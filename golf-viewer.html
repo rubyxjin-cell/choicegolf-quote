@@ -210,15 +210,23 @@ function renderPage(d) {
 
   wrap.innerHTML = `
     <!-- HEADER -->
-    <header class="site-header">
-      <div style="display:flex;align-items:center;gap:10px">
-        <div class="logo-box">CG</div>
-        <div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;color:#111;letter-spacing:.3px;line-height:1.2">${d.companyName}</div>
-          <div style="font-size:9px;color:#8A8A84;letter-spacing:2px;text-transform:uppercase">${d.companyNameEn}</div>
+    <header class="site-header" style="padding:0;flex-direction:column;align-items:stretch;height:auto">
+      <div style="padding:10px 16px 8px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #F0EDE8">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:36px;height:36px;border-radius:8px;background:#1C3D2E;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#C9A268;flex-shrink:0">CG</div>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:#111;line-height:1.2">${d.companyName}</div>
+            <div style="font-size:9px;color:#8A8A84;letter-spacing:2px;text-transform:uppercase">${d.companyNameEn}</div>
+          </div>
+        </div>
+        <div style="font-size:10px;color:#8A8A84;letter-spacing:1px;text-transform:uppercase;border:1px solid #D4D1CA;padding:4px 10px;border-radius:20px">견적서</div>
+      </div>
+      <div style="padding:6px 16px 8px;background:#F8F7F4">
+        <div style="font-size:10px;color:#6B6B65;line-height:1.8;letter-spacing:0.2px">
+          <span style="font-weight:600;color:#333">(주)초이스골프</span>&nbsp;|&nbsp;☎ 1533-3160 / 02-545-5055<br>
+          사업자등록 594-88-03010&nbsp;|&nbsp;관광사업 제2025-000011호&nbsp;|&nbsp;통신판매업 제2025-서울중구-213호
         </div>
       </div>
-      <div style="font-size:10px;color:#8A8A84;letter-spacing:1px;text-transform:uppercase;border:1px solid #D4D1CA;padding:4px 10px;border-radius:20px">견적서</div>
     </header>
 
     <!-- HERO -->
