@@ -171,45 +171,66 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
   <!-- SIDEBAR -->
   <div class="sidebar">
     <div class="sidebar-section">
-      <div class="sidebar-label">견적 입력</div>
-      <div class="sidebar-item active" onclick="switchTab('basic')" id="tab-basic">
-        <span class="sidebar-item-icon">📋</span> 기본 정보
-      </div>
-      <div class="sidebar-item" onclick="switchTab('price')" id="tab-price">
-        <span class="sidebar-item-icon">💰</span> 요금표
-      </div>
-      <div class="sidebar-item" onclick="switchTab('schedule')" id="tab-schedule">
-        <span class="sidebar-item-icon">🗓</span> 일정표
-      </div>
-      <div class="sidebar-item" onclick="switchTab('hotel')" id="tab-hotel">
-        <span class="sidebar-item-icon">🏨</span> 호텔
-      </div>
-      <div class="sidebar-item" onclick="switchTab('golf')" id="tab-golf">
-        <span class="sidebar-item-icon">⛳</span> 골프장
-      </div>
-      <div class="sidebar-item" onclick="switchTab('contact')" id="tab-contact">
-        <span class="sidebar-item-icon">📞</span> 연락처
-      </div>
-    </div>
-    <div class="sidebar-section">
       <div class="sidebar-label">상품 관리</div>
-      <div class="sidebar-item" onclick="switchTab('products')" id="tab-products">
+      <div class="sidebar-item active" onclick="switchTab('products')" id="tab-products">
         <span class="sidebar-item-icon">📦</span> 상품 목록
       </div>
       <div class="sidebar-item" onclick="switchTab('product-new')" id="tab-product-new">
-        <span class="sidebar-item-icon">➕</span> 상품 등록
+        <span class="sidebar-item-icon">✏️</span> 상품 등록/수정
       </div>
+    </div>
+    <div class="sidebar-section" id="sectionNavWrap" style="display:none">
+      <div class="sidebar-label">섹션 이동</div>
+      <div class="sidebar-item" onclick="scrollToSection('sec-basic')"><span class="sidebar-item-icon">📋</span> 기본 정보</div>
+      <div class="sidebar-item" onclick="scrollToSection('sec-price')"><span class="sidebar-item-icon">💰</span> 요금표</div>
+      <div class="sidebar-item" onclick="scrollToSection('sec-schedule')"><span class="sidebar-item-icon">🗓</span> 일정표</div>
+      <div class="sidebar-item" onclick="scrollToSection('sec-hotel')"><span class="sidebar-item-icon">🏨</span> 호텔</div>
+      <div class="sidebar-item" onclick="scrollToSection('sec-golf')"><span class="sidebar-item-icon">⛳</span> 골프장</div>
+      <div class="sidebar-item" onclick="scrollToSection('sec-contact')"><span class="sidebar-item-icon">📞</span> 연락처</div>
     </div>
   </div>
 
   <!-- CONTENT -->
   <div class="content">
 
-    <!-- ① 기본 정보 -->
-    <div class="tab-panel active" id="panel-basic">
+    <!-- ① 상품 목록 -->
+    <div class="tab-panel active" id="panel-products">
+      <div class="form-card">
+        <div class="form-card-title"><span class="form-card-title-icon">📦</span> 저장된 상품 목록</div>
+        <div id="productListWrap">
+          <div style="text-align:center;padding:40px;color:var(--ink3);font-size:13px">로딩 중...</div>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:4px">
+        <button onclick="newProduct()" style="display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:white;border:none;padding:12px 28px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">
+          ✏️ 새 상품 등록하기
+        </button>
+      </div>
+    </div>
+
+    <!-- ② 상품 등록/수정 (모든 섹션 통합) -->
+    <div class="tab-panel" id="panel-product-new">
+
+      <!-- 상단 저장 바 -->
+      <div class="form-card" id="currentProductBanner" style="background:linear-gradient(135deg,#1C3D2E,#2A5240);border:none;position:sticky;top:0;z-index:10;margin-bottom:20px">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <div style="flex:1;min-width:180px">
+            <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:4px" id="bannerLabel">새 상품 등록</div>
+            <input type="text" id="productName" placeholder="상품명 입력 (예: 일본 미야자키 3박4일)" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:8px 14px;font-size:14px;font-weight:600;color:white;font-family:'Noto Sans KR',sans-serif;outline:none;width:100%" oninput="this.style.color='white'">
+          </div>
+          <div style="display:flex;gap:8px;flex-shrink:0">
+            <button id="btnSaveNew" onclick="saveProduct()" style="background:var(--gold);color:white;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">
+              💾 새 상품으로 저장
+            </button>
+            <button id="btnUpdate" onclick="updateProduct()" style="display:none;background:#2563EB;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">
+              🔄 상품 업데이트
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 요약 바 -->
       <div class="summary-bar" id="summary-bar">
-        <div class="summary-item"><div class="summary-label">고객명</div><div class="summary-value" id="s-customer">—</div></div>
-        <div class="summary-divider"></div>
         <div class="summary-item"><div class="summary-label">여행지</div><div class="summary-value" id="s-dest">—</div></div>
         <div class="summary-divider"></div>
         <div class="summary-item"><div class="summary-label">기간</div><div class="summary-value" id="s-period">—</div></div>
@@ -217,18 +238,8 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
         <div class="summary-item"><div class="summary-label">인원</div><div class="summary-value" id="s-pax">—</div></div>
       </div>
 
-      <div class="form-card">
-        <div class="form-card-title"><span class="form-card-title-icon">👤</span> 고객 정보</div>
-        <div class="form-row col2">
-          <div class="field"><label>고객명 (대표)</label><input type="text" id="customerName" placeholder="홍길동" oninput="updateSummary()"></div>
-          <div class="field"><label>연락처</label><input type="text" id="customerPhone" placeholder="010-0000-0000"></div>
-        </div>
-        <div class="form-row col3">
-          <div class="field"><label>총 인원</label><input type="number" id="pax" placeholder="4" min="1" oninput="updateSummary()"></div>
-          <div class="field"><label>성인 남</label><input type="number" id="paxM" placeholder="3" min="0"></div>
-          <div class="field"><label>성인 여</label><input type="number" id="paxF" placeholder="1" min="0"></div>
-        </div>
-      </div>
+      <!-- 📋 기본 정보 -->
+      <div id="sec-basic" style="font-size:11px;font-weight:700;letter-spacing:2px;color:var(--ink3);text-transform:uppercase;margin:8px 0 12px;padding-left:2px">📋 기본 정보</div>
 
       <div class="form-card">
         <div class="form-card-title"><span class="form-card-title-icon">✈️</span> 여행 정보</div>
@@ -251,15 +262,15 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
           <div class="field"><label>부서 / 팀</label><input type="text" id="agentTeam" placeholder="해외팀"></div>
         </div>
       </div>
-    </div>
 
-    <!-- ② 요금표 -->
-    <div class="tab-panel" id="panel-price">
+      <!-- 💰 요금표 -->
+      <div id="sec-price" style="font-size:11px;font-weight:700;letter-spacing:2px;color:var(--ink3);text-transform:uppercase;margin:24px 0 12px;padding-left:2px">💰 요금표</div>
+
       <div class="form-card">
         <div class="form-card-title"><span class="form-card-title-icon">💰</span> 대표 금액</div>
         <div class="form-row col2">
           <div class="field"><label>1인당 금액 (원)</label><input type="number" id="pricePerPerson" placeholder="1020000" oninput="calcTotal()"></div>
-          <div class="field"><label>4인 총액 (자동계산)</label><input type="text" id="priceTotal" placeholder="자동계산" readonly style="background:#F0F0EE;color:var(--ink3)"></div>
+          <div class="field"><label>총액 (자동계산)</label><input type="text" id="priceTotal" placeholder="자동계산" readonly style="background:#F0F0EE;color:var(--ink3)"></div>
         </div>
       </div>
 
@@ -299,19 +310,19 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- ③ 일정표 -->
-    <div class="tab-panel" id="panel-schedule">
+      <!-- 🗓 일정표 -->
+      <div id="sec-schedule" style="font-size:11px;font-weight:700;letter-spacing:2px;color:var(--ink3);text-transform:uppercase;margin:24px 0 12px;padding-left:2px">🗓 일정표</div>
+
       <div class="form-card">
         <div class="form-card-title"><span class="form-card-title-icon">🗓</span> 일자별 일정</div>
         <div class="day-blocks" id="dayBlocks"></div>
         <button class="btn-add" style="margin-top:12px" onclick="addDay()">+ 일정 추가</button>
       </div>
-    </div>
 
-    <!-- ④ 호텔 -->
-    <div class="tab-panel" id="panel-hotel">
+      <!-- 🏨 호텔 -->
+      <div id="sec-hotel" style="font-size:11px;font-weight:700;letter-spacing:2px;color:var(--ink3);text-transform:uppercase;margin:24px 0 12px;padding-left:2px">🏨 호텔</div>
+
       <div class="form-card">
         <div class="form-card-title"><span class="form-card-title-icon">🏨</span> 숙박 호텔</div>
         <div class="form-row col2">
@@ -343,16 +354,19 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- ⑤ 골프장 -->
-    <div class="tab-panel" id="panel-golf">
-      <div class="course-cards" id="courseCards"></div>
-      <button class="btn-add" onclick="addCourse()">+ 골프장 추가</button>
-    </div>
+      <!-- ⛳ 골프장 -->
+      <div id="sec-golf" style="font-size:11px;font-weight:700;letter-spacing:2px;color:var(--ink3);text-transform:uppercase;margin:24px 0 12px;padding-left:2px">⛳ 골프장</div>
 
-    <!-- ⑥ 연락처 -->
-    <div class="tab-panel" id="panel-contact">
+      <div class="form-card">
+        <div class="form-card-title"><span class="form-card-title-icon">⛳</span> 골프장 정보</div>
+        <div class="course-cards" id="courseCards"></div>
+        <button class="btn-add" style="margin-top:8px" onclick="addCourse()">+ 골프장 추가</button>
+      </div>
+
+      <!-- 📞 연락처 -->
+      <div id="sec-contact" style="font-size:11px;font-weight:700;letter-spacing:2px;color:var(--ink3);text-transform:uppercase;margin:24px 0 12px;padding-left:2px">📞 연락처 & 회사</div>
+
       <div class="form-card">
         <div class="form-card-title"><span class="form-card-title-icon">📞</span> 고객 페이지 연락처</div>
         <div class="form-row col2">
@@ -367,50 +381,18 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
           <div class="field"><label>회사명 (영문)</label><input type="text" id="companyNameEn" placeholder="Choice Golf Tour" value="Choice Golf Tour"></div>
         </div>
       </div>
-    </div>
 
-    <!-- ⑦ 상품 목록 -->
-    <div class="tab-panel" id="panel-products">
-      <div class="form-card">
-        <div class="form-card-title"><span class="form-card-title-icon">📦</span> 저장된 상품 목록</div>
-        <div id="productListWrap">
-          <div style="text-align:center;padding:40px;color:var(--ink3);font-size:13px">로딩 중...</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ⑧ 상품 등록/수정 -->
-    <div class="tab-panel" id="panel-product-new">
-      <!-- 현재 불러온 상품 표시 -->
-      <div class="form-card" id="currentProductBanner" style="display:none;background:linear-gradient(135deg,#1C3D2E,#2A5240);border:none">
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
-          <div>
-            <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:4px">현재 작업 중인 상품</div>
-            <div style="font-size:16px;font-weight:600;color:white" id="currentProductName">—</div>
-          </div>
-          <button onclick="updateProduct()" style="background:var(--gold);color:white;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">
-            🔄 상품 업데이트
-          </button>
-        </div>
-      </div>
-
-      <div class="form-card">
-        <div class="form-card-title"><span class="form-card-title-icon">➕</span> 새 상품으로 저장</div>
-        <p style="font-size:13px;color:var(--ink3);margin-bottom:16px;line-height:1.7">
-          지금 빌더에 입력된 내용 전체를 새 상품으로 저장합니다.<br>
-          나중에 불러와서 고객명·날짜·금액만 수정하면 됩니다.
-        </p>
-        <div class="form-row">
-          <div class="field">
-            <label>상품명</label>
-            <input type="text" id="productName" placeholder="예: 일본 미야자키 3박4일 2라운드">
-          </div>
-        </div>
-        <button class="btn-preview" style="width:100%;justify-content:center;margin-top:8px" onclick="saveProduct()">
-          📦 새 상품으로 저장
+      <!-- 하단 저장 버튼 -->
+      <div style="display:flex;gap:12px;margin-top:12px;margin-bottom:32px">
+        <button id="btnSaveNew2" onclick="saveProduct()" style="flex:1;background:var(--gold);color:white;border:none;padding:14px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">
+          💾 새 상품으로 저장
+        </button>
+        <button id="btnUpdate2" onclick="updateProduct()" style="display:none;flex:1;background:#2563EB;color:white;border:none;padding:14px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">
+          🔄 상품 업데이트
         </button>
       </div>
-    </div>
+
+    </div><!-- /panel-product-new -->
 
   </div><!-- /content -->
 </div><!-- /main -->
@@ -466,8 +448,6 @@ window.onload = () => {
   addCourse({round:2, day:3, name:'Phoenix Seagaia CC', nameJp:'シーガイアCC', holes:'18홀 파72', rating:'PGA 공인 챔피언십', desc:'태평양이 한눈에 내려다보이는 오션뷰 홀이 압도적입니다. 국내 골프 팬들의 버킷리스트 코스로 손꼽히는 PGA 개최지.', features:'🌊 오션뷰,🏆 PGA 개최지,🚗 카트 포함', isPGA:true});
 
   // 기본 폼 값
-  document.getElementById('customerName').value = '홍길동';
-  document.getElementById('pax').value = '4';
   document.getElementById('destination').value = '일본 미야자키';
   document.getElementById('dateFrom').value = '2026-05-14';
   document.getElementById('dateTo').value = '2026-05-17';
@@ -487,6 +467,8 @@ window.onload = () => {
   calcTotal();
   updateSummary();
   fetchProducts();
+  // Start on product list
+  switchTab('products');
 };
 
 /* ════════════════════════════
@@ -496,29 +478,70 @@ function switchTab(name) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
   document.getElementById('panel-' + name).classList.add('active');
-  document.getElementById('tab-' + name).classList.add('active');
+  const tabEl = document.getElementById('tab-' + name);
+  if (tabEl) tabEl.classList.add('active');
+  const navWrap = document.getElementById('sectionNavWrap');
+  if (navWrap) navWrap.style.display = (name === 'product-new') ? 'block' : 'none';
   if (name === 'products') renderProductList();
+  // scroll to top
+  document.querySelector('.content').scrollTop = 0;
+}
+
+function scrollToSection(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function newProduct() {
+  // Clear form for new product
+  state.currentProductId = null;
+  state.currentProductName = null;
+  clearForm();
+  updateCurrentProductBanner();
+  switchTab('product-new');
+  showToast('✏️ 새 상품 입력을 시작하세요!');
+}
+
+function clearForm() {
+  const ids = ['destination','airport','dateFrom','dateTo','rounds','validUntil','agent','agentTeam',
+    'pricePerPerson','priceNote','hotelName','hotelNameKr','hotelRoom','hotelNights','hotelDesc',
+    'contactPhone','contactKakao','companyName','companyNameEn','productName'];
+  ids.forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+  document.getElementById('companyName').value = '초이스골프';
+  document.getElementById('companyNameEn').value = 'Choice Golf Tour';
+  document.getElementById('priceItems').innerHTML = '';
+  state.priceItems = [];
+  ['includes','excludes','hotelFacilities'].forEach(type => {
+    const wrap = document.getElementById(type + '-wrap');
+    if (wrap) wrap.querySelectorAll('.tag-item').forEach(t => t.remove());
+  });
+  document.getElementById('dayBlocks').innerHTML = '';
+  dayCount = 0;
+  document.getElementById('courseCards').innerHTML = '';
+  calcTotal();
+  updateSummary();
 }
 
 /* ════════════════════════════
    SUMMARY BAR
 ════════════════════════════ */
 function updateSummary() {
-  const cn = document.getElementById('customerName').value || '—';
-  const dest = document.getElementById('destination').value || '—';
-  const pax = document.getElementById('pax').value;
-  const from = document.getElementById('dateFrom').value;
-  const to = document.getElementById('dateTo').value;
-  document.getElementById('s-customer').textContent = cn;
-  document.getElementById('s-dest').textContent = dest;
-  document.getElementById('s-pax').textContent = pax ? pax + '명' : '—';
-  if(from && to) {
+  const dest = document.getElementById('destination')?.value || '—';
+  const pax = document.getElementById('pax')?.value;
+  const from = document.getElementById('dateFrom')?.value;
+  const to = document.getElementById('dateTo')?.value;
+  const destEl = document.getElementById('s-dest');
+  const paxEl = document.getElementById('s-pax');
+  const periodEl = document.getElementById('s-period');
+  if (destEl) destEl.textContent = dest;
+  if (paxEl) paxEl.textContent = pax ? pax + '명' : '—';
+  if(from && to && periodEl) {
     const f = new Date(from), t2 = new Date(to);
     const nights = Math.round((t2-f)/(1000*60*60*24));
     const fmt = d => `${d.getMonth()+1}/${d.getDate()}`;
-    document.getElementById('s-period').textContent = `${fmt(f)} – ${fmt(t2)} (${nights}박)`;
-  } else {
-    document.getElementById('s-period').textContent = '—';
+    periodEl.textContent = `${fmt(f)} – ${fmt(t2)} (${nights}박)`;
+  } else if(periodEl) {
+    periodEl.textContent = '—';
   }
 }
 
@@ -1168,8 +1191,8 @@ function renderProductList() {
         <div style="font-size:14px;font-weight:500;color:var(--ink)">${p.name}</div>
         <div style="font-size:11px;color:var(--ink3);margin-top:3px">${new Date(p.created_at).toLocaleDateString('ko-KR')} 등록</div>
       </div>
-      <button onclick="loadProductById('${p.id}')" style="background:var(--accent);color:white;border:none;padding:7px 14px;border-radius:7px;font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif">불러오기</button>
-      <button onclick="deleteProduct('${p.id}')" style="background:none;border:1px solid #DFCAC9;color:var(--red);padding:7px 14px;border-radius:7px;font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif">삭제</button>
+      <button onclick="loadProductById('${p.id}')" style="background:var(--accent);color:white;border:none;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Noto Sans KR',sans-serif">✏️ 불러와서 수정</button>
+      <button onclick="deleteProduct('${p.id}')" style="background:none;border:1px solid #DFCAC9;color:var(--red);padding:9px 14px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif">삭제</button>
     </div>
   `).join('');
 }
@@ -1191,8 +1214,11 @@ async function saveProduct() {
     });
     const rows = await res.json();
     if (!rows || !rows[0]) throw new Error('저장 실패');
+    const saved = rows[0];
+    state.currentProductId = saved.id;
+    state.currentProductName = name;
+    updateCurrentProductBanner();
     showToast('✅ 상품 저장 완료!');
-    document.getElementById('productName').value = '';
     await fetchProducts();
   } catch(e) { showToast('❌ 오류: ' + e.message); }
 }
@@ -1215,18 +1241,33 @@ function loadProductById(id) {
   updateCurrentProductBanner();
 
   showToast(`✅ "${p.name}" 불러오기 완료!`);
-  switchTab('basic');
+  switchTab('product-new');
   document.getElementById('productSelector').value = '';
+  document.querySelector('.content').scrollTop = 0;
 }
 
 function updateCurrentProductBanner() {
-  const banner = document.getElementById('currentProductBanner');
-  const nameEl = document.getElementById('currentProductName');
+  const bannerLabel = document.getElementById('bannerLabel');
+  const productNameEl = document.getElementById('productName');
+  const btnSaveNew = document.getElementById('btnSaveNew');
+  const btnSaveNew2 = document.getElementById('btnSaveNew2');
+  const btnUpdate = document.getElementById('btnUpdate');
+  const btnUpdate2 = document.getElementById('btnUpdate2');
+
   if (state.currentProductId) {
-    banner.style.display = 'block';
-    nameEl.textContent = state.currentProductName;
+    if (bannerLabel) bannerLabel.textContent = '수정 중인 상품';
+    if (productNameEl) productNameEl.value = state.currentProductName;
+    if (btnSaveNew) btnSaveNew.style.display = 'none';
+    if (btnSaveNew2) btnSaveNew2.style.display = 'none';
+    if (btnUpdate) btnUpdate.style.display = 'inline-flex';
+    if (btnUpdate2) { btnUpdate2.style.display = 'block'; btnUpdate2.style.flex = '1'; }
   } else {
-    banner.style.display = 'none';
+    if (bannerLabel) bannerLabel.textContent = '새 상품 등록';
+    if (productNameEl) productNameEl.value = '';
+    if (btnSaveNew) btnSaveNew.style.display = 'inline-flex';
+    if (btnSaveNew2) { btnSaveNew2.style.display = 'block'; btnSaveNew2.style.flex = '1'; }
+    if (btnUpdate) btnUpdate.style.display = 'none';
+    if (btnUpdate2) btnUpdate2.style.display = 'none';
   }
 }
 
@@ -1302,6 +1343,10 @@ function applyProductData(d) {
   // 골프장 초기화
   document.getElementById('courseCards').innerHTML = '';
   (d.courses || []).forEach(c => addCourse(c));
+
+  // 상품명 입력란에도 세팅
+  const pnEl = document.getElementById('productName');
+  if (pnEl && state.currentProductName) pnEl.value = state.currentProductName;
 
   calcTotal();
   updateSummary();
