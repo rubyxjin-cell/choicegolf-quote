@@ -342,6 +342,17 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
           </div>
         </div>
         <div class="form-row">
+          <div class="field">
+            <label>호텔 대표 사진</label>
+            <div id="hotelPhotoPreview" style="width:100%;height:160px;border-radius:8px;border:1.5px dashed var(--line);background:var(--input-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;gap:8px;overflow:hidden;position:relative" onclick="document.getElementById('hotelPhotoInput').click()">
+              <span style="font-size:28px">📷</span>
+              <span style="font-size:12px;color:var(--ink3)">클릭해서 사진 업로드</span>
+            </div>
+            <input type="file" id="hotelPhotoInput" accept="image/*" style="display:none" onchange="uploadHotelPhoto(this)">
+            <input type="hidden" id="hotelPhotoUrl">
+          </div>
+        </div>
+        <div class="form-row">
           <div class="field"><label>호텔 소개 (고객에게 보여지는 텍스트)</label><textarea id="hotelDesc" placeholder="일본 최대 규모 리조트 중 하나로 골프 코스와 직결된 최고급 숙박 시설입니다. 전 객실 자연 채광, 실내 온천과 스파를 자유롭게 이용 가능합니다."></textarea></div>
         </div>
         <div class="form-row">
@@ -466,9 +477,8 @@ window.onload = () => {
 
   calcTotal();
   updateSummary();
+  // panel-products는 HTML에서 이미 active — fetchProducts 완료 후 자동 렌더링
   fetchProducts();
-  // Start on product list
-  switchTab('products');
 };
 
 /* ════════════════════════════
@@ -703,6 +713,16 @@ function addCourse(data={}) {
       <button class="day-block-del" onclick="document.getElementById('${id}').remove()">✕</button>
     </div>
     <div class="course-card-body">
+      <div class="form-row">
+        <div class="field">
+          <label>골프장 대표 사진</label>
+          <div id="coursePhoto-\${id}" style="width:100%;height:120px;border-radius:8px;border:1.5px dashed var(--line);background:var(--input-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;gap:6px;overflow:hidden;position:relative" onclick="document.getElementById('coursePhotoInput-\${id}').click()">
+            \${data.photoUrl ? '<img src="'+data.photoUrl+'" style="width:100%;height:100%;object-fit:cover;border-radius:7px">' : '<span style=\'font-size:24px\'>📷</span><span style=\'font-size:11px;color:#8A8A84\'>클릭해서 사진 업로드</span>'}
+          </div>
+          <input type="file" id="coursePhotoInput-\${id}" accept="image/*" style="display:none" onchange="uploadCoursePhoto(this,'\${id}')">
+          <input type="hidden" id="coursePhotoUrl-\${id}" value="\${data.photoUrl||''}">
+        </div>
+      </div>
       <div class="form-row col2">
         <div class="field"><label>라운드</label><input type="number" placeholder="1" value="${data.round||roundNum}" min="1" style="font-size:13px"></div>
         <div class="field"><label>진행 Day</label><input type="number" placeholder="2" value="${data.day||''}" min="1" style="font-size:13px"></div>
@@ -774,7 +794,8 @@ function collectData() {
       holes: inputs[4]?.value || '',
       rating: inputs[5]?.value || '',
       desc: ta?.value || '',
-      features: (inputs[6]?.value || '').split(',').map(s=>s.trim()).filter(Boolean)
+      features: (inputs[6]?.value || '').split(',').map(s=>s.trim()).filter(Boolean),
+      photoUrl: cc.querySelector('input[type=hidden]')?.value || ''
     });
   });
 
@@ -804,6 +825,7 @@ function collectData() {
     hotelRoom: v('hotelRoom'), hotelNights: v('hotelNights'),
     hotelStars: v('hotelStars'), hotelDesc: v('hotelDesc'),
     hotelFacilities: getTagValues('hotelFacilities'),
+    hotelPhotoUrl: v('hotelPhotoUrl'),
     courses,
     contactPhone: v('contactPhone'), contactKakao: v('contactKakao'),
     companyName: v('companyName'), companyNameEn: v('companyNameEn')
@@ -815,76 +837,76 @@ function collectData() {
 ════════════════════════════ */
 function generateHTML(d) {
   const totalPrice = (d.pricePerPerson * d.paxNum).toLocaleString();
-  const perPerson = d.pricePerPerson ? Math.round(d.pricePerPerson/10000) + '만' : '—';
+  const perPerson = d.pricePerPerson ? d.pricePerPerson.toLocaleString() : '—';
+  const perPersonMan = d.pricePerPerson ? Math.round(d.pricePerPerson/10000) + '만' : '—';
   const starsStr = '★'.repeat(parseInt(d.hotelStars)||5);
+  const dayLabels = ['1일차','2일차','3일차','4일차','5일차','6일차','7일차','8일차','9일차','10일차'];
 
-  const priceRowsHTML = d.priceRows.map((r,i) => `
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 16px;border-bottom:1px solid #E8E6E1;gap:12px;${i%2===1?'background:#F8F7F5':''}">
-      <div>
-        <div style="font-size:13px;color:#4A4A46;flex:1;line-height:1.4">${r.name}</div>
-        ${r.detail?`<div style="font-size:11px;color:#8A8A84;margin-top:2px">${r.detail}</div>`:''}
-      </div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:#111110;white-space:nowrap">₩${r.amount.toLocaleString()}</div>
-    </div>`).join('');
-
-  const daysHTML = d.days.map((day,i) => {
+  // 일정표 HTML
+  const daysHTML = d.days.map((day, i) => {
     const isLast = i === d.days.length - 1;
-    const dotColor = isLast ? '#A07840' : '#1C3D2E';
+    const dayLabel = dayLabels[i] || (i+1)+'일차';
     const golfCard = day.isGolf && day.golfName ? `
-      <div style="background:#1C3D2E;border-radius:10px;padding:13px 15px;margin-bottom:10px;display:flex;align-items:center;gap:12px">
-        <span style="font-size:20px;flex-shrink:0">⛳</span>
+      <div style="background:#1C3D2E;border-radius:10px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px">
+        <span style="font-size:18px;flex-shrink:0">⛳</span>
         <div>
-          <div style="font-family:'Noto Serif KR',serif;font-size:13px;font-weight:600;color:white;line-height:1.4">${day.golfName}</div>
-          ${day.golfInfo?`<div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:3px">${day.golfInfo}</div>`:''}
+          <div style="font-size:14px;font-weight:700;color:white;line-height:1.3">${day.golfName}</div>
+          ${day.golfInfo?`<div style="font-size:12px;color:rgba(255,255,255,0.6);margin-top:2px">${day.golfInfo}</div>`:''}
         </div>
       </div>` : '';
     const itemsHTML = day.items.map(it => `
-      <div style="display:flex;gap:10px;align-items:baseline;margin-bottom:6px">
-        <span style="font-family:'Cormorant Garamond',serif;font-size:12px;color:#A07840;font-weight:600;min-width:44px;flex-shrink:0">${it.time}</span>
-        <span style="font-size:13px;color:#4A4A46;line-height:1.5">${it.text}</span>
+      <div style="display:flex;gap:10px;align-items:center;padding:5px 0;border-bottom:1px solid #F0EFE9">
+        <span style="font-size:12px;color:#A07840;font-weight:700;min-width:48px;flex-shrink:0;font-variant-numeric:tabular-nums">${it.time}</span>
+        <span style="font-size:13px;color:#333;font-weight:400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1">${it.text}</span>
       </div>`).join('');
     return `
-      <div style="display:grid;grid-template-columns:58px 1fr;">
-        <div style="display:flex;flex-direction:column;align-items:center;padding-top:4px;position:relative;${!isLast?'border-right:1px solid #E8E6E1':''}">
-          <div style="width:9px;height:9px;border-radius:50%;background:${dotColor};border:2px solid white;box-shadow:0 0 0 1.5px ${dotColor};margin-top:6px;position:relative;z-index:1"></div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:10px;font-weight:600;color:#8A8A84;letter-spacing:1px;text-transform:uppercase;text-align:center;margin-top:4px;line-height:1.2">Day<br>${day.num}</div>
+      <div style="border:1px solid #E8E6E1;border-radius:14px;overflow:hidden;margin-bottom:14px;background:white">
+        <div style="background:${isLast?'#A07840':'#1C3D2E'};padding:12px 16px;display:flex;align-items:center;gap:10px">
+          <span style="font-size:18px;font-weight:900;color:white;letter-spacing:-0.5px">${dayLabel}</span>
+          <span style="font-size:13px;font-weight:500;color:rgba(255,255,255,0.85);flex:1">${day.title}</span>
+          ${day.isGolf?'<span style="font-size:11px;background:rgba(255,255,255,0.2);color:white;padding:2px 8px;border-radius:10px">⛳ 골프</span>':''}
         </div>
-        <div style="${!isLast?'border-bottom:1px dashed #E8E6E1':''}; padding:18px 0 22px 18px">
-          <div style="font-family:'Noto Serif KR',serif;font-size:15px;font-weight:600;color:#111110;margin-bottom:4px;line-height:1.4">${day.title}${day.isGolf?'<span style="display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:500;background:#E6F0EA;color:#1C3D2E;margin-left:6px;font-family:\'Noto Sans KR\',sans-serif">⛳ 골프</span>':''}</div>
-          ${day.sub?`<div style="font-size:11px;color:#8A8A84;margin-bottom:10px">${day.sub}</div>`:''}
+        <div style="padding:14px 16px">
+          ${day.sub?`<div style="font-size:12px;color:#8A8A84;margin-bottom:10px">${day.sub}</div>`:''}
           ${golfCard}
           ${itemsHTML}
         </div>
       </div>`;
   }).join('');
 
-  const incHTML = d.includes.map(t=>`<li style="font-size:12px;color:#4A4A46;line-height:1.4;display:flex;gap:7px;align-items:flex-start;margin-bottom:7px"><span style="font-size:10px;margin-top:1px;flex-shrink:0;font-weight:700;color:#1C3D2E">✓</span>${t}</li>`).join('');
-  const excHTML = d.excludes.map(t=>`<li style="font-size:12px;color:#4A4A46;line-height:1.4;display:flex;gap:7px;align-items:flex-start;margin-bottom:7px"><span style="font-size:10px;margin-top:1px;flex-shrink:0;font-weight:700;color:#8B2E2E">✕</span>${t}</li>`).join('');
+  // 포함/불포함
+  const incHTML = d.includes.map(t=>`<li style="font-size:13px;color:#333;padding:5px 0;border-bottom:1px solid #F0EFE9;display:flex;gap:8px;align-items:flex-start"><span style="color:#1C3D2E;font-weight:700;flex-shrink:0">✓</span>${t}</li>`).join('');
+  const excHTML = d.excludes.map(t=>`<li style="font-size:13px;color:#333;padding:5px 0;border-bottom:1px solid #F0EFE9;display:flex;gap:8px;align-items:flex-start"><span style="color:#C0392B;font-weight:700;flex-shrink:0">✕</span>${t}</li>`).join('');
 
-  const hotelFacHTML = d.hotelFacilities.map(f=>`<span style="font-size:11px;padding:4px 10px;background:#F8F7F5;border:1px solid #E8E6E1;border-radius:20px;color:#4A4A46">${f}</span>`).join('');
+  // 호텔 편의시설
+  const hotelFacHTML = d.hotelFacilities.map(f=>`<span style="font-size:12px;padding:5px 12px;background:#F0F4F2;border:1px solid #C8DDD4;border-radius:20px;color:#1C3D2E;font-weight:500">${f}</span>`).join('');
 
-  const coursesHTML = d.courses.map((c,i) => {
-    const bg = i%2===0 ? 'linear-gradient(135deg,#A8C8A8 0%,#5C8C6C 100%)' : 'linear-gradient(135deg,#90B4A0 0%,#4A7860 100%)';
-    const featHTML = c.features.map(f=>`<span style="font-size:11px;padding:4px 10px;background:#F8F7F5;border:1px solid #E8E6E1;border-radius:20px;color:#4A4A46">${f}</span>`).join('');
+  // 골프장
+  const coursesHTML = d.courses.map((c, i) => {
+    const bg = i%2===0 ? 'linear-gradient(135deg,#A8C8A8,#4A7860)' : 'linear-gradient(135deg,#90B4A0,#3A6050)';
+    const photoEl = c.photoUrl
+      ? `<img src="${c.photoUrl}" style="width:100%;height:200px;object-fit:cover">`
+      : `<div style="width:100%;height:200px;background:${bg};display:flex;align-items:center;justify-content:center;font-size:48px;position:relative"><div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(0,0,0,0.4))"></div><span style="position:relative">⛳</span></div>`;
+    const featHTML = c.features.map(f=>`<span style="font-size:12px;padding:5px 12px;background:#F0F4F2;border:1px solid #C8DDD4;border-radius:20px;color:#1C3D2E;font-weight:500">${f}</span>`).join('');
     return `
       <div style="border:1px solid #E8E6E1;border-radius:14px;overflow:hidden;background:white;margin-bottom:20px">
-        <div style="width:100%;height:190px;display:flex;align-items:center;justify-content:center;font-size:44px;position:relative;background:${bg}">
-          <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,0.3))"></div>
-          <div style="position:absolute;bottom:12px;left:14px;background:rgba(0,0,0,0.5);color:white;font-size:11px;padding:4px 10px;border-radius:20px">Day ${c.day} · ${c.round}라운드</div>
-          ${i===0?'⛳':'🏆'}
+        <div style="position:relative">${photoEl}
+          <div style="position:absolute;bottom:10px;left:12px;background:rgba(0,0,0,0.55);color:white;font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px">Day ${c.day} · ${c.round}라운드</div>
         </div>
         <div style="padding:18px 18px 20px">
-          <div style="font-size:11px;color:${i===0?'#1C3D2E':'#A07840'};letter-spacing:1px;margin-bottom:6px">${c.rating}</div>
-          <div style="font-family:'Noto Serif KR',serif;font-size:17px;font-weight:600;color:#111110;margin-bottom:4px;line-height:1.3">${c.name}</div>
-          <div style="font-size:12px;color:#8A8A84;margin-bottom:12px">${c.nameJp} · ${c.holes}</div>
-          <div style="font-size:13px;color:#4A4A46;line-height:1.8;border-top:1px solid #E8E6E1;padding-top:12px">${c.desc}</div>
-          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px">${featHTML}</div>
+          <div style="font-size:11px;color:#A07840;font-weight:700;letter-spacing:1px;margin-bottom:6px">${c.rating}</div>
+          <div style="font-size:18px;font-weight:700;color:#111;margin-bottom:4px;line-height:1.3">${c.name}</div>
+          <div style="font-size:12px;color:#8A8A84;margin-bottom:14px">${c.nameJp}${c.nameJp&&c.holes?' · ':''}${c.holes}</div>
+          ${c.desc?`<div style="font-size:13px;color:#444;line-height:1.8;border-top:1px solid #EDEBE6;padding-top:14px;margin-bottom:12px">${c.desc}</div>`:''}
+          <div style="display:flex;flex-wrap:wrap;gap:6px">${featHTML}</div>
         </div>
       </div>`;
   }).join('');
 
   const noteLines = d.priceNote.split('\n').filter(Boolean).map(l=>`${l}<br>`).join('');
-  const chipStyle = 'display:inline-flex;align-items:center;gap:5px;padding:6px 12px;background:#F8F7F5;border-radius:20px;font-size:12px;color:#4A4A46;border:1px solid #E8E6E1;margin:3px 0';
+  const hotelPhotoEl = d.hotelPhotoUrl
+    ? `<img src="${d.hotelPhotoUrl}" style="width:100%;height:200px;object-fit:cover">`
+    : `<div style="width:100%;height:200px;background:linear-gradient(135deg,#BFD4C8,#7A9A8A);display:flex;align-items:center;justify-content:center;font-size:48px;position:relative"><div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(0,0,0,0.3))"></div><span style="position:relative">🏨</span></div>`;
 
   return `<!DOCTYPE html>
 <html lang="ko">
@@ -892,22 +914,20 @@ function generateHTML(d) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${d.companyName} — ${d.destination} 골프투어</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;900&family=Noto+Serif+KR:wght@400;600;700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#DDDBD5;font-family:'Noto Sans KR',sans-serif;font-weight:300;-webkit-font-smoothing:antialiased}
-.reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+body{background:#DDDBD5;font-family:'Noto Sans KR',sans-serif;font-weight:400;-webkit-font-smoothing:antialiased;color:#222}
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .5s ease,transform .5s ease}
 .reveal.visible{opacity:1;transform:translateY(0)}
+.sec-title{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#8A8A84;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.sec-title::after{content:'';flex:1;height:1px;background:#E8E6E1}
 @media(min-width:768px){
   body{padding:40px 24px 60px}
-  .wrap{max-width:1100px;border-radius:20px;overflow:hidden;box-shadow:0 20px 80px rgba(0,0,0,0.14)!important}
-  .hero{padding:64px 52px 60px!important;display:grid!important;grid-template-columns:1fr 340px!important;gap:48px;align-items:start}
-  .hero-right{display:flex!important}
-  section,.contact-sec{padding:56px 52px!important}
-  .media-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:20px!important}
-  .share-bar{position:static!important;justify-content:flex-end!important;padding:16px 52px!important;border-top:1px solid #E8E6E1!important}
+  .wrap{max-width:540px;border-radius:20px;overflow:hidden;box-shadow:0 20px 80px rgba(0,0,0,0.14)!important}
+  section,.contact-sec{padding:48px 40px!important}
+  .share-bar{position:static!important;justify-content:flex-end!important;padding:16px 40px!important;border-top:1px solid #E8E6E1!important}
   .share-btn{flex:0 0 auto!important;padding:12px 28px!important}
-  footer{padding:36px 52px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;text-align:left!important}
 }
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(10px);background:#111;color:#fff;font-size:13px;padding:10px 22px;border-radius:24px;opacity:0;pointer-events:none;transition:all .3s;white-space:nowrap;z-index:999}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -917,163 +937,116 @@ body{background:#DDDBD5;font-family:'Noto Sans KR',sans-serif;font-weight:300;-w
 <div class="wrap" style="background:white;max-width:500px;margin:0 auto;min-height:100vh;box-shadow:0 0 60px rgba(0,0,0,0.10)">
 
   <!-- HEADER -->
-  <header style="padding:18px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #E8E6E1;position:sticky;top:0;background:rgba(255,255,255,0.94);backdrop-filter:blur(14px);z-index:100">
+  <header style="height:56px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #E8E6E1;position:sticky;top:0;background:rgba(255,255,255,0.96);backdrop-filter:blur(14px);z-index:100">
     <div style="display:flex;align-items:center;gap:10px">
-      <div style="width:40px;height:40px;border-radius:8px;background:#1C3D2E;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;color:#C9A268;flex-shrink:0">CG</div>
+      <div style="width:36px;height:36px;border-radius:8px;background:#1C3D2E;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:600;color:#C9A268;flex-shrink:0;letter-spacing:.5px">CG</div>
       <div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;color:#111;letter-spacing:.3px;line-height:1.2">${d.companyName}</div>
-        <div style="font-size:9px;color:#8A8A84;letter-spacing:2px;text-transform:uppercase">${d.companyNameEn}</div>
+        <div style="font-size:14px;font-weight:700;color:#111;line-height:1.2">${d.companyName}</div>
+        <div style="font-size:10px;color:#8A8A84;letter-spacing:1.5px;text-transform:uppercase;margin-top:1px">${d.companyNameEn}</div>
       </div>
     </div>
-    <div style="font-size:10px;color:#8A8A84;letter-spacing:1px;text-transform:uppercase;border:1px solid #D4D1CA;padding:4px 10px;border-radius:20px">견적서</div>
+    <div style="font-size:11px;font-weight:600;color:#1C3D2E;letter-spacing:1px;border:1.5px solid #1C3D2E;padding:4px 12px;border-radius:20px">견적서</div>
   </header>
 
   <!-- HERO -->
-  <div class="hero reveal" style="padding:44px 20px 40px;border-bottom:1px solid #E8E6E1;position:relative;overflow:hidden">
-    <div style="position:relative;z-index:1">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
-        <span style="width:24px;height:1px;background:#A07840;display:inline-block"></span>
-        <span style="font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#A07840;font-weight:500">Overseas Golf Tour Proposal</span>
-      </div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(40px,10vw,58px);font-weight:300;font-style:italic;color:#111;line-height:1.05;margin-bottom:6px">${d.destination.split(' ')[0]}<br><strong style="font-weight:600;font-style:normal;display:block;font-size:clamp(30px,7.5vw,44px)">${d.destination.split(' ').slice(1).join(' ')}</strong></div>
-      <p style="font-size:13px;color:#8A8A84;margin-top:14px;line-height:1.75">세계가 인정한 명코스에서 잊을 수 없는 라운드를 경험하세요.</p>
-      <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:20px">
-        <div style="${chipStyle}">📅 ${d.period}</div>
-        <div style="${chipStyle}">👤 ${d.pax}인</div>
-        <div style="${chipStyle}">⛳ ${d.rounds}라운드</div>
-        <div style="${chipStyle}">🌙 ${d.nights}박 ${d.nights+1}일</div>
-      </div>
-    </div>
-    <div class="hero-right" style="display:none;flex-direction:column;gap:12px;flex-shrink:0">
-      <div style="background:#1C3D2E;border-radius:16px;padding:24px;color:white">
-        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:6px">대표 예약자</div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;line-height:1.4">${d.customerName} 님 외 ${d.paxNum-1}명</div>
-        <div style="height:1px;background:rgba(255,255,255,0.12);margin:16px 0"></div>
-        <div style="font-size:10px;color:rgba(255,255,255,0.5);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px">1인당 금액</div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:600;color:#C9A268;line-height:1;letter-spacing:-1px">${perPerson}</div>
-        <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-top:4px">원 · ${d.paxNum}인 총 ₩${totalPrice}</div>
-      </div>
-      <div style="background:#F8F7F5;border:1px solid #E8E6E1;border-radius:12px;padding:18px 20px">
-        <div style="font-size:11px;color:#8A8A84;margin-bottom:8px">담당자 직접 문의</div>
-        <div style="font-family:'Noto Serif KR',serif;font-size:22px;font-weight:600;color:#111">${d.contactPhone}</div>
-        <div style="display:flex;align-items:center;gap:7px;margin-top:8px;font-size:13px;color:#4A4A46">💬 카카오채널 ${d.contactKakao}</div>
-      </div>
+  <div class="hero reveal" style="padding:36px 20px 32px;border-bottom:1px solid #E8E6E1;background:#1C3D2E">
+    <div style="font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:16px">Overseas Golf Tour Proposal</div>
+    <div style="font-size:34px;font-weight:900;color:white;line-height:1.15;letter-spacing:-0.5px;margin-bottom:8px">${d.destination}</div>
+    <div style="font-size:14px;color:rgba(255,255,255,0.55);margin-bottom:24px;font-weight:400">해외 골프투어 여행 견적서</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px">
+      ${d.period?`<span style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;background:rgba(255,255,255,0.12);border-radius:20px;font-size:12px;color:white;font-weight:500">📅 ${d.period}</span>`:''}
+      ${d.pax?`<span style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;background:rgba(255,255,255,0.12);border-radius:20px;font-size:12px;color:white;font-weight:500">👤 ${d.pax}인</span>`:''}
+      ${d.rounds?`<span style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;background:rgba(255,255,255,0.12);border-radius:20px;font-size:12px;color:white;font-weight:500">⛳ ${d.rounds}라운드</span>`:''}
+      ${d.nights?`<span style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;background:rgba(255,255,255,0.12);border-radius:20px;font-size:12px;color:white;font-weight:500">🌙 ${d.nights}박 ${d.nights+1}일</span>`:''}
     </div>
   </div>
 
-  <!-- 01 요금표 -->
-  <section class="reveal" style="padding:44px 20px;border-bottom:1px solid #E8E6E1">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px">
-      <span style="font-family:'Cormorant Garamond',serif;font-size:11px;color:#8A8A84;letter-spacing:1px">01</span>
-      <span style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:#111">여행 요금 안내</span>
-      <span style="flex:1;height:1px;background:#E8E6E1"></span>
-    </div>
-    <div style="background:#1C3D2E;border-radius:16px;padding:22px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:flex-end">
-      <div>
-        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:6px">대표 예약자</div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:white;line-height:1.3">${d.customerName} 님<br>외 ${d.paxNum-1}명</div>
-      </div>
-      <div style="text-align:right">
-        <div style="font-size:10px;color:rgba(255,255,255,0.5);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">1인당</div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:600;color:#C9A268;line-height:1;letter-spacing:-1px">${perPerson}</div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-top:3px">원 (${d.paxNum}인 기준)</div>
-      </div>
-    </div>
-    <div style="border:1px solid #E8E6E1;border-radius:12px;overflow:hidden">
-      ${priceRowsHTML}
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:15px 16px;gap:12px;background:#F0F4F2;border-top:2px solid #D4D1CA">
-        <div style="font-size:12px;font-weight:700;color:#1C3D2E;letter-spacing:.5px">합계 (${d.paxNum}인 총액)</div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:#1C3D2E">₩${totalPrice}</div>
-      </div>
-    </div>
-    ${d.priceNote?`<div style="margin-top:14px;padding:12px 14px;background:#FFF9F0;border-left:2.5px solid #C9A268;border-radius:0 8px 8px 0;font-size:12px;color:#8A8A84;line-height:1.8">${noteLines}</div>`:''}
-  </section>
+  <!-- 01 요금 안내 -->
+  <section class="reveal" style="padding:36px 20px;border-bottom:1px solid #E8E6E1">
+    <div class="sec-title">01 &nbsp;여행 요금 안내</div>
 
-  <!-- 02 일정표 -->
-  <section class="reveal" style="padding:44px 20px;border-bottom:1px solid #E8E6E1;background:#F8F7F5">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px">
-      <span style="font-family:'Cormorant Garamond',serif;font-size:11px;color:#8A8A84;letter-spacing:1px">02</span>
-      <span style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:#111">상세 일정표</span>
-      <span style="flex:1;height:1px;background:#E8E6E1"></span>
+    <!-- 패키지 금액 카드 -->
+    <div style="background:#1C3D2E;border-radius:16px;padding:24px 22px;margin-bottom:20px">
+      <div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:12px">패키지 요금 (1인 기준)</div>
+      <div style="display:flex;align-items:flex-end;gap:8px;margin-bottom:8px">
+        <span style="font-size:42px;font-weight:900;color:#C9A268;line-height:1;letter-spacing:-1px">${perPersonMan}</span>
+        <span style="font-size:14px;color:rgba(255,255,255,0.45);margin-bottom:6px">원</span>
+      </div>
+      <div style="height:1px;background:rgba(255,255,255,0.1);margin-bottom:12px"></div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.5)">${d.paxNum}인 총 합계 &nbsp;<span style="color:rgba(255,255,255,0.8);font-weight:600">₩${totalPrice}</span></div>
     </div>
-    <div>${daysHTML}</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:28px">
+
+    ${d.priceNote?`<div style="margin-bottom:20px;padding:12px 16px;background:#FFFBF2;border-left:3px solid #C9A268;border-radius:0 8px 8px 0;font-size:12px;color:#666;line-height:2">${noteLines}</div>`:''}
+
+    <!-- 포함 / 불포함 -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
       <div style="border-radius:12px;padding:16px;border:1px solid #C4DFD0;background:#F3FAF6">
-        <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;color:#1C3D2E">포함</div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#1C3D2E;margin-bottom:12px">✓ 포함</div>
         <ul style="list-style:none">${incHTML}</ul>
       </div>
       <div style="border-radius:12px;padding:16px;border:1px solid #DFCAC9;background:#FDF4F4">
-        <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;color:#8B2E2E">불포함</div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#C0392B;margin-bottom:12px">✕ 불포함</div>
         <ul style="list-style:none">${excHTML}</ul>
       </div>
     </div>
   </section>
 
+  <!-- 02 일정표 -->
+  <section class="reveal" style="padding:36px 20px;border-bottom:1px solid #E8E6E1;background:#F8F7F5">
+    <div class="sec-title">02 &nbsp;상세 일정표</div>
+    ${daysHTML}
+  </section>
+
   <!-- 03 호텔 -->
-  <section class="reveal" style="padding:44px 20px;border-bottom:1px solid #E8E6E1">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px">
-      <span style="font-family:'Cormorant Garamond',serif;font-size:11px;color:#8A8A84;letter-spacing:1px">03</span>
-      <span style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:#111">숙박 호텔</span>
-      <span style="flex:1;height:1px;background:#E8E6E1"></span>
-    </div>
+  <section class="reveal" style="padding:36px 20px;border-bottom:1px solid #E8E6E1">
+    <div class="sec-title">03 &nbsp;숙박 호텔</div>
     <div style="border:1px solid #E8E6E1;border-radius:14px;overflow:hidden;background:white">
-      <div style="width:100%;height:190px;display:flex;align-items:center;justify-content:center;font-size:44px;position:relative;background:linear-gradient(135deg,#BFD4C8 0%,#8AA89A 100%)">
-        <div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,0.3))"></div>
-        <div style="position:absolute;bottom:12px;left:14px;background:rgba(0,0,0,0.5);color:white;font-size:11px;padding:4px 10px;border-radius:20px">${d.destination} · ${d.hotelNights}박</div>
-        🏨
+      <div style="position:relative">${hotelPhotoEl}
+        <div style="position:absolute;bottom:10px;left:12px;background:rgba(0,0,0,0.55);color:white;font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px">${d.destination} · ${d.hotelNights}박</div>
       </div>
       <div style="padding:18px 18px 20px">
-        <div style="font-size:11px;color:#A07840;letter-spacing:1px;margin-bottom:6px">${starsStr}</div>
-        <div style="font-family:'Noto Serif KR',serif;font-size:17px;font-weight:600;color:#111;margin-bottom:4px;line-height:1.3">${d.hotelName}</div>
-        <div style="font-size:12px;color:#8A8A84;margin-bottom:12px">${d.hotelNameKr} · ${d.hotelRoom}</div>
-        <div style="font-size:13px;color:#4A4A46;line-height:1.8;border-top:1px solid #E8E6E1;padding-top:12px">${d.hotelDesc}</div>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px">${hotelFacHTML}</div>
+        <div style="font-size:12px;color:#A07840;font-weight:700;letter-spacing:1px;margin-bottom:6px">${starsStr}</div>
+        <div style="font-size:18px;font-weight:700;color:#111;margin-bottom:4px;line-height:1.3">${d.hotelName}</div>
+        <div style="font-size:13px;color:#8A8A84;margin-bottom:14px">${d.hotelNameKr}${d.hotelNameKr&&d.hotelRoom?' · ':''}${d.hotelRoom}</div>
+        ${d.hotelDesc?`<div style="font-size:13px;color:#444;line-height:1.8;border-top:1px solid #EDEBE6;padding-top:14px;margin-bottom:14px">${d.hotelDesc}</div>`:''}
+        <div style="display:flex;flex-wrap:wrap;gap:6px">${hotelFacHTML}</div>
       </div>
     </div>
   </section>
 
   <!-- 04 골프장 -->
-  <section class="reveal" style="padding:44px 20px;border-bottom:1px solid #E8E6E1;background:#F8F7F5">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px">
-      <span style="font-family:'Cormorant Garamond',serif;font-size:11px;color:#8A8A84;letter-spacing:1px">04</span>
-      <span style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:#111">라운드 코스</span>
-      <span style="flex:1;height:1px;background:#E8E6E1"></span>
-    </div>
-    <div class="media-grid" style="display:flex;flex-direction:column;gap:20px">${coursesHTML}</div>
+  <section class="reveal" style="padding:36px 20px;border-bottom:1px solid #E8E6E1;background:#F8F7F5">
+    <div class="sec-title">04 &nbsp;라운드 코스</div>
+    ${coursesHTML}
   </section>
 
   <!-- 05 문의 -->
-  <div class="contact-sec reveal" style="padding:44px 20px;border-bottom:1px solid #E8E6E1">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
-      <span style="font-family:'Cormorant Garamond',serif;font-size:11px;color:#8A8A84;letter-spacing:1px">05</span>
-      <span style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:#111">문의 · 예약</span>
-      <span style="flex:1;height:1px;background:#E8E6E1"></span>
-    </div>
+  <div class="contact-sec reveal" style="padding:36px 20px;border-bottom:1px solid #E8E6E1">
+    <div class="sec-title">05 &nbsp;문의 · 예약</div>
     <div style="border:1px solid #E8E6E1;border-radius:14px;overflow:hidden">
-      <a href="tel:${d.contactPhone}" style="display:flex;align-items:center;gap:14px;padding:15px 18px;border-bottom:1px solid #E8E6E1;text-decoration:none;color:inherit">
-        <div style="width:36px;height:36px;border-radius:10px;background:#E8F2EC;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">📞</div>
-        <div><div style="font-size:11px;color:#8A8A84;margin-bottom:2px">전화 문의</div><div style="font-family:'Noto Serif KR',serif;font-size:14px;font-weight:600;color:#111">${d.contactPhone}</div></div>
-        <div style="margin-left:auto;color:#8A8A84;font-size:18px">›</div>
+      <a href="tel:${d.contactPhone}" style="display:flex;align-items:center;gap:14px;padding:16px 18px;border-bottom:1px solid #E8E6E1;text-decoration:none;color:inherit">
+        <div style="width:40px;height:40px;border-radius:10px;background:#E8F2EC;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">📞</div>
+        <div><div style="font-size:11px;color:#8A8A84;margin-bottom:3px">전화 문의</div><div style="font-size:15px;font-weight:700;color:#111">${d.contactPhone}</div></div>
+        <div style="margin-left:auto;color:#8A8A84;font-size:20px">›</div>
       </a>
-      <div style="display:flex;align-items:center;gap:14px;padding:15px 18px">
-        <div style="width:36px;height:36px;border-radius:10px;background:#FEE500;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">💬</div>
-        <div><div style="font-size:11px;color:#8A8A84;margin-bottom:2px">카카오톡 채널</div><div style="font-family:'Noto Serif KR',serif;font-size:14px;font-weight:600;color:#111">${d.contactKakao}</div></div>
-        <div style="margin-left:auto;color:#8A8A84;font-size:18px">›</div>
+      <div style="display:flex;align-items:center;gap:14px;padding:16px 18px">
+        <div style="width:40px;height:40px;border-radius:10px;background:#FEE500;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">💬</div>
+        <div><div style="font-size:11px;color:#8A8A84;margin-bottom:3px">카카오톡 채널</div><div style="font-size:15px;font-weight:700;color:#111">${d.contactKakao}</div></div>
+        <div style="margin-left:auto;color:#8A8A84;font-size:20px">›</div>
       </div>
     </div>
   </div>
 
   <!-- FOOTER -->
-  <footer style="padding:32px 20px 80px;text-align:center;background:#F8F7F5;border-top:1px solid #E8E6E1">
-    <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:#111;letter-spacing:.5px;margin-bottom:4px">${d.companyName}</div>
-    <div style="font-size:11px;color:#8A8A84;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px">${d.companyNameEn}</div>
-    <div style="font-size:11px;color:#8A8A84;line-height:2">광고 없는 맞춤 견적 페이지 · 본 페이지는 ${d.companyName} 전용입니다</div>
+  <footer style="padding:28px 20px 80px;text-align:center;background:#1C3D2E">
+    <div style="font-size:16px;font-weight:700;color:white;margin-bottom:4px">${d.companyName}</div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase">${d.companyNameEn}</div>
   </footer>
 
   <!-- SHARE BAR -->
   <div class="share-bar" style="position:sticky;bottom:0;background:rgba(255,255,255,0.96);backdrop-filter:blur(14px);border-top:1px solid #E8E6E1;padding:12px 20px;display:flex;gap:10px;z-index:100">
-    <button onclick="shareKakao()" style="display:flex;align-items:center;justify-content:center;gap:7px;padding:13px 0;border-radius:12px;font-size:13px;font-weight:500;border:none;cursor:pointer;flex:1;background:#FEE500;color:#3A1D1D;font-family:'Noto Sans KR',sans-serif" class="share-btn">💬 카카오톡 공유</button>
-    <button onclick="copyLink()" style="display:flex;align-items:center;justify-content:center;gap:7px;padding:13px 0;border-radius:12px;font-size:13px;font-weight:500;border:none;cursor:pointer;flex:1;background:#1C3D2E;color:white;font-family:'Noto Sans KR',sans-serif" class="share-btn">🔗 링크 복사</button>
+    <button onclick="shareKakao()" style="display:flex;align-items:center;justify-content:center;gap:7px;padding:13px 0;border-radius:12px;font-size:13px;font-weight:600;border:none;cursor:pointer;flex:1;background:#FEE500;color:#3A1D1D;font-family:'Noto Sans KR',sans-serif" class="share-btn">💬 카카오톡 공유</button>
+    <button onclick="copyLink()" style="display:flex;align-items:center;justify-content:center;gap:7px;padding:13px 0;border-radius:12px;font-size:13px;font-weight:600;border:none;cursor:pointer;flex:1;background:#1C3D2E;color:white;font-family:'Noto Sans KR',sans-serif" class="share-btn">🔗 링크 복사</button>
   </div>
 </div>
 <div class="toast" id="toast">링크가 복사되었습니다 ✓</div>
@@ -1087,11 +1060,60 @@ function shareKakao(){if(navigator.share){navigator.share({title:'${d.companyNam
 </body>
 </html>`;
 }
-
 /* ════════════════════════════
    SUPABASE
 ════════════════════════════ */
 const SUPABASE_URL = 'https://qmzrpyyadoajwziqachm.supabase.co';
+
+/* ════════════════════════════
+   IMAGE UPLOAD (Supabase Storage)
+════════════════════════════ */
+async function uploadImageToStorage(file, prefix) {
+  const ext = file.name.split('.').pop();
+  const filename = prefix + '_' + Date.now() + '.' + ext;
+  try {
+    const res = await fetch(`${SUPABASE_URL}/storage/v1/object/golf-images/${filename}`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': file.type,
+        'x-upsert': 'true'
+      },
+      body: file
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.message || '업로드 실패');
+    }
+    return `${SUPABASE_URL}/storage/v1/object/public/golf-images/${filename}`;
+  } catch(e) {
+    showToast('❌ 사진 업로드 오류: ' + e.message);
+    return null;
+  }
+}
+
+async function uploadHotelPhoto(input) {
+  const file = input.files[0]; if (!file) return;
+  showToast('⏳ 호텔 사진 업로드 중...');
+  const url = await uploadImageToStorage(file, 'hotel');
+  if (!url) return;
+  document.getElementById('hotelPhotoUrl').value = url;
+  const preview = document.getElementById('hotelPhotoPreview');
+  preview.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:7px">`;
+  showToast('✅ 호텔 사진 업로드 완료!');
+}
+
+async function uploadCoursePhoto(input, courseId) {
+  const file = input.files[0]; if (!file) return;
+  showToast('⏳ 골프장 사진 업로드 중...');
+  const url = await uploadImageToStorage(file, 'course');
+  if (!url) return;
+  document.getElementById('coursePhotoUrl-' + courseId).value = url;
+  const preview = document.getElementById('coursePhoto-' + courseId);
+  preview.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:7px">`;
+  showToast('✅ 골프장 사진 업로드 완료!');
+}
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFtenJweXlhZG9hand6aXFhY2htIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMDI0NDcsImV4cCI6MjA4OTc3ODQ0N30.CI6ZFvNa2TRa0XqwnrXKL9x3ZHXfKg6GaNwJhqYvCmc';
 
 // 뷰어 URL — Vercel 배포 후 도메인으로 교체
@@ -1320,6 +1342,12 @@ function applyProductData(d) {
   set('contactKakao', d.contactKakao);
   set('companyName', d.companyName);
   set('companyNameEn', d.companyNameEn);
+  set('hotelPhotoUrl', d.hotelPhotoUrl);
+  // 호텔 사진 미리보기 복원
+  if (d.hotelPhotoUrl) {
+    const preview = document.getElementById('hotelPhotoPreview');
+    if (preview) preview.innerHTML = `<img src="${d.hotelPhotoUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:7px">`;
+  }
 
   // 요금 항목 초기화 후 재생성
   document.getElementById('priceItems').innerHTML = '';
