@@ -1174,6 +1174,8 @@ async function publishQuote() {
 let productsCache = [];
 
 async function fetchProducts() {
+  const wrap = document.getElementById('productListWrap');
+  if (wrap) wrap.innerHTML = `<div style="text-align:center;padding:40px;color:var(--ink3);font-size:13px">⏳ 불러오는 중...</div>`;
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/products?order=created_at.desc&select=*`, {
       headers: {
@@ -1186,17 +1188,23 @@ async function fetchProducts() {
     const data = await res.json();
     if (!res.ok) {
       console.error('products 테이블 오류:', data);
-      showToast('❌ products 테이블 오류. Supabase에서 테이블을 확인해주세요.');
       productsCache = [];
-    } else {
-      productsCache = Array.isArray(data) ? data : [];
+      if (wrap) wrap.innerHTML = `<div style="text-align:center;padding:40px;color:#c0392b;font-size:13px">
+        ❌ 상품 목록을 불러올 수 없어요.<br><span style="font-size:11px;color:var(--ink3)">${JSON.stringify(data)}</span><br><br>
+        <button onclick="fetchProducts()" style="padding:8px 20px;background:var(--accent);color:white;border:none;border-radius:8px;cursor:pointer;font-family:'Noto Sans KR',sans-serif">🔄 다시 시도</button>
+      </div>`;
+      return;
     }
+    productsCache = Array.isArray(data) ? data : [];
     renderProductSelector();
     renderProductList();
   } catch(e) {
     console.error(e);
     productsCache = [];
-    showToast('❌ 네트워크 오류: ' + e.message);
+    if (wrap) wrap.innerHTML = `<div style="text-align:center;padding:40px;color:#c0392b;font-size:13px">
+      ❌ 네트워크 오류: ${e.message}<br><br>
+      <button onclick="fetchProducts()" style="padding:8px 20px;background:var(--accent);color:white;border:none;border-radius:8px;cursor:pointer;font-family:'Noto Sans KR',sans-serif">🔄 다시 시도</button>
+    </div>`;
   }
 }
 
@@ -1217,7 +1225,12 @@ function renderProductList() {
     wrap.innerHTML = `<div style="text-align:center;padding:40px;color:var(--ink3);font-size:13px">저장된 상품이 없어요.<br>왼쪽 "상품 등록" 탭에서 추가해주세요!</div>`;
     return;
   }
-  wrap.innerHTML = productsCache.map(p => `
+  wrap.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <span style="font-size:13px;color:var(--ink3)">총 ${productsCache.length}개</span>
+      <button onclick="fetchProducts()" style="font-size:12px;padding:6px 14px;background:none;border:1px solid var(--line);border-radius:8px;cursor:pointer;color:var(--ink3);font-family:'Noto Sans KR',sans-serif">🔄 새로고침</button>
+    </div>
+    ${productsCache.map(p => `
     <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid var(--line);border-radius:10px;margin-bottom:10px;background:var(--input-bg)">
       <div style="flex:1">
         <div style="font-size:14px;font-weight:500;color:var(--ink)">${p.name}</div>
@@ -1226,7 +1239,7 @@ function renderProductList() {
       <button onclick="loadProductById('${p.id}')" style="background:var(--accent);color:white;border:none;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Noto Sans KR',sans-serif">✏️ 불러와서 수정</button>
       <button onclick="deleteProduct('${p.id}')" style="background:none;border:1px solid #DFCAC9;color:var(--red);padding:9px 14px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif">삭제</button>
     </div>
-  `).join('');
+  `).join('')}`;
 }
 
 async function saveProduct() {
@@ -1275,7 +1288,15 @@ async function loadProductById(id) {
   }
   if (!p) { showToast('❌ 상품을 찾을 수 없어요'); return; }
   if (!confirm(`"${p.name}" 상품을 불러올까요?\n현재 입력 내용이 초기화됩니다.`)) return;
-  applyProductData(p.data);
+
+  // data 필드가 문자열로 오는 경우 파싱
+  let d = p.data;
+  if (typeof d === 'string') {
+    try { d = JSON.parse(d); } catch(e) { showToast('❌ 데이터 파싱 오류: ' + e.message); return; }
+  }
+  if (!d || typeof d !== 'object') { showToast('❌ 상품 데이터가 올바르지 않아요'); return; }
+
+  applyProductData(d);
 
   // 현재 작업 중인 상품 기억
   state.currentProductId = p.id;
