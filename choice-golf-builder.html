@@ -379,13 +379,26 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
       </div>
     </div>
 
-    <!-- ⑧ 상품 등록 -->
+    <!-- ⑧ 상품 등록/수정 -->
     <div class="tab-panel" id="panel-product-new">
+      <!-- 현재 불러온 상품 표시 -->
+      <div class="form-card" id="currentProductBanner" style="display:none;background:linear-gradient(135deg,#1C3D2E,#2A5240);border:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+          <div>
+            <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:4px">현재 작업 중인 상품</div>
+            <div style="font-size:16px;font-weight:600;color:white" id="currentProductName">—</div>
+          </div>
+          <button onclick="updateProduct()" style="background:var(--gold);color:white;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">
+            🔄 상품 업데이트
+          </button>
+        </div>
+      </div>
+
       <div class="form-card">
-        <div class="form-card-title"><span class="form-card-title-icon">➕</span> 현재 입력 내용을 상품으로 저장</div>
+        <div class="form-card-title"><span class="form-card-title-icon">➕</span> 새 상품으로 저장</div>
         <p style="font-size:13px;color:var(--ink3);margin-bottom:16px;line-height:1.7">
-          지금 빌더에 입력된 내용 전체를 상품 템플릿으로 저장합니다.<br>
-          나중에 불러와서 고객명·금액만 수정하면 됩니다.
+          지금 빌더에 입력된 내용 전체를 새 상품으로 저장합니다.<br>
+          나중에 불러와서 고객명·날짜·금액만 수정하면 됩니다.
         </p>
         <div class="form-row">
           <div class="field">
@@ -394,7 +407,7 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
           </div>
         </div>
         <button class="btn-preview" style="width:100%;justify-content:center;margin-top:8px" onclick="saveProduct()">
-          📦 상품으로 저장
+          📦 새 상품으로 저장
         </button>
       </div>
     </div>
@@ -414,7 +427,9 @@ const state = {
   priceItems: [],
   includes: [],
   excludes: [],
-  hotelFacilities: []
+  hotelFacilities: [],
+  currentProductId: null,
+  currentProductName: null
 };
 
 /* ════════════════════════════
@@ -1182,9 +1197,49 @@ function loadProductById(id) {
   if (!p) return;
   if (!confirm(`"${p.name}" 상품을 불러올까요?\n현재 입력 내용이 초기화됩니다.`)) return;
   applyProductData(p.data);
+
+  // 현재 작업 중인 상품 기억
+  state.currentProductId = p.id;
+  state.currentProductName = p.name;
+  updateCurrentProductBanner();
+
   showToast(`✅ "${p.name}" 불러오기 완료!`);
   switchTab('basic');
   document.getElementById('productSelector').value = '';
+}
+
+function updateCurrentProductBanner() {
+  const banner = document.getElementById('currentProductBanner');
+  const nameEl = document.getElementById('currentProductName');
+  if (state.currentProductId) {
+    banner.style.display = 'block';
+    nameEl.textContent = state.currentProductName;
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+async function updateProduct() {
+  if (!state.currentProductId) return;
+  if (!confirm(`"${state.currentProductName}" 상품을 현재 내용으로 업데이트할까요?`)) return;
+  const d = collectData();
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/products?id=eq.${state.currentProductId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`
+      },
+      body: JSON.stringify({ data: d })
+    });
+    if (res.ok) {
+      showToast(`✅ "${state.currentProductName}" 업데이트 완료!`);
+      await fetchProducts();
+    } else {
+      throw new Error('업데이트 실패');
+    }
+  } catch(e) { showToast('❌ 오류: ' + e.message); }
 }
 
 function applyProductData(d) {
