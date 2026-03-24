@@ -571,10 +571,14 @@ function syncDays() {
    PRICE
 ════════════════════════════ */
 function calcTotal() {
-  const pp = parseInt(document.getElementById('pricePerPerson').value) || 0;
-  const pax = parseInt(document.getElementById('pax').value) || 1;
+  const ppEl = document.getElementById("pricePerPerson");
+  const paxEl = document.getElementById("pax");
+  const totalEl = document.getElementById("priceTotal");
+  if (!ppEl || !totalEl) return;
+  const pp = parseInt(ppEl.value) || 0;
+  const pax = parseInt(paxEl?.value) || 1;
   const total = pp * pax;
-  document.getElementById('priceTotal').value = total ? '₩' + total.toLocaleString() : '';
+  totalEl.value = total ? "₩" + total.toLocaleString() : "";
 }
 
 function addPriceItem(data={}) {
@@ -1222,7 +1226,12 @@ function renderProductSelector() {
 function renderProductList() {
   const wrap = document.getElementById('productListWrap');
   if (!productsCache.length) {
-    wrap.innerHTML = `<div style="text-align:center;padding:40px;color:var(--ink3);font-size:13px">저장된 상품이 없어요.<br>왼쪽 "상품 등록" 탭에서 추가해주세요!</div>`;
+    wrap.innerHTML = `
+      <div style="text-align:center;padding:40px;color:var(--ink3);font-size:13px">
+        저장된 상품이 없어요.<br>왼쪽 "상품 등록" 탭에서 추가해주세요!
+        <br><br>
+        <button onclick="fetchProducts()" style="padding:8px 20px;background:none;border:1px solid var(--line);border-radius:8px;cursor:pointer;color:var(--ink3);font-size:12px;font-family:'Noto Sans KR',sans-serif">🔄 새로고침</button>
+      </div>`;
     return;
   }
   wrap.innerHTML = `
