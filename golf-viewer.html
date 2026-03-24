@@ -9,7 +9,7 @@
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{--white:#fff;--off:#F8F7F5;--line:#E8E6E1;--line2:#D4D1CA;--ink:#111110;--ink2:#4A4A46;--ink3:#8A8A84;--accent:#1C3D2E;--gold:#A07840;--gold-lt:#C9A268;--red:#8B2E2E}
 html{scroll-behavior:smooth}
-body{background:#DDDBD5;font-family:'Noto Sans KR',sans-serif;font-weight:300;-webkit-font-smoothing:antialiased;color:var(--ink)}
+body{background:#DDDBD5;font-family:'Noto Sans KR',sans-serif;font-weight:300;-webkit-font-smoothing:antialiased;color:var(--ink);padding-bottom:80px}
 .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
 .reveal.visible{opacity:1;transform:translateY(0)}
 
@@ -34,7 +34,7 @@ body{background:#DDDBD5;font-family:'Noto Sans KR',sans-serif;font-weight:300;-w
 .wrap{background:var(--white);max-width:500px;margin:0 auto;min-height:100vh;box-shadow:0 0 60px rgba(0,0,0,0.10)}
 
 @media(min-width:768px){
-  body{padding:40px 24px 60px}
+  body{padding:40px 24px 0;padding-bottom:0!important}
   .wrap{max-width:1100px;border-radius:20px;overflow:hidden;min-height:auto;box-shadow:0 20px 80px rgba(0,0,0,0.14)}
   .site-header{padding:22px 52px!important}
   .hero{padding:64px 52px 60px!important;display:grid!important;grid-template-columns:1fr 340px!important;gap:48px;align-items:start}
@@ -67,7 +67,7 @@ section,.contact-sec{padding:44px 20px;border-bottom:1px solid var(--line)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 /* SHARE BAR */
-.share-bar{position:sticky;bottom:0;background:rgba(255,255,255,0.96);backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:12px 20px;display:flex;gap:10px;z-index:100}
+.share-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,0.97);backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:12px 20px 24px;display:flex;gap:10px;z-index:200}
 .share-btn{display:flex;align-items:center;justify-content:center;gap:7px;padding:13px 0;border-radius:12px;font-size:13px;font-weight:500;border:none;cursor:pointer;flex:1;font-family:'Noto Sans KR',sans-serif;transition:opacity .15s,transform .1s}
 .share-btn:active{opacity:.8;transform:scale(.98)}
 .btn-kakao{background:#FEE500;color:#3A1D1D}

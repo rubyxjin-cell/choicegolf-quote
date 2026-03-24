@@ -141,6 +141,9 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
 .summary-divider{width:1px;height:32px;background:rgba(255,255,255,0.15)}
 
 /* ── TOAST ── */
+.cat-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--line);background:var(--input-bg);font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;color:var(--ink2);transition:all .15s}
+.cat-btn:hover{background:var(--accent);color:white;border-color:var(--accent)}
+.cat-active{background:var(--accent)!important;color:white!important;border-color:var(--accent)!important}
 .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--ink);color:white;font-size:13px;padding:10px 22px;border-radius:24px;opacity:0;pointer-events:none;transition:all .3s ease;white-space:nowrap;z-index:999}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
@@ -197,6 +200,21 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
     <div class="tab-panel active" id="panel-products">
       <div class="form-card">
         <div class="form-card-title"><span class="form-card-title-icon">📦</span> 저장된 상품 목록</div>
+        <!-- 카테고리 필터 -->
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px" id="categoryFilter">
+          <button onclick="filterByCategory('')" class="cat-btn cat-active" data-cat="">전체</button>
+          <button onclick="filterByCategory('일본')" class="cat-btn" data-cat="일본">🇯🇵 일본</button>
+          <button onclick="filterByCategory('중국')" class="cat-btn" data-cat="중국">🇨🇳 중국</button>
+          <button onclick="filterByCategory('대만')" class="cat-btn" data-cat="대만">🇹🇼 대만</button>
+          <button onclick="filterByCategory('태국')" class="cat-btn" data-cat="태국">🇹🇭 태국</button>
+          <button onclick="filterByCategory('베트남')" class="cat-btn" data-cat="베트남">🇻🇳 베트남</button>
+          <button onclick="filterByCategory('필리핀')" class="cat-btn" data-cat="필리핀">🇵🇭 필리핀</button>
+          <button onclick="filterByCategory('인도네시아')" class="cat-btn" data-cat="인도네시아">🇮🇩 인도네시아</button>
+          <button onclick="filterByCategory('말레이시아')" class="cat-btn" data-cat="말레이시아">🇲🇾 말레이시아</button>
+          <button onclick="filterByCategory('캄보디아')" class="cat-btn" data-cat="캄보디아">🇰🇭 캄보디아</button>
+          <button onclick="filterByCategory('괌/사이판')" class="cat-btn" data-cat="괌/사이판">🌺 괌/사이판</button>
+          <button onclick="filterByCategory('기타')" class="cat-btn" data-cat="기타">🌐 기타</button>
+        </div>
         <div id="productListWrap">
           <div style="text-align:center;padding:40px;color:var(--ink3);font-size:13px">로딩 중...</div>
         </div>
@@ -216,6 +234,22 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
           <div style="flex:1;min-width:180px">
             <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:4px" id="bannerLabel">새 상품 등록</div>
+            <div style="display:flex;gap:8px;margin-bottom:6px">
+              <select id="productCategory" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:7px 12px;font-size:13px;color:white;font-family:'Noto Sans KR',sans-serif;outline:none;flex-shrink:0">
+                <option value="">🌏 국가 선택</option>
+                <option value="일본">🇯🇵 일본</option>
+                <option value="중국">🇨🇳 중국</option>
+                <option value="대만">🇹🇼 대만</option>
+                <option value="태국">🇹🇭 태국</option>
+                <option value="베트남">🇻🇳 베트남</option>
+                <option value="필리핀">🇵🇭 필리핀</option>
+                <option value="인도네시아">🇮🇩 인도네시아</option>
+                <option value="말레이시아">🇲🇾 말레이시아</option>
+                <option value="캄보디아">🇰🇭 캄보디아</option>
+                <option value="괌/사이판">🌺 괌/사이판</option>
+                <option value="기타">🌐 기타</option>
+              </select>
+            </div>
             <input type="text" id="productName" placeholder="상품명 입력 (예: 일본 미야자키 3박4일)" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:8px 14px;font-size:14px;font-weight:600;color:white;font-family:'Noto Sans KR',sans-serif;outline:none;width:100%" oninput="this.style.color='white'">
           </div>
           <div style="display:flex;gap:8px;flex-shrink:0">
@@ -344,12 +378,15 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
         <div class="form-row">
           <div class="field">
             <label>호텔 대표 사진</label>
-            <div id="hotelPhotoPreview" style="width:100%;height:160px;border-radius:8px;border:1.5px dashed var(--line);background:var(--input-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;gap:8px;overflow:hidden;position:relative" onclick="document.getElementById('hotelPhotoInput').click()">
-              <span style="font-size:28px">📷</span>
-              <span style="font-size:12px;color:var(--ink3)">클릭해서 사진 업로드</span>
+            <div style="display:flex;gap:8px;align-items:stretch">
+              <input type="text" id="hotelPhotoUrl" placeholder="사진 URL 입력 (구글드라이브 공유링크 등)" style="flex:1;font-size:12px" oninput="previewHotelPhoto(this.value)">
+              <button type="button" onclick="document.getElementById('hotelPhotoFileInput').click()" style="padding:0 12px;background:var(--input-bg);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;color:var(--ink2);white-space:nowrap">📁 파일</button>
+              <input type="file" id="hotelPhotoFileInput" accept="image/*" style="display:none" onchange="uploadHotelPhoto(this)">
             </div>
-            <input type="file" id="hotelPhotoInput" accept="image/*" style="display:none" onchange="uploadHotelPhoto(this)">
-            <input type="hidden" id="hotelPhotoUrl">
+            <div id="hotelPhotoPreview" style="width:100%;height:140px;border-radius:8px;border:1.5px dashed var(--line);background:var(--input-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;overflow:hidden;position:relative;margin-top:6px">
+              <span style="font-size:24px">🏨</span>
+              <span style="font-size:11px;color:var(--ink3)">URL 입력 또는 파일 업로드</span>
+            </div>
           </div>
         </div>
         <div class="form-row">
@@ -431,10 +468,11 @@ const state = {
 window.onload = () => {
   // 기본 요금 항목
   const defaultPrices = [
-    {name:'왕복 항공권', detail:'이코노미 · 1인 기준', amount:'320000'},
-    {name:'호텔 숙박', detail:'3박 · 2인 1실 × 2룸', amount:'480000'},
-    {name:'골프 2라운드', detail:'그린피 + 카트 포함', amount:'280000'},
-    {name:'식사 · 차량 · 가이드', detail:'전 일정 포함', amount:'180000'},
+    {name:'왕복 항공권', detail:'이코노미 클래스 · 김해↔미야자키', amount:'380000'},
+    {name:'호텔 숙박', detail:'피닉스 시가이어 리조트 3박 · 2인 1실', amount:'520000'},
+    {name:'골프 2라운드', detail:'그린피 + 전동카트 + 캐디피 포함', amount:'280000'},
+    {name:'식사', detail:'조식 3회 · 석식 3회 (중식 불포함)', amount:'60000'},
+    {name:'전용차량 · 가이드', detail:'공항 픽업/샌딩 · 한국어 가이드', amount:'50000'},
   ];
   defaultPrices.forEach(p => addPriceItem(p));
 
@@ -448,11 +486,11 @@ window.onload = () => {
   defaultDays.forEach((d,i) => addDay(d, i+1));
 
   // 기본 포함/불포함
-  ['왕복 항공권','전 일정 숙박','골프 2라운드','조·석식 전체','전용 차량','가이드 · 보험'].forEach(t => addTagItem('includes', t));
-  ['캐디피 (현장)','개인 음료·주류','쇼핑 · 관광','싱글룸 추가','여권 발급비','기타 개인 경비'].forEach(t => addTagItem('excludes', t));
+  ['왕복 항공권','전 일정 숙박 (3박)','골프 2라운드','그린피 · 카트비 · 캐디피','조식 3회 · 석식 3회','공항 전용차량','한국어 가이드','여행자 보험'].forEach(t => addTagItem('includes', t));
+  ['개인 음료 · 주류','중식 (자유식)','쇼핑 · 개인 관광','싱글룸 추가 비용','여권 · 비자 발급비','기타 개인 경비'].forEach(t => addTagItem('excludes', t));
 
   // 기본 호텔 편의시설
-  ['🛁 천연 온천','🍳 조식 포함','📶 무료 Wi-Fi','⛳ 코스 직결'].forEach(t => addTagItem('hotelFacilities', t));
+  ['🛁 천연 온천 스파','🍳 조식 포함','📶 무료 Wi-Fi','⛳ 골프코스 직결','🏊 실내외 수영장','🌊 오션뷰 객실'].forEach(t => addTagItem('hotelFacilities', t));
 
   // 기본 골프장 2개
   addCourse({round:1, day:2, name:'미야자키 컨트리클럽', nameJp:'宮崎CC', holes:'18홀 파72', rating:'코스 레이팅 72.8', desc:'완만한 페어웨이와 전략적 벙커 배치로 중급자도 충분히 즐길 수 있는 파크랜드 스타일 코스. 라운드 후 온천이 피로를 풀어드립니다.', features:'🚗 카트 포함,👘 캐디 선택,🛁 온천 입욕', isPGA:false});
@@ -460,20 +498,24 @@ window.onload = () => {
 
   // 기본 폼 값
   document.getElementById('destination').value = '일본 미야자키';
+  document.getElementById('airport').value = '김해국제공항 (PUS)';
   document.getElementById('dateFrom').value = '2026-05-14';
   document.getElementById('dateTo').value = '2026-05-17';
   document.getElementById('rounds').value = '2';
-  document.getElementById('validUntil').value = '2026-03-31';
-  document.getElementById('agent').value = '김담당';
-  document.getElementById('pricePerPerson').value = '1020000';
+  document.getElementById('validUntil').value = '2026-04-30';
+  document.getElementById('agent').value = '초이스골프 상담팀';
+  document.getElementById('pricePerPerson').value = '1290000';
   document.getElementById('hotelName').value = 'Phoenix Seagaia Resort';
   document.getElementById('hotelNameKr').value = '피닉스 시가이어 리조트';
   document.getElementById('hotelRoom').value = '디럭스 트윈';
   document.getElementById('hotelNights').value = '3';
-  document.getElementById('hotelDesc').value = '일본 최대 규모 리조트 중 하나로 골프 코스와 직결된 최고급 숙박 시설입니다. 전 객실 자연 채광, 실내 온천과 스파를 자유롭게 이용 가능합니다.';
-  document.getElementById('contactPhone').value = '010-0000-0000';
+  document.getElementById('hotelStars').value = '5';
+  document.getElementById('hotelDesc').value = '일본 규슈 미야자키를 대표하는 5성급 리조트입니다. 태평양을 바라보는 오션뷰 객실, 천연 온천 스파, 실내·외 수영장을 갖추고 있으며 PGA 챔피언십 코스와 직결된 골프 전문 리조트입니다. 전 객실 자연 채광과 럭셔리한 인테리어로 골프투어의 피로를 완벽하게 해소해 드립니다.';
+  document.getElementById('contactPhone').value = '1533-3160';
   document.getElementById('contactKakao').value = '@초이스골프';
-  document.getElementById('priceNote').value = '※ 환율·항공 시세에 따라 변동될 수 있습니다\n※ 본 견적은 2026년 3월 31일까지 유효합니다\n※ 예약 확정 시 총 금액의 30% 계약금 납입';
+  document.getElementById('priceNote').value = '※ 항공권 유류할증료·환율 시세에 따라 금액이 변동될 수 있습니다\n※ 본 견적은 2026년 4월 30일까지 유효합니다\n※ 예약 확정 시 총 금액의 30% 계약금 납입\n※ 잔금은 출발 14일 전까지 납입 바랍니다';
+  document.getElementById('companyName').value = '초이스골프';
+  document.getElementById('companyNameEn').value = 'Choice Golf Tour';
 
   calcTotal();
   updateSummary();
@@ -720,11 +762,14 @@ function addCourse(data={}) {
       <div class="form-row">
         <div class="field">
           <label>골프장 대표 사진</label>
-          <div id="coursePhoto-${id}" style="width:100%;height:120px;border-radius:8px;border:1.5px dashed var(--line);background:var(--input-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;gap:6px;overflow:hidden;position:relative" onclick="document.getElementById('coursePhotoInput-' + '${id}').click()">
-            <span style="font-size:24px">📷</span><span style="font-size:11px;color:#8A8A84">클릭해서 사진 업로드</span>
+          <div style="display:flex;gap:8px;align-items:stretch">
+            <input type="text" id="coursePhotoUrl-${id}" placeholder="사진 URL 입력" style="flex:1;font-size:12px" value="${data.photoUrl||''}" oninput="previewCoursePhoto(this.value,'${id}')">
+            <button type="button" onclick="document.getElementById('coursePhotoFileInput-${id}').click()" style="padding:0 10px;background:var(--input-bg);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;color:var(--ink2);white-space:nowrap">📁</button>
+            <input type="file" id="coursePhotoFileInput-${id}" accept="image/*" style="display:none" onchange="uploadCoursePhoto(this,'${id}')">
           </div>
-          <input type="file" id="coursePhotoInput-${id}" accept="image/*" style="display:none" onchange="uploadCoursePhoto(this,'${id}')">
-          <input type="hidden" id="coursePhotoUrl-${id}" value="${data.photoUrl||''}">
+          <div id="coursePhoto-${id}" style="width:100%;height:110px;border-radius:8px;border:1.5px dashed var(--line);background:var(--input-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;overflow:hidden;position:relative;margin-top:6px">
+            <span style="font-size:22px">⛳</span><span style="font-size:11px;color:#8A8A84">URL 입력 또는 파일 업로드</span>
+          </div>
         </div>
       </div>
       <div class="form-row col2">
@@ -748,6 +793,8 @@ function addCourse(data={}) {
     </div>
   `;
   document.getElementById('courseCards').appendChild(div);
+  // 사진 URL 있으면 미리보기
+  if (data.photoUrl) previewCoursePhoto(data.photoUrl, id);
 }
 
 /* ════════════════════════════
@@ -931,12 +978,13 @@ body{background:#DDDBD5;font-family:'Noto Sans KR',sans-serif;font-weight:400;-w
 .reveal.visible{opacity:1;transform:translateY(0)}
 .sec-title{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#8A8A84;margin-bottom:18px;display:flex;align-items:center;gap:10px}
 .sec-title::after{content:'';flex:1;height:1px;background:#E8E6E1}
+body{padding-bottom:76px}
 @media(min-width:768px){
-  body{padding:40px 24px 60px}
+  body{padding:40px 24px 0px}
   .wrap{max-width:540px;border-radius:20px;overflow:hidden;box-shadow:0 20px 80px rgba(0,0,0,0.14)!important}
   section,.contact-sec{padding:48px 40px!important}
-  .share-bar{position:static!important;justify-content:flex-end!important;padding:16px 40px!important;border-top:1px solid #E8E6E1!important}
-  .share-btn{flex:0 0 auto!important;padding:12px 28px!important}
+  .share-bar{position:static!important;padding:16px 40px 24px!important;border-top:1px solid #E8E6E1!important}
+  .share-btn{padding:12px 28px!important}
 }
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(10px);background:#111;color:#fff;font-size:13px;padding:10px 22px;border-radius:24px;opacity:0;pointer-events:none;transition:all .3s;white-space:nowrap;z-index:999}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -1058,7 +1106,7 @@ body{background:#DDDBD5;font-family:'Noto Sans KR',sans-serif;font-weight:400;-w
   </footer>
 
   <!-- SHARE BAR -->
-  <div class="share-bar" style="position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:500px;background:rgba(255,255,255,0.97);backdrop-filter:blur(14px);border-top:1px solid #E8E6E1;padding:12px 20px 20px;display:flex;gap:10px;z-index:200;box-sizing:border-box">
+  <div class="share-bar" style="position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,0.97);backdrop-filter:blur(14px);border-top:1px solid #E8E6E1;padding:12px 20px 20px;display:flex;gap:10px;z-index:200;box-sizing:border-box">
     <button onclick="shareKakao()" style="display:flex;align-items:center;justify-content:center;gap:7px;padding:13px 0;border-radius:12px;font-size:13px;font-weight:600;border:none;cursor:pointer;flex:1;background:#FEE500;color:#3A1D1D;font-family:'Noto Sans KR',sans-serif" class="share-btn">💬 카카오톡 공유</button>
     <button onclick="copyLink()" style="display:flex;align-items:center;justify-content:center;gap:7px;padding:13px 0;border-radius:12px;font-size:13px;font-weight:600;border:none;cursor:pointer;flex:1;background:#1C3D2E;color:white;font-family:'Noto Sans KR',sans-serif" class="share-btn">🔗 링크 복사</button>
   </div>
@@ -1182,6 +1230,36 @@ async function publishQuote() {
 ════════════════════════════ */
 let productsCache = [];
 
+let currentCategory = '';
+
+function filterByCategory(cat) {
+  currentCategory = cat;
+  document.querySelectorAll('.cat-btn').forEach(b => {
+    b.classList.toggle('cat-active', b.dataset.cat === cat);
+  });
+  renderProductList();
+}
+
+function previewHotelPhoto(url) {
+  const preview = document.getElementById('hotelPhotoPreview');
+  if (!preview) return;
+  if (url) {
+    preview.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:7px" onerror="this.parentElement.innerHTML='<span style=font-size:24px>🏨</span><span style=font-size:11px;color:#8A8A84>이미지를 불러올 수 없어요</span>'">`;
+  } else {
+    preview.innerHTML = '<span style="font-size:24px">🏨</span><span style="font-size:11px;color:var(--ink3)">URL 입력 또는 파일 업로드</span>';
+  }
+}
+
+function previewCoursePhoto(url, courseId) {
+  const preview = document.getElementById('coursePhoto-' + courseId);
+  if (!preview) return;
+  if (url) {
+    preview.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:7px" onerror="this.parentElement.innerHTML='<span style=font-size:22px>⛳</span><span style=font-size:11px;color:#8A8A84>이미지 오류</span>'">`;
+  } else {
+    preview.innerHTML = '<span style="font-size:22px">⛳</span><span style="font-size:11px;color:#8A8A84">URL 입력 또는 파일 업로드</span>';
+  }
+}
+
 async function fetchProducts() {
   const wrap = document.getElementById('productListWrap');
   if (wrap) wrap.innerHTML = `<div style="text-align:center;padding:40px;color:var(--ink3);font-size:13px">⏳ 불러오는 중...</div>`;
@@ -1239,15 +1317,24 @@ function renderProductList() {
       </div>`;
     return;
   }
+  const filtered = currentCategory
+    ? productsCache.filter(p => p.category === currentCategory)
+    : productsCache;
+
   wrap.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-      <span style="font-size:13px;color:var(--ink3)">총 ${productsCache.length}개</span>
+      <span style="font-size:13px;color:var(--ink3)">${currentCategory ? currentCategory+' ' : ''}총 ${filtered.length}개</span>
       <button onclick="fetchProducts()" style="font-size:12px;padding:6px 14px;background:none;border:1px solid var(--line);border-radius:8px;cursor:pointer;color:var(--ink3);font-family:'Noto Sans KR',sans-serif">🔄 새로고침</button>
     </div>
-    ${productsCache.map(p => `
+    ${filtered.length === 0
+      ? `<div style="text-align:center;padding:30px;color:var(--ink3);font-size:13px">해당 카테고리 상품이 없어요</div>`
+      : filtered.map(p => `
     <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid var(--line);border-radius:10px;margin-bottom:10px;background:var(--input-bg)">
       <div style="flex:1">
-        <div style="font-size:14px;font-weight:500;color:var(--ink)">${p.name}</div>
+        <div style="display:flex;align-items:center;gap:6px">
+          ${p.category ? `<span style="font-size:10px;padding:2px 8px;background:var(--accent);color:white;border-radius:10px">${p.category}</span>` : ''}
+          <span style="font-size:14px;font-weight:500;color:var(--ink)">${p.name}</span>
+        </div>
         <div style="font-size:11px;color:var(--ink3);margin-top:3px">${new Date(p.created_at).toLocaleDateString('ko-KR')} 등록</div>
       </div>
       <button onclick="loadProductById('${p.id}')" style="background:var(--accent);color:white;border:none;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Noto Sans KR',sans-serif">✏️ 불러와서 수정</button>
@@ -1259,6 +1346,7 @@ function renderProductList() {
 async function saveProduct() {
   const name = document.getElementById('productName').value.trim();
   if (!name) { showToast('❌ 상품명을 입력해주세요'); return; }
+  const category = document.getElementById('productCategory')?.value || '';
   const d = collectData();
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/products`, {
@@ -1269,7 +1357,7 @@ async function saveProduct() {
         'Authorization': `Bearer ${SUPABASE_KEY}`,
         'Prefer': 'return=representation'
       },
-      body: JSON.stringify({ name, data: d })
+      body: JSON.stringify({ name, category, data: d })
     });
     const rows = await res.json();
     if (!rows || !rows[0]) throw new Error('저장 실패');
@@ -1311,6 +1399,10 @@ async function loadProductById(id) {
   if (!d || typeof d !== 'object') { showToast('❌ 상품 데이터가 올바르지 않아요'); return; }
 
   applyProductData(d);
+
+  // 카테고리 복원
+  const catEl = document.getElementById('productCategory');
+  if (catEl && p.category) catEl.value = p.category;
 
   // 현재 작업 중인 상품 기억
   state.currentProductId = p.id;
@@ -1361,7 +1453,7 @@ async function updateProduct() {
         'apikey': SUPABASE_KEY,
         'Authorization': `Bearer ${SUPABASE_KEY}`
       },
-      body: JSON.stringify({ data: d })
+      body: JSON.stringify({ data: d, category: document.getElementById('productCategory')?.value || '' })
     });
     if (res.ok) {
       showToast(`✅ "${state.currentProductName}" 업데이트 완료!`);
@@ -1401,8 +1493,9 @@ function applyProductData(d) {
   set('hotelPhotoUrl', d.hotelPhotoUrl);
   // 호텔 사진 미리보기 복원
   if (d.hotelPhotoUrl) {
-    const preview = document.getElementById('hotelPhotoPreview');
-    if (preview) preview.innerHTML = `<img src="${d.hotelPhotoUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:7px">`;
+    const urlEl = document.getElementById('hotelPhotoUrl');
+    if (urlEl) urlEl.value = d.hotelPhotoUrl;
+    previewHotelPhoto(d.hotelPhotoUrl);
   }
 
   // 요금 항목 초기화 후 재생성
