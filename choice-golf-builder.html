@@ -784,7 +784,8 @@ function collectData() {
   // 골프장
   const courses = [];
   document.querySelectorAll('.course-card').forEach(cc => {
-    const inputs = cc.querySelectorAll('input');
+    // inputs[0]=file, inputs[1]=hidden(photoUrl), inputs[2]=round, inputs[3]=day ...
+    const inputs = cc.querySelectorAll('input[type=number], input[type=text]');
     const ta = cc.querySelector('textarea');
     courses.push({
       round: inputs[0]?.value || '',
