@@ -122,7 +122,8 @@ async function fetchQuote(id) {
     });
     const rows = await res.json();
     if (!rows || rows.length === 0) { showError(); return; }
-    const d = rows[0].data;
+    let d = rows[0].data;
+    if (typeof d === "string") { try { d = JSON.parse(d); } catch(e) { showError(); return; } }
     document.title = `${d.companyName} — ${d.destination} 골프투어`;
     renderPage(d);
   } catch(e) {
@@ -137,7 +138,7 @@ function showError() {
 
 function renderPage(d) {
   const wrap = document.getElementById('mainWrap');
-  const totalPrice = (d.pricePerPerson * d.paxNum).toLocaleString();
+  const totalPrice = (d.pricePerPerson * d.pax).toLocaleString();
   const perPerson = d.pricePerPerson ? Math.round(d.pricePerPerson / 10000) + '만' : '—';
   const starsStr = '★'.repeat(parseInt(d.hotelStars) || 5);
   const chipS = 'display:inline-flex;align-items:center;gap:5px;padding:6px 12px;background:#F8F7F5;border-radius:20px;font-size:12px;color:#4A4A46;border:1px solid #E8E6E1;margin:3px 0';
@@ -239,11 +240,11 @@ function renderPage(d) {
       <div class="hero-right" style="display:none;flex-direction:column;gap:12px;flex-shrink:0">
         <div style="background:#1C3D2E;border-radius:16px;padding:24px;color:white">
           <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:6px">대표 예약자</div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;line-height:1.4">${d.customerName} 님 외 ${d.paxNum-1}명</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;line-height:1.4">${d.customerName} 님 외 ${d.pax-1}명</div>
           <div style="height:1px;background:rgba(255,255,255,0.12);margin:16px 0"></div>
           <div style="font-size:10px;color:rgba(255,255,255,0.5);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px">1인당 금액</div>
           <div style="font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:600;color:#C9A268;line-height:1;letter-spacing:-1px">${perPerson}</div>
-          <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-top:4px">원 · ${d.paxNum}인 총 ₩${totalPrice}</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-top:4px">원 · ${d.pax}인 총 ₩${totalPrice}</div>
         </div>
         <div style="background:#F8F7F5;border:1px solid #E8E6E1;border-radius:12px;padding:18px 20px">
           <div style="font-size:11px;color:#8A8A84;margin-bottom:8px">담당자 직접 문의</div>
@@ -259,18 +260,18 @@ function renderPage(d) {
       <div style="background:#1C3D2E;border-radius:16px;padding:22px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:flex-end">
         <div>
           <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:6px">대표 예약자</div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:white;line-height:1.3">${d.customerName} 님<br>외 ${d.paxNum-1}명</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:white;line-height:1.3">${d.customerName} 님<br>외 ${d.pax-1}명</div>
         </div>
         <div style="text-align:right">
           <div style="font-size:10px;color:rgba(255,255,255,0.5);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">1인당</div>
           <div style="font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:600;color:#C9A268;line-height:1;letter-spacing:-1px">${perPerson}</div>
-          <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-top:3px">원 (${d.paxNum}인 기준)</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-top:3px">원 (${d.pax}인 기준)</div>
         </div>
       </div>
       <div style="border:1px solid #E8E6E1;border-radius:12px;overflow:hidden">
         ${priceRowsHTML}
         <div style="display:flex;justify-content:space-between;align-items:center;padding:15px 16px;gap:12px;background:#F0F4F2;border-top:2px solid #D4D1CA">
-          <div style="font-size:12px;font-weight:700;color:#1C3D2E;letter-spacing:.5px">합계 (${d.paxNum}인 총액)</div>
+          <div style="font-size:12px;font-weight:700;color:#1C3D2E;letter-spacing:.5px">합계 (${d.pax}인 총액)</div>
           <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:#1C3D2E">₩${totalPrice}</div>
         </div>
       </div>
