@@ -1029,19 +1029,21 @@ function collectData() {
   // 골프장
   const courses = [];
   document.querySelectorAll('.course-card').forEach(cc => {
-    // inputs[0]=file, inputs[1]=hidden(photoUrl), inputs[2]=round, inputs[3]=day ...
+    // DOM 순서: inputs[0]=coursePhotoUrl(text), inputs[1]=round(number), inputs[2]=day(number),
+    //           inputs[3]=name(text), inputs[4]=nameJp(text), inputs[5]=holes(text),
+    //           inputs[6]=rating(text), inputs[7]=features(text)
     const inputs = cc.querySelectorAll('input[type=number], input[type=text]');
     const ta = cc.querySelector('textarea');
     courses.push({
-      round: inputs[0]?.value || '',
-      day: inputs[1]?.value || '',
-      name: inputs[2]?.value || '',
-      nameJp: inputs[3]?.value || '',
-      holes: inputs[4]?.value || '',
-      rating: inputs[5]?.value || '',
-      desc: ta?.value || '',
-      features: (inputs[6]?.value || '').split(',').map(s=>s.trim()).filter(Boolean),
-      photoUrl: cc.querySelector('input[type=hidden]')?.value || ''
+      photoUrl: inputs[0]?.value || '',
+      round:    inputs[1]?.value || '',
+      day:      inputs[2]?.value || '',
+      name:     inputs[3]?.value || '',
+      nameJp:   inputs[4]?.value || '',
+      holes:    inputs[5]?.value || '',
+      rating:   inputs[6]?.value || '',
+      desc:     ta?.value || '',
+      features: (inputs[7]?.value || '').split(',').map(s=>s.trim()).filter(Boolean),
     });
   });
 
