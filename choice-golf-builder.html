@@ -187,6 +187,26 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
 .photo-slot-label{font-size:10px;color:var(--ink3)}
 .photo-slot-del{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.5);color:white;border:none;border-radius:50%;width:20px;height:20px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
 
+/* ── COLLAPSIBLE SECTIONS ── */
+.sec-header{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;padding:6px 2px;margin:20px 0 10px}
+.sec-header-left{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--ink3);text-transform:uppercase}
+.sec-toggle{font-size:16px;color:var(--ink3);transition:transform .2s;line-height:1}
+.sec-toggle.collapsed{transform:rotate(-90deg)}
+.sec-body{transition:none}
+.sec-body.hidden{display:none}
+.quote-quick-card{background:linear-gradient(135deg,#1E40AF,#3B82F6);border-radius:12px;padding:20px 22px;margin-bottom:20px;display:none}
+.quote-quick-card.show{display:block}
+.quote-quick-label{font-size:10px;color:rgba(255,255,255,0.6);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.quote-quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.quote-quick-field{display:flex;flex-direction:column;gap:4px}
+.quote-quick-field label{font-size:10px;color:rgba(255,255,255,0.6);letter-spacing:.5px}
+.quote-quick-field input{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:7px;padding:8px 11px;font-size:13px;color:white;font-family:'Noto Sans KR',sans-serif;outline:none}
+.quote-quick-field input::placeholder{color:rgba(255,255,255,0.4)}
+.quote-quick-field input:focus{background:rgba(255,255,255,0.22);border-color:rgba(255,255,255,0.6)}
+
+/* select option fix */
+select option{background:#1C3D2E;color:white}
+
 /* ── QUOTE LIST ── */
 .quote-card{display:flex;align-items:center;gap:12px;padding:14px 18px;border:1.5px solid var(--line);border-radius:12px;margin-bottom:10px;background:var(--white);transition:border-color .15s}
 .quote-card:hover{border-color:var(--accent)}
@@ -334,13 +354,13 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
     <div class="tab-panel" id="panel-product-new">
 
       <!-- 상단 저장 바 -->
-      <div class="form-card" id="currentProductBanner" style="background:linear-gradient(135deg,#1C3D2E,#2A5240);border:none;position:sticky;top:0;z-index:10;margin-bottom:20px">
-        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-          <div style="flex:1;min-width:180px">
-            <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:4px" id="bannerLabel">새 상품 등록</div>
-            <div style="display:flex;gap:8px;margin-bottom:6px">
-              <select id="productCategory" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:7px 12px;font-size:13px;color:white;font-family:'Noto Sans KR',sans-serif;outline:none;flex-shrink:0">
-                <option value="">🌏 국가 선택</option>
+      <div class="form-card" id="currentProductBanner" style="background:linear-gradient(135deg,#1C3D2E,#2A5240);border:none;position:sticky;top:0;z-index:10;margin-bottom:16px;padding:16px 20px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <div style="flex:1;min-width:160px">
+            <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:6px" id="bannerLabel">새 상품 등록</div>
+            <div style="display:flex;gap:6px;align-items:center">
+              <select id="productCategory" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.25);border-radius:7px;padding:6px 10px;font-size:12px;color:white;font-family:'Noto Sans KR',sans-serif;outline:none;flex-shrink:0;max-width:130px">
+                <option value="">🌏 국가</option>
                 <option value="일본">🇯🇵 일본</option>
                 <option value="중국">🇨🇳 중국</option>
                 <option value="대만">🇹🇼 대만</option>
@@ -353,25 +373,15 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
                 <option value="괌/사이판">🌺 괌/사이판</option>
                 <option value="기타">🌐 기타</option>
               </select>
+              <input type="text" id="productName" placeholder="상품명 / 견적서명 입력" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);border-radius:7px;padding:6px 12px;font-size:13px;font-weight:600;color:white;font-family:'Noto Sans KR',sans-serif;outline:none;flex:1" oninput="this.style.color='white'">
             </div>
-            <input type="text" id="productName" placeholder="상품명 입력 (예: 일본 미야자키 3박4일)" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:8px 14px;font-size:14px;font-weight:600;color:white;font-family:'Noto Sans KR',sans-serif;outline:none;width:100%" oninput="this.style.color='white'">
           </div>
-          <div style="display:flex;gap:8px;flex-shrink:0">
-            <button id="btnSaveNew" onclick="saveProduct()" style="background:var(--gold);color:white;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">
-              💾 새 상품으로 저장
-            </button>
-            <button id="btnUpdate" onclick="updateProduct()" style="display:none;background:#2563EB;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">
-              🔄 상품 업데이트
-            </button>
-            <button id="btnSaveQuote" onclick="saveQuote()" style="display:none;background:var(--gold);color:white;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">
-              📋 견적서 저장
-            </button>
-            <button id="btnUpdateQuote" onclick="updateQuote()" style="display:none;background:#059669;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">
-              🔄 견적서 수정저장
-            </button>
-            <button id="btnExitQuote" onclick="exitQuoteMode()" style="display:none;background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3);padding:10px 14px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">
-              ✕ 종료
-            </button>
+          <div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap">
+            <button id="btnSaveNew" onclick="saveProduct()" style="background:var(--gold);color:white;border:none;padding:8px 16px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">💾 상품저장</button>
+            <button id="btnUpdate" onclick="updateProduct()" style="display:none;background:#2563EB;color:white;border:none;padding:8px 16px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">🔄 상품업데이트</button>
+            <button id="btnSaveQuote" onclick="saveQuote()" style="display:none;background:var(--gold);color:white;border:none;padding:8px 16px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">📋 견적서 저장</button>
+            <button id="btnUpdateQuote" onclick="updateQuote()" style="display:none;background:#059669;color:white;border:none;padding:8px 16px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">🔄 수정저장</button>
+            <button id="btnExitQuote" onclick="exitQuoteMode()" style="display:none;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.8);border:1px solid rgba(255,255,255,0.25);padding:8px 12px;border-radius:7px;font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">✕ 종료</button>
           </div>
         </div>
       </div>
@@ -385,196 +395,226 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
         <div class="summary-item"><div class="summary-label">인원</div><div class="summary-value" id="s-pax">—</div></div>
       </div>
 
-      <!-- 📋 기본 정보 -->
-      <div id="sec-basic" style="font-size:11px;font-weight:700;letter-spacing:2px;color:var(--ink3);text-transform:uppercase;margin:8px 0 12px;padding-left:2px">📋 기본 정보</div>
-
-      <div class="form-card">
-        <div class="form-card-title"><span class="form-card-title-icon">✈️</span> 여행 정보</div>
-        <div class="form-row col2">
-          <div class="field"><label>여행지</label><input type="text" id="destination" placeholder="일본 미야자키" oninput="updateSummary()"></div>
-          <div class="field"><label>출발 공항</label><input type="text" id="airport" placeholder="김해국제공항 (PUS)"></div>
-        </div>
-        <div class="form-row col4">
-          <div class="field"><label>출발일</label><input type="date" id="dateFrom" oninput="updateSummary(); syncDays()"></div>
-          <div class="field"><label>귀국일</label><input type="date" id="dateTo" oninput="updateSummary(); syncDays()"></div>
-          <div class="field"><label>라운드 수</label><input type="number" id="rounds" placeholder="2" min="1"></div>
-          <div class="field"><label>견적 유효기간</label><input type="date" id="validUntil"></div>
+      <!-- 📋 견적서 모드: 고객 핵심정보 퀵카드 -->
+      <div class="quote-quick-card" id="quoteQuickCard">
+        <div class="quote-quick-label">👤 고객 핵심 정보 (필수 입력)</div>
+        <div class="quote-quick-grid">
+          <div class="quote-quick-field"><label>고객명</label><input type="text" id="q_customerName" placeholder="홍길동" oninput="document.getElementById('customerName').value=this.value;updateSummary()"></div>
+          <div class="quote-quick-field"><label>연락처</label><input type="text" id="q_customerPhone" placeholder="010-0000-0000" oninput="document.getElementById('customerPhone').value=this.value"></div>
+          <div class="quote-quick-field"><label>출발일</label><input type="date" id="q_dateFrom" oninput="document.getElementById('dateFrom').value=this.value;updateSummary();syncDays()"></div>
+          <div class="quote-quick-field"><label>귀국일</label><input type="date" id="q_dateTo" oninput="document.getElementById('dateTo').value=this.value;updateSummary();syncDays()"></div>
+          <div class="quote-quick-field"><label>인원 (남)</label><input type="number" id="q_paxM" placeholder="2" min="0" oninput="document.getElementById('paxM').value=this.value;syncPaxTotal()"></div>
+          <div class="quote-quick-field"><label>인원 (여)</label><input type="number" id="q_paxF" placeholder="2" min="0" oninput="document.getElementById('paxF').value=this.value;syncPaxTotal()"></div>
+          <div class="quote-quick-field"><label>1인 요금 (원)</label><input type="number" id="q_price" placeholder="1020000" oninput="document.getElementById('pricePerPerson').value=this.value;calcTotal()"></div>
+          <div class="quote-quick-field"><label>견적 유효기간</label><input type="date" id="q_validUntil" oninput="document.getElementById('validUntil').value=this.value"></div>
         </div>
       </div>
 
-      <div class="form-card">
-        <div class="form-card-title"><span class="form-card-title-icon">👔</span> 담당자</div>
-        <div class="form-row col2">
-          <div class="field"><label>담당 AGT</label><input type="text" id="agent" placeholder="김담당"></div>
-          <div class="field"><label>부서 / 팀</label><input type="text" id="agentTeam" placeholder="해외팀"></div>
-        </div>
+      <!-- ── 섹션: 기본정보 ── -->
+      <div class="sec-header" id="sec-basic" onclick="toggleSection('body-basic')">
+        <div class="sec-header-left"><span>📋</span> 기본 정보</div>
+        <span class="sec-toggle" id="tog-basic">▼</span>
       </div>
-
-      <!-- 💰 요금표 -->
-      <div id="sec-price" style="font-size:11px;font-weight:700;letter-spacing:2px;color:var(--ink3);text-transform:uppercase;margin:24px 0 12px;padding-left:2px">💰 요금표</div>
-
-      <div class="form-card">
-        <div class="form-card-title"><span class="form-card-title-icon">💰</span> 대표 금액</div>
-        <div class="form-row col2">
-          <div class="field"><label>1인당 금액 (원)</label><input type="number" id="pricePerPerson" placeholder="1020000" oninput="calcTotal()"></div>
-          <div class="field"><label>총액 (자동계산)</label><input type="text" id="priceTotal" placeholder="자동계산" readonly style="background:#F0F0EE;color:var(--ink3)"></div>
-        </div>
-      </div>
-
-      <div class="form-card">
-        <div class="form-card-title"><span class="form-card-title-icon">📊</span> 항목별 금액</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 120px 32px;gap:8px;padding:0 0 8px;margin-bottom:4px">
-          <span style="font-size:11px;color:var(--ink3);font-weight:500;letter-spacing:.5px;text-transform:uppercase">항목명</span>
-          <span style="font-size:11px;color:var(--ink3);font-weight:500;letter-spacing:.5px;text-transform:uppercase">세부 설명</span>
-          <span style="font-size:11px;color:var(--ink3);font-weight:500;letter-spacing:.5px;text-transform:uppercase">금액 (원)</span>
-          <span></span>
-        </div>
-        <div class="price-items" id="priceItems"></div>
-        <button class="btn-add" onclick="addPriceItem()">+ 항목 추가</button>
-      </div>
-
-      <div class="form-card">
-        <div class="form-card-title"><span class="form-card-title-icon">📝</span> 안내 문구</div>
-        <div class="field"><label>요금 하단 안내 (※ 내용)</label><textarea id="priceNote" placeholder="※ 환율·항공 시세에 따라 변동될 수 있습니다&#10;※ 본 견적은 2026년 3월 31일까지 유효합니다&#10;※ 예약 확정 시 총 금액의 30% 계약금 납입"></textarea></div>
-      </div>
-
-      <div class="form-card">
-        <div class="form-card-title"><span class="form-card-title-icon">✅</span> 포함 / 불포함 항목</div>
-        <div class="form-row col2">
-          <div class="field">
-            <label>포함 사항</label>
-            <div class="tags-wrap" id="includes-wrap" onclick="focusTagInput('includes-input')">
-              <input class="tag-input" id="includes-input" placeholder="항목 입력 후 Enter" onkeydown="addTag(event,'includes')">
-            </div>
-            <div class="tag-hint">항목을 입력하고 Enter를 누르세요</div>
+      <div class="sec-body" id="body-basic">
+        <div class="form-card" style="margin-bottom:10px">
+          <div class="form-row col2" style="margin-bottom:10px">
+            <div class="field"><label>여행지</label><input type="text" id="destination" placeholder="일본 미야자키" oninput="updateSummary()"></div>
+            <div class="field"><label>출발 공항</label><input type="text" id="airport" placeholder="김해국제공항 (PUS)"></div>
           </div>
-          <div class="field">
-            <label>불포함 사항</label>
-            <div class="tags-wrap" id="excludes-wrap" onclick="focusTagInput('excludes-input')">
-              <input class="tag-input" id="excludes-input" placeholder="항목 입력 후 Enter" onkeydown="addTag(event,'excludes')">
-            </div>
-            <div class="tag-hint">항목을 입력하고 Enter를 누르세요</div>
+          <div class="form-row col4" style="margin-bottom:10px">
+            <div class="field"><label>출발일</label><input type="date" id="dateFrom" oninput="updateSummary();syncDays()"></div>
+            <div class="field"><label>귀국일</label><input type="date" id="dateTo" oninput="updateSummary();syncDays()"></div>
+            <div class="field"><label>라운드 수</label><input type="number" id="rounds" placeholder="2" min="1"></div>
+            <div class="field"><label>견적 유효기간</label><input type="date" id="validUntil"></div>
+          </div>
+          <div class="form-row col4">
+            <div class="field"><label>고객명</label><input type="text" id="customerName" placeholder="홍길동" oninput="updateSummary()"></div>
+            <div class="field"><label>연락처</label><input type="text" id="customerPhone" placeholder="010-0000-0000"></div>
+            <div class="field"><label>인원 (남)</label><input type="number" id="paxM" placeholder="2" min="0" oninput="syncPaxTotal()"></div>
+            <div class="field"><label>인원 (여)</label><input type="number" id="paxF" placeholder="2" min="0" oninput="syncPaxTotal()"></div>
+          </div>
+          <input type="hidden" id="pax">
+          <div class="form-row col2" style="margin-top:10px">
+            <div class="field"><label>담당 AGT</label><input type="text" id="agent" placeholder="김담당"></div>
+            <div class="field"><label>부서 / 팀</label><input type="text" id="agentTeam" placeholder="해외팀"></div>
           </div>
         </div>
       </div>
 
-      <!-- 🗓 일정표 -->
-      <div id="sec-schedule" style="font-size:11px;font-weight:700;letter-spacing:2px;color:var(--ink3);text-transform:uppercase;margin:24px 0 12px;padding-left:2px">🗓 일정표</div>
-
-      <div class="form-card">
-        <div class="form-card-title"><span class="form-card-title-icon">🗓</span> 일자별 일정</div>
-        <div class="day-blocks" id="dayBlocks"></div>
-        <button class="btn-add" style="margin-top:12px" onclick="addDay()">+ 일정 추가</button>
+      <!-- ── 섹션: 요금표 ── -->
+      <div class="sec-header" id="sec-price" onclick="toggleSection('body-price')">
+        <div class="sec-header-left"><span>💰</span> 요금표</div>
+        <span class="sec-toggle" id="tog-price">▼</span>
+      </div>
+      <div class="sec-body" id="body-price">
+        <div class="form-card" style="margin-bottom:10px">
+          <div class="form-row col2" style="margin-bottom:10px">
+            <div class="field"><label>1인당 금액 (원)</label><input type="number" id="pricePerPerson" placeholder="1020000" oninput="calcTotal()"></div>
+            <div class="field"><label>총액 (자동계산)</label><input type="text" id="priceTotal" placeholder="자동계산" readonly style="background:#F0F0EE;color:var(--ink3)"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 120px 32px;gap:8px;padding:0 0 8px;margin-bottom:4px">
+            <span style="font-size:11px;color:var(--ink3);font-weight:500;letter-spacing:.5px;text-transform:uppercase">항목명</span>
+            <span style="font-size:11px;color:var(--ink3);font-weight:500;letter-spacing:.5px;text-transform:uppercase">세부 설명</span>
+            <span style="font-size:11px;color:var(--ink3);font-weight:500;letter-spacing:.5px;text-transform:uppercase">금액 (원)</span>
+            <span></span>
+          </div>
+          <div class="price-items" id="priceItems"></div>
+          <button class="btn-add" onclick="addPriceItem()" style="margin-bottom:10px">+ 항목 추가</button>
+          <div class="field"><label>요금 하단 안내</label><textarea id="priceNote" placeholder="※ 환율·항공 시세에 따라 변동될 수 있습니다" style="min-height:60px"></textarea></div>
+        </div>
+        <div class="form-card" style="margin-bottom:10px">
+          <div class="form-row col2">
+            <div class="field">
+              <label>포함 사항</label>
+              <div class="tags-wrap" id="includes-wrap" onclick="focusTagInput('includes-input')">
+                <input class="tag-input" id="includes-input" placeholder="항목 입력 후 Enter" onkeydown="addTag(event,'includes')">
+              </div>
+            </div>
+            <div class="field">
+              <label>불포함 사항</label>
+              <div class="tags-wrap" id="excludes-wrap" onclick="focusTagInput('excludes-input')">
+                <input class="tag-input" id="excludes-input" placeholder="항목 입력 후 Enter" onkeydown="addTag(event,'excludes')">
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <!-- 🏨 호텔 -->
-      <div id="sec-hotel" style="font-size:11px;font-weight:700;letter-spacing:2px;color:var(--ink3);text-transform:uppercase;margin:24px 0 12px;padding-left:2px">🏨 호텔</div>
+      <!-- ── 섹션: 일정표 ── -->
+      <div class="sec-header" id="sec-schedule" onclick="toggleSection('body-schedule')">
+        <div class="sec-header-left"><span>🗓</span> 일정표</div>
+        <span class="sec-toggle collapsed" id="tog-schedule">▼</span>
+      </div>
+      <div class="sec-body hidden" id="body-schedule">
+        <div class="form-card" style="margin-bottom:10px">
+          <div class="day-blocks" id="dayBlocks"></div>
+          <button class="btn-add" style="margin-top:12px" onclick="addDay()">+ 일정 추가</button>
+        </div>
+      </div>
 
-      <div class="form-card">
-        <div class="form-card-title" style="justify-content:space-between"><span style="display:flex;align-items:center;gap:8px"><span class="form-card-title-icon">🏨</span> 숙박 호텔</span><button onclick="openPickerModal('hotel','single')" style="display:inline-flex;align-items:center;gap:5px;background:rgba(28,61,46,0.07);border:1.5px solid var(--accent);border-radius:8px;padding:6px 13px;font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;font-family:'Noto Sans KR',sans-serif">📚 라이브러리에서 불러오기</button></div>
-        <div class="form-row col2">
-          <div class="field"><label>호텔명 (영문)</label><input type="text" id="hotelName" placeholder="Phoenix Seagaia Resort"></div>
-          <div class="field"><label>호텔명 (한글)</label><input type="text" id="hotelNameKr" placeholder="피닉스 시가이어 리조트"></div>
-        </div>
-        <div class="form-row col3">
-          <div class="field"><label>객실 타입</label><input type="text" id="hotelRoom" placeholder="디럭스 트윈"></div>
-          <div class="field"><label>숙박 박수</label><input type="number" id="hotelNights" placeholder="3" min="1"></div>
-          <div class="field">
-            <label>등급</label>
-            <select id="hotelStars">
-              <option value="5">★★★★★ (5성)</option>
-              <option value="4">★★★★ (4성)</option>
-              <option value="3">★★★ (3성)</option>
-            </select>
+      <!-- ── 섹션: 호텔 ── -->
+      <div class="sec-header" id="sec-hotel" onclick="toggleSection('body-hotel')">
+        <div class="sec-header-left"><span>🏨</span> 호텔</div>
+        <span class="sec-toggle collapsed" id="tog-hotel">▼</span>
+      </div>
+      <div class="sec-body hidden" id="body-hotel">
+        <div class="form-card" style="margin-bottom:10px">
+          <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+            <button onclick="openPickerModal('hotel','single')" style="display:inline-flex;align-items:center;gap:5px;background:rgba(28,61,46,0.07);border:1.5px solid var(--accent);border-radius:8px;padding:6px 13px;font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;font-family:'Noto Sans KR',sans-serif">📚 라이브러리에서 불러오기</button>
           </div>
-        </div>
-        <div class="form-row">
-          <div class="field">
-            <label>호텔 대표 사진</label>
-            <div style="display:flex;gap:8px;align-items:stretch">
-              <input type="text" id="hotelPhotoUrl" placeholder="사진 URL 입력 (구글드라이브 공유링크 등)" style="flex:1;font-size:12px" oninput="previewHotelPhoto(this.value)">
-              <button type="button" onclick="document.getElementById('hotelPhotoFileInput').click()" style="padding:0 12px;background:var(--input-bg);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;color:var(--ink2);white-space:nowrap">📁 파일</button>
-              <input type="file" id="hotelPhotoFileInput" accept="image/*" style="display:none" onchange="uploadHotelPhoto(this)">
-            </div>
-            <div id="hotelPhotoPreview" style="width:100%;height:140px;border-radius:8px;border:1.5px dashed var(--line);background:var(--input-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;overflow:hidden;position:relative;margin-top:6px">
-              <span style="font-size:24px">🏨</span>
-              <span style="font-size:11px;color:var(--ink3)">URL 입력 또는 파일 업로드</span>
+          <div class="form-row col2" style="margin-bottom:10px">
+            <div class="field"><label>호텔명 (영문)</label><input type="text" id="hotelName" placeholder="Phoenix Seagaia Resort"></div>
+            <div class="field"><label>호텔명 (한글)</label><input type="text" id="hotelNameKr" placeholder="피닉스 시가이어 리조트"></div>
+          </div>
+          <div class="form-row col4" style="margin-bottom:10px">
+            <div class="field"><label>객실 타입</label><input type="text" id="hotelRoom" placeholder="디럭스 트윈"></div>
+            <div class="field"><label>숙박 박수</label><input type="number" id="hotelNights" placeholder="3" min="1"></div>
+            <div class="field" style="grid-column:span 2">
+              <label>등급</label>
+              <select id="hotelStars">
+                <option value="5">★★★★★ (5성)</option>
+                <option value="4">★★★★ (4성)</option>
+                <option value="3">★★★ (3성)</option>
+              </select>
             </div>
           </div>
-        </div>
-        <div class="form-row">
-          <div class="field"><label>호텔 소개 (고객에게 보여지는 텍스트)</label><textarea id="hotelDesc" placeholder="일본 최대 규모 리조트 중 하나로 골프 코스와 직결된 최고급 숙박 시설입니다. 전 객실 자연 채광, 실내 온천과 스파를 자유롭게 이용 가능합니다."></textarea></div>
-        </div>
-        <div class="form-row">
+          <div class="form-row" style="margin-bottom:10px">
+            <div class="field">
+              <label>호텔 대표 사진</label>
+              <div style="display:flex;gap:8px;align-items:stretch">
+                <input type="text" id="hotelPhotoUrl" placeholder="사진 URL 또는 파일 업로드" style="flex:1;font-size:12px" oninput="previewHotelPhoto(this.value)">
+                <button type="button" onclick="document.getElementById('hotelPhotoFileInput').click()" style="padding:0 12px;background:var(--input-bg);border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:12px;color:var(--ink2);white-space:nowrap">📁 파일</button>
+                <input type="file" id="hotelPhotoFileInput" accept="image/*" style="display:none" onchange="uploadHotelPhoto(this)">
+              </div>
+              <div id="hotelPhotoPreview" style="width:100%;height:100px;border-radius:8px;border:1.5px dashed var(--line);background:var(--input-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;overflow:hidden;position:relative;margin-top:6px">
+                <span style="font-size:24px">🏨</span>
+                <span style="font-size:11px;color:var(--ink3)">URL 입력 또는 파일 업로드</span>
+              </div>
+            </div>
+          </div>
+          <div class="form-row" style="margin-bottom:10px">
+            <div class="field"><label>호텔 소개</label><textarea id="hotelDesc" placeholder="호텔 소개글" style="min-height:60px"></textarea></div>
+          </div>
           <div class="field">
             <label>편의시설 태그</label>
             <div class="tags-wrap" id="hotelFacilities-wrap" onclick="focusTagInput('hotelFacilities-input')">
               <input class="tag-input" id="hotelFacilities-input" placeholder="예: 천연 온천, 조식 포함" onkeydown="addTag(event,'hotelFacilities')">
             </div>
-            <div class="tag-hint">항목 입력 후 Enter</div>
           </div>
         </div>
       </div>
 
-      <!-- ⛳ 골프장 -->
-      <div id="sec-golf" style="font-size:11px;font-weight:700;letter-spacing:2px;color:var(--ink3);text-transform:uppercase;margin:24px 0 12px;padding-left:2px">⛳ 골프장</div>
-
-      <div class="form-card">
-        <div class="form-card-title" style="justify-content:space-between"><span style="display:flex;align-items:center;gap:8px"><span class="form-card-title-icon">⛳</span> 골프장 정보</span><button onclick="openPickerModal('golf','multi')" style="display:inline-flex;align-items:center;gap:5px;background:rgba(28,61,46,0.07);border:1.5px solid var(--accent);border-radius:8px;padding:6px 13px;font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;font-family:'Noto Sans KR',sans-serif">📚 라이브러리에서 불러오기</button></div>
-        <div class="course-cards" id="courseCards"></div>
-        <button class="btn-add" style="margin-top:8px" onclick="addCourse()">+ 골프장 직접 입력</button>
+      <!-- ── 섹션: 골프장 ── -->
+      <div class="sec-header" id="sec-golf" onclick="toggleSection('body-golf')">
+        <div class="sec-header-left"><span>⛳</span> 골프장</div>
+        <span class="sec-toggle collapsed" id="tog-golf">▼</span>
       </div>
-
-      <!-- 🗺 관광지 -->
-      <div id="sec-tour" style="font-size:11px;font-weight:700;letter-spacing:2px;color:var(--ink3);text-transform:uppercase;margin:24px 0 12px;padding-left:2px">🗺 관광지</div>
-
-      <div class="form-card">
-        <div class="form-card-title" style="justify-content:space-between"><span style="display:flex;align-items:center;gap:8px"><span class="form-card-title-icon">🗺</span> 관광지 소개</span><button onclick="openPickerModal('tour','multi')" style="display:inline-flex;align-items:center;gap:5px;background:rgba(28,61,46,0.07);border:1.5px solid var(--accent);border-radius:8px;padding:6px 13px;font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;font-family:'Noto Sans KR',sans-serif">📚 라이브러리에서 불러오기</button></div>
-        <div id="tourCards" style="display:flex;flex-direction:column;gap:12px;margin-bottom:8px"></div>
-        <button class="btn-add" onclick="addExtraCard('tour')">+ 관광지 직접 입력</button>
-      </div>
-
-      <!-- 🎁 옵션 -->
-      <div id="sec-option" style="font-size:11px;font-weight:700;letter-spacing:2px;color:var(--ink3);text-transform:uppercase;margin:24px 0 12px;padding-left:2px">🎁 옵션</div>
-
-      <div class="form-card">
-        <div class="form-card-title" style="justify-content:space-between"><span style="display:flex;align-items:center;gap:8px"><span class="form-card-title-icon">🎁</span> 선택 옵션</span><button onclick="openPickerModal('option','multi')" style="display:inline-flex;align-items:center;gap:5px;background:rgba(28,61,46,0.07);border:1.5px solid var(--accent);border-radius:8px;padding:6px 13px;font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;font-family:'Noto Sans KR',sans-serif">📚 라이브러리에서 불러오기</button></div>
-        <div id="optionCards" style="display:flex;flex-direction:column;gap:12px;margin-bottom:8px"></div>
-        <button class="btn-add" onclick="addExtraCard('option')">+ 옵션 직접 입력</button>
-      </div>
-
-      <!-- 📞 연락처 -->
-      <div id="sec-contact" style="font-size:11px;font-weight:700;letter-spacing:2px;color:var(--ink3);text-transform:uppercase;margin:24px 0 12px;padding-left:2px">📞 연락처 & 회사</div>
-
-      <div class="form-card">
-        <div class="form-card-title"><span class="form-card-title-icon">📞</span> 고객 페이지 연락처</div>
-        <div class="form-row col2">
-          <div class="field"><label>전화번호</label><input type="text" id="contactPhone" placeholder="010-0000-0000"></div>
-          <div class="field"><label>카카오톡 채널</label><input type="text" id="contactKakao" placeholder="@초이스골프"></div>
+      <div class="sec-body hidden" id="body-golf">
+        <div class="form-card" style="margin-bottom:10px">
+          <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+            <button onclick="openPickerModal('golf','multi')" style="display:inline-flex;align-items:center;gap:5px;background:rgba(28,61,46,0.07);border:1.5px solid var(--accent);border-radius:8px;padding:6px 13px;font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;font-family:'Noto Sans KR',sans-serif">📚 라이브러리에서 불러오기</button>
+          </div>
+          <div class="course-cards" id="courseCards"></div>
+          <button class="btn-add" style="margin-top:8px" onclick="addCourse()">+ 골프장 직접 입력</button>
         </div>
       </div>
-      <div class="form-card">
-        <div class="form-card-title"><span class="form-card-title-icon">🏢</span> 회사 정보</div>
-        <div class="form-row col2">
-          <div class="field"><label>회사명 (한글)</label><input type="text" id="companyName" placeholder="초이스골프" value="초이스골프"></div>
-          <div class="field"><label>회사명 (영문)</label><input type="text" id="companyNameEn" placeholder="Choice Golf Tour" value="Choice Golf Tour"></div>
+
+      <!-- ── 섹션: 관광지 ── -->
+      <div class="sec-header" id="sec-tour" onclick="toggleSection('body-tour')">
+        <div class="sec-header-left"><span>🗺</span> 관광지</div>
+        <span class="sec-toggle collapsed" id="tog-tour">▼</span>
+      </div>
+      <div class="sec-body hidden" id="body-tour">
+        <div class="form-card" style="margin-bottom:10px">
+          <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+            <button onclick="openPickerModal('tour','multi')" style="display:inline-flex;align-items:center;gap:5px;background:rgba(28,61,46,0.07);border:1.5px solid var(--accent);border-radius:8px;padding:6px 13px;font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;font-family:'Noto Sans KR',sans-serif">📚 라이브러리에서 불러오기</button>
+          </div>
+          <div id="tourCards" style="display:flex;flex-direction:column;gap:12px;margin-bottom:8px"></div>
+          <button class="btn-add" onclick="addExtraCard('tour')">+ 관광지 직접 입력</button>
+        </div>
+      </div>
+
+      <!-- ── 섹션: 옵션 ── -->
+      <div class="sec-header" id="sec-option" onclick="toggleSection('body-option')">
+        <div class="sec-header-left"><span>🎁</span> 옵션</div>
+        <span class="sec-toggle collapsed" id="tog-option">▼</span>
+      </div>
+      <div class="sec-body hidden" id="body-option">
+        <div class="form-card" style="margin-bottom:10px">
+          <div style="display:flex;justify-content:flex-end;margin-bottom:10px">
+            <button onclick="openPickerModal('option','multi')" style="display:inline-flex;align-items:center;gap:5px;background:rgba(28,61,46,0.07);border:1.5px solid var(--accent);border-radius:8px;padding:6px 13px;font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;font-family:'Noto Sans KR',sans-serif">📚 라이브러리에서 불러오기</button>
+          </div>
+          <div id="optionCards" style="display:flex;flex-direction:column;gap:12px;margin-bottom:8px"></div>
+          <button class="btn-add" onclick="addExtraCard('option')">+ 옵션 직접 입력</button>
+        </div>
+      </div>
+
+      <!-- ── 섹션: 연락처 ── -->
+      <div class="sec-header" id="sec-contact" onclick="toggleSection('body-contact')">
+        <div class="sec-header-left"><span>📞</span> 연락처 & 회사</div>
+        <span class="sec-toggle collapsed" id="tog-contact">▼</span>
+      </div>
+      <div class="sec-body hidden" id="body-contact">
+        <div class="form-card" style="margin-bottom:10px">
+          <div class="form-row col2">
+            <div class="field"><label>전화번호</label><input type="text" id="contactPhone" placeholder="010-0000-0000"></div>
+            <div class="field"><label>카카오톡 채널</label><input type="text" id="contactKakao" placeholder="@초이스골프"></div>
+          </div>
+        </div>
+        <div class="form-card" style="margin-bottom:10px">
+          <div class="form-row col2">
+            <div class="field"><label>회사명 (한글)</label><input type="text" id="companyName" placeholder="초이스골프" value="초이스골프"></div>
+            <div class="field"><label>회사명 (영문)</label><input type="text" id="companyNameEn" placeholder="Choice Golf Tour" value="Choice Golf Tour"></div>
+          </div>
         </div>
       </div>
 
       <!-- 하단 저장 버튼 -->
-      <div style="display:flex;gap:12px;margin-top:12px;margin-bottom:32px">
-        <button id="btnSaveNew2" onclick="saveProduct()" style="flex:1;background:var(--gold);color:white;border:none;padding:14px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">
-          💾 새 상품으로 저장
-        </button>
-        <button id="btnUpdate2" onclick="updateProduct()" style="display:none;flex:1;background:#2563EB;color:white;border:none;padding:14px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">
-          🔄 상품 업데이트
-        </button>
-        <button id="btnSaveQuote2" onclick="saveQuote()" style="display:none;flex:1;background:var(--gold);color:white;border:none;padding:14px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">
-          📋 견적서 저장
-        </button>
-        <button id="btnUpdateQuote2" onclick="updateQuote()" style="display:none;flex:1;background:#059669;color:white;border:none;padding:14px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">
-          🔄 견적서 수정저장
-        </button>
+      <div style="display:flex;gap:10px;margin-top:12px;margin-bottom:32px">
+        <button id="btnSaveNew2" onclick="saveProduct()" style="flex:1;background:var(--gold);color:white;border:none;padding:13px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">💾 새 상품으로 저장</button>
+        <button id="btnUpdate2" onclick="updateProduct()" style="display:none;flex:1;background:#2563EB;color:white;border:none;padding:13px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">🔄 상품 업데이트</button>
+        <button id="btnSaveQuote2" onclick="saveQuote()" style="display:none;flex:1;background:var(--gold);color:white;border:none;padding:13px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">📋 견적서 저장</button>
+        <button id="btnUpdateQuote2" onclick="updateQuote()" style="display:none;flex:1;background:#059669;color:white;border:none;padding:13px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">🔄 견적서 수정저장</button>
       </div>
 
     </div><!-- /panel-product-new -->
@@ -736,6 +776,57 @@ function switchTab(name) {
 function scrollToSection(id) {
   const el = document.getElementById(id);
   if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+/* ── 섹션 접기/펼치기 ── */
+function toggleSection(bodyId) {
+  const body = document.getElementById(bodyId);
+  const togId = 'tog-' + bodyId.replace('body-','');
+  const tog = document.getElementById(togId);
+  if (!body) return;
+  const hidden = body.classList.toggle('hidden');
+  if (tog) tog.classList.toggle('collapsed', hidden);
+}
+
+/* 견적서 모드에서 섹션 상태 설정 */
+function setQuoteSections(quoteMode) {
+  const quickCard = document.getElementById('quoteQuickCard');
+  if (quickCard) quickCard.classList.toggle('show', quoteMode);
+
+  if (quoteMode) {
+    // 견적서 모드: 기본정보·요금만 펼침, 나머지 접기
+    ['body-basic','body-price'].forEach(id => {
+      const b = document.getElementById(id); const t = document.getElementById('tog-'+id.replace('body-',''));
+      if(b) b.classList.remove('hidden'); if(t) t.classList.remove('collapsed');
+    });
+    ['body-schedule','body-hotel','body-golf','body-tour','body-option','body-contact'].forEach(id => {
+      const b = document.getElementById(id); const t = document.getElementById('tog-'+id.replace('body-',''));
+      if(b) b.classList.add('hidden'); if(t) t.classList.add('collapsed');
+    });
+  } else {
+    // 상품 모드: 기본·요금·일정·호텔·골프 펼침
+    ['body-basic','body-price','body-schedule','body-hotel','body-golf'].forEach(id => {
+      const b = document.getElementById(id); const t = document.getElementById('tog-'+id.replace('body-',''));
+      if(b) b.classList.remove('hidden'); if(t) t.classList.remove('collapsed');
+    });
+    ['body-tour','body-option','body-contact'].forEach(id => {
+      const b = document.getElementById(id); const t = document.getElementById('tog-'+id.replace('body-',''));
+      if(b) b.classList.add('hidden'); if(t) t.classList.add('collapsed');
+    });
+  }
+}
+
+/* 인원 합산 */
+function syncPaxTotal() {
+  const m = parseInt(document.getElementById('paxM')?.value) || 0;
+  const f = parseInt(document.getElementById('paxF')?.value) || 0;
+  const total = m + f;
+  const el = document.getElementById('pax'); if(el) el.value = total || '';
+  // 퀵카드 동기화
+  const qm = document.getElementById('q_paxM'); if(qm && qm.value !== String(m)) qm.value = m||'';
+  const qf = document.getElementById('q_paxF'); if(qf && qf.value !== String(f)) qf.value = f||'';
+  updateSummary();
+  calcTotal();
 }
 
 function newProduct() {
@@ -1661,6 +1752,7 @@ function updateCurrentProductBanner() {
       if (btnSaveNew2) { btnSaveNew2.style.display = 'block'; btnSaveNew2.style.flex = '1'; }
     }
   }
+  setQuoteSections(state.quoteMode);
 }
 
 async function updateProduct() {
