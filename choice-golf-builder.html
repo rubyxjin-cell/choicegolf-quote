@@ -187,6 +187,15 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
 .photo-slot-label{font-size:10px;color:var(--ink3)}
 .photo-slot-del{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.5);color:white;border:none;border-radius:50%;width:20px;height:20px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
 
+/* ── QUOTE LIST ── */
+.quote-card{display:flex;align-items:center;gap:12px;padding:14px 18px;border:1.5px solid var(--line);border-radius:12px;margin-bottom:10px;background:var(--white);transition:border-color .15s}
+.quote-card:hover{border-color:var(--accent)}
+.quote-status{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+.quote-status.draft{background:#F3F4F6;color:#6B7280}
+.quote-status.sent{background:#DBEAFE;color:#1D4ED8}
+.quote-status.confirmed{background:#D1FAE5;color:#065F46}
+.quote-mode-banner{background:linear-gradient(135deg,#1D4ED8,#2563EB)!important}
+
 /* ── PICKER MODAL ── */
 .picker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;max-height:400px;overflow-y:auto;padding-right:4px}
 .picker-card{border:2px solid var(--line);border-radius:10px;overflow:hidden;cursor:pointer;transition:all .15s}
@@ -224,6 +233,13 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
       </div>
       <div class="sidebar-item" onclick="switchTab('product-new')" id="tab-product-new">
         <span class="sidebar-item-icon">✏️</span> 상품 등록/수정
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">견적서</div>
+      <div class="sidebar-item" onclick="switchTab('quotes')" id="tab-quotes">
+        <span class="sidebar-item-icon">📋</span> 개별견적서
+        <span class="sidebar-badge" id="quoteBadge" style="display:none">0</span>
       </div>
     </div>
     <div class="sidebar-section">
@@ -294,6 +310,26 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
       </div>
     </div>
 
+    <!-- ④ 개별견적서 목록 -->
+    <div class="tab-panel" id="panel-quotes">
+      <div class="form-card">
+        <div class="form-card-title" style="justify-content:space-between">
+          <span><span class="form-card-title-icon">📋</span> 개별견적서 목록</span>
+          <span style="font-size:12px;color:var(--ink3)">상품 목록에서 "견적서 작성"을 눌러 생성하세요</span>
+        </div>
+        <!-- 상태 필터 -->
+        <div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap">
+          <button onclick="filterQuotes('')" class="cat-btn cat-active" data-qcat="">전체</button>
+          <button onclick="filterQuotes('draft')" class="cat-btn" data-qcat="draft">📝 임시저장</button>
+          <button onclick="filterQuotes('sent')" class="cat-btn" data-qcat="sent">📤 발송완료</button>
+          <button onclick="filterQuotes('confirmed')" class="cat-btn" data-qcat="confirmed">✅ 계약완료</button>
+        </div>
+        <div id="quoteListWrap">
+          <div style="text-align:center;padding:40px;color:var(--ink3);font-size:13px">로딩 중...</div>
+        </div>
+      </div>
+    </div>
+
     <!-- ② 상품 등록/수정 (모든 섹션 통합) -->
     <div class="tab-panel" id="panel-product-new">
 
@@ -326,6 +362,15 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
             </button>
             <button id="btnUpdate" onclick="updateProduct()" style="display:none;background:#2563EB;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">
               🔄 상품 업데이트
+            </button>
+            <button id="btnSaveQuote" onclick="saveQuote()" style="display:none;background:var(--gold);color:white;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">
+              📋 견적서 저장
+            </button>
+            <button id="btnUpdateQuote" onclick="updateQuote()" style="display:none;background:#059669;color:white;border:none;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">
+              🔄 견적서 수정저장
+            </button>
+            <button id="btnExitQuote" onclick="exitQuoteMode()" style="display:none;background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.3);padding:10px 14px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">
+              ✕ 종료
             </button>
           </div>
         </div>
@@ -524,6 +569,12 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
         <button id="btnUpdate2" onclick="updateProduct()" style="display:none;flex:1;background:#2563EB;color:white;border:none;padding:14px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">
           🔄 상품 업데이트
         </button>
+        <button id="btnSaveQuote2" onclick="saveQuote()" style="display:none;flex:1;background:var(--gold);color:white;border:none;padding:14px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">
+          📋 견적서 저장
+        </button>
+        <button id="btnUpdateQuote2" onclick="updateQuote()" style="display:none;flex:1;background:#059669;color:white;border:none;padding:14px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">
+          🔄 견적서 수정저장
+        </button>
       </div>
 
     </div><!-- /panel-product-new -->
@@ -597,7 +648,10 @@ const state = {
   excludes: [],
   hotelFacilities: [],
   currentProductId: null,
-  currentProductName: null
+  currentProductName: null,
+  quoteMode: false,
+  currentQuoteId: null,
+  baseProductId: null
 };
 
 /* ════════════════════════════
@@ -674,6 +728,7 @@ function switchTab(name) {
   if (navWrap) navWrap.style.display = (name === 'product-new') ? 'block' : 'none';
   if (name === 'products') renderProductList();
   if (name === 'library') { libState.currentCat = 'golf'; fetchLibrary(); }
+  if (name === 'quotes') fetchQuotes();
   // scroll to top
   document.querySelector('.content').scrollTop = 0;
 }
@@ -1476,7 +1531,8 @@ function renderProductList() {
         </div>
         <div style="font-size:11px;color:var(--ink3);margin-top:3px">${new Date(p.created_at).toLocaleDateString('ko-KR')} 등록</div>
       </div>
-      <button onclick="loadProductById('${p.id}')" style="background:var(--accent);color:white;border:none;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Noto Sans KR',sans-serif">✏️ 불러와서 수정</button>
+      <button onclick="loadProductById('${p.id}')" style="background:var(--accent);color:white;border:none;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Noto Sans KR',sans-serif">✏️ 상품 수정</button>
+      <button onclick="startQuoteFromProduct('${p.id}')" style="background:#2563EB;color:white;border:none;padding:9px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">📋 견적서 작성</button>
       <button onclick="deleteProduct('${p.id}')" style="background:none;border:1px solid #DFCAC9;color:var(--red);padding:9px 14px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif">삭제</button>
     </div>
   `).join('')}`;
@@ -1556,27 +1612,52 @@ async function loadProductById(id) {
 }
 
 function updateCurrentProductBanner() {
+  const bannerEl = document.getElementById('currentProductBanner');
   const bannerLabel = document.getElementById('bannerLabel');
   const productNameEl = document.getElementById('productName');
   const btnSaveNew = document.getElementById('btnSaveNew');
   const btnSaveNew2 = document.getElementById('btnSaveNew2');
   const btnUpdate = document.getElementById('btnUpdate');
   const btnUpdate2 = document.getElementById('btnUpdate2');
+  const btnSaveQuote = document.getElementById('btnSaveQuote');
+  const btnSaveQuote2 = document.getElementById('btnSaveQuote2');
+  const btnUpdateQuote = document.getElementById('btnUpdateQuote');
+  const btnUpdateQuote2 = document.getElementById('btnUpdateQuote2');
+  const btnExitQuote = document.getElementById('btnExitQuote');
 
-  if (state.currentProductId) {
-    if (bannerLabel) bannerLabel.textContent = '수정 중인 상품';
-    if (productNameEl) productNameEl.value = state.currentProductName;
-    if (btnSaveNew) btnSaveNew.style.display = 'none';
-    if (btnSaveNew2) btnSaveNew2.style.display = 'none';
-    if (btnUpdate) btnUpdate.style.display = 'inline-flex';
-    if (btnUpdate2) { btnUpdate2.style.display = 'block'; btnUpdate2.style.flex = '1'; }
+  // 모든 버튼 숨기기
+  [btnSaveNew,btnSaveNew2,btnUpdate,btnUpdate2,btnSaveQuote,btnSaveQuote2,btnUpdateQuote,btnUpdateQuote2,btnExitQuote].forEach(b => { if(b) b.style.display='none'; });
+
+  if (state.quoteMode) {
+    // 견적서 작성 모드 (파란색)
+    if (bannerEl) bannerEl.classList.add('quote-mode-banner');
+    if (bannerLabel) bannerLabel.textContent = '📋 개별견적서 작성 중';
+    if (productNameEl) productNameEl.placeholder = '견적서 이름 (예: 홍길동 - 일본미야자키)';
+    if (state.currentQuoteId) {
+      // 기존 견적서 수정
+      if (btnUpdateQuote) btnUpdateQuote.style.display = 'inline-flex';
+      if (btnUpdateQuote2) { btnUpdateQuote2.style.display = 'block'; btnUpdateQuote2.style.flex = '1'; }
+    } else {
+      // 새 견적서
+      if (btnSaveQuote) btnSaveQuote.style.display = 'inline-flex';
+      if (btnSaveQuote2) { btnSaveQuote2.style.display = 'block'; btnSaveQuote2.style.flex = '1'; }
+    }
+    if (btnExitQuote) btnExitQuote.style.display = 'inline-flex';
   } else {
-    if (bannerLabel) bannerLabel.textContent = '새 상품 등록';
-    if (productNameEl) productNameEl.value = '';
-    if (btnSaveNew) btnSaveNew.style.display = 'inline-flex';
-    if (btnSaveNew2) { btnSaveNew2.style.display = 'block'; btnSaveNew2.style.flex = '1'; }
-    if (btnUpdate) btnUpdate.style.display = 'none';
-    if (btnUpdate2) btnUpdate2.style.display = 'none';
+    // 상품 모드 (초록색)
+    if (bannerEl) bannerEl.classList.remove('quote-mode-banner');
+    if (productNameEl) productNameEl.placeholder = '상품명 입력 (예: 일본 미야자키 3박4일)';
+    if (state.currentProductId) {
+      if (bannerLabel) bannerLabel.textContent = '수정 중인 상품';
+      if (productNameEl) productNameEl.value = state.currentProductName;
+      if (btnUpdate) btnUpdate.style.display = 'inline-flex';
+      if (btnUpdate2) { btnUpdate2.style.display = 'block'; btnUpdate2.style.flex = '1'; }
+    } else {
+      if (bannerLabel) bannerLabel.textContent = '새 상품 등록';
+      if (productNameEl) productNameEl.value = '';
+      if (btnSaveNew) btnSaveNew.style.display = 'inline-flex';
+      if (btnSaveNew2) { btnSaveNew2.style.display = 'block'; btnSaveNew2.style.flex = '1'; }
+    }
   }
 }
 
@@ -1702,6 +1783,273 @@ function saveDraft() {
     sessionStorage.setItem('draft', JSON.stringify(d));
     showToast('💾 임시저장 완료');
   } catch(e) { showToast('저장 실패: ' + e.message); }
+}
+
+/* ════════════════════════════
+   INDIVIDUAL QUOTES (개별견적서)
+════════════════════════════ */
+let quotesCache = [];
+let currentQuoteFilter = '';
+
+async function fetchQuotes() {
+  const wrap = document.getElementById('quoteListWrap');
+  if (wrap) wrap.innerHTML = '<div style="text-align:center;padding:30px;color:var(--ink3)">로딩 중...</div>';
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/quotes?order=created_at.desc&select=*`, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+    });
+    quotesCache = await res.json();
+    // 뱃지 업데이트
+    const badge = document.getElementById('quoteBadge');
+    if (badge) { badge.textContent = quotesCache.length; badge.style.display = quotesCache.length ? 'inline-block' : 'none'; }
+    renderQuoteList();
+  } catch(e) {
+    if (wrap) wrap.innerHTML = `<div style="text-align:center;padding:30px;color:var(--red)">❌ 네트워크 오류: ${e.message}<br><br><button onclick="fetchQuotes()" style="padding:8px 20px;background:var(--accent);color:white;border:none;border-radius:8px;cursor:pointer;font-family:'Noto Sans KR',sans-serif">🔄 다시 시도</button></div>`;
+  }
+}
+
+function filterQuotes(status) {
+  currentQuoteFilter = status;
+  document.querySelectorAll('[data-qcat]').forEach(b => b.classList.remove('cat-active'));
+  const btn = document.querySelector(`[data-qcat="${status}"]`);
+  if (btn) btn.classList.add('cat-active');
+  renderQuoteList();
+}
+
+const STATUS_LABEL = { draft:'📝 임시저장', sent:'📤 발송완료', confirmed:'✅ 계약완료' };
+const STATUS_NEXT  = { draft:'sent', sent:'confirmed', confirmed:'draft' };
+const STATUS_NEXT_LABEL = { draft:'→ 발송완료로', sent:'→ 계약완료로', confirmed:'→ 임시저장으로' };
+
+function renderQuoteList() {
+  const wrap = document.getElementById('quoteListWrap');
+  if (!wrap) return;
+  const filtered = currentQuoteFilter
+    ? quotesCache.filter(q => q.status === currentQuoteFilter)
+    : quotesCache;
+
+  if (!filtered.length) {
+    wrap.innerHTML = `<div style="text-align:center;padding:40px;color:var(--ink3);font-size:13px">
+      ${currentQuoteFilter ? '해당 상태의 견적서가 없어요' : '저장된 견적서가 없어요.<br>상품 목록에서 "📋 견적서 작성"을 눌러 시작하세요!'}
+    </div>`;
+    return;
+  }
+
+  wrap.innerHTML = filtered.map(q => {
+    const d = q.data || {};
+    const name = q.quote_name || q.customer_name || '(이름 없음)';
+    const dest = d.destination || '-';
+    const dates = (d.dateFrom && d.dateTo) ? `${d.dateFrom} ~ ${d.dateTo}` : '-';
+    const pax = d.pax ? `${d.pax}인` : '';
+    const price = d.pricePerPerson ? `₩${Number(d.pricePerPerson).toLocaleString()}/인` : '';
+    const status = q.status || 'draft';
+    const created = new Date(q.created_at).toLocaleDateString('ko-KR');
+
+    return `
+    <div class="quote-card">
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap">
+          <span class="quote-status ${status}">${STATUS_LABEL[status]||status}</span>
+          <span style="font-size:14px;font-weight:700;color:var(--ink)">${name}</span>
+          ${dest !== '-' ? `<span style="font-size:12px;color:var(--ink3)">· ${dest}</span>` : ''}
+        </div>
+        <div style="font-size:11px;color:var(--ink3);display:flex;gap:10px;flex-wrap:wrap">
+          ${dates !== '-' ? `<span>📅 ${dates}</span>` : ''}
+          ${pax ? `<span>👤 ${pax}</span>` : ''}
+          ${price ? `<span>💰 ${price}</span>` : ''}
+          <span>📆 ${created} 저장</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap">
+        <button onclick="changeQuoteStatus('${q.id}','${STATUS_NEXT[status]}')" style="padding:7px 10px;border-radius:7px;border:1px solid var(--line);background:var(--input-bg);font-size:11px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;color:var(--ink2);white-space:nowrap">${STATUS_NEXT_LABEL[status]}</button>
+        <button onclick="loadQuoteById('${q.id}')" style="padding:7px 12px;border-radius:7px;border:none;background:var(--accent);color:white;font-size:12px;font-weight:500;cursor:pointer;font-family:'Noto Sans KR',sans-serif">✏️ 수정</button>
+        <button onclick="generateQuoteLink('${q.id}')" style="padding:7px 12px;border-radius:7px;border:none;background:#2563EB;color:white;font-size:12px;font-weight:500;cursor:pointer;font-family:'Noto Sans KR',sans-serif">🔗 링크</button>
+        <button onclick="deleteQuote('${q.id}')" style="padding:7px 10px;border-radius:7px;border:1px solid #DFCAC9;background:none;color:var(--red);font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* 상품 → 견적서 작성 모드 진입 */
+async function startQuoteFromProduct(productId) {
+  if (!confirm('이 상품을 기반으로 개별견적서를 작성할까요?\n(상품 템플릿은 변경되지 않아요)')) return;
+
+  // 상품 데이터 로드
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/products?id=eq.${productId}&select=*`, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+    });
+    const rows = await res.json();
+    if (!rows || !rows[0]) { showToast('❌ 상품 불러오기 실패'); return; }
+    const product = rows[0];
+
+    // 폼에 상품 데이터 적용
+    applyProductData(product.data || {});
+
+    // 카테고리 세팅
+    const catEl = document.getElementById('productCategory');
+    if (catEl && product.category) catEl.value = product.category;
+
+    // 견적서 모드로 전환
+    state.quoteMode = true;
+    state.currentQuoteId = null;
+    state.baseProductId = productId;
+    state.currentProductId = null;
+
+    // 고객 정보 필드 초기화 (새 고객용)
+    ['customerName','customerPhone','pax','paxM','paxF'].forEach(id => {
+      const el = document.getElementById(id); if(el) el.value = '';
+    });
+    ['dateFrom','dateTo','validUntil'].forEach(id => {
+      const el = document.getElementById(id); if(el) el.value = '';
+    });
+
+    // 견적서 이름 필드 초기화
+    const pnEl = document.getElementById('productName');
+    if (pnEl) pnEl.value = '';
+    pnEl.placeholder = '견적서 이름 (예: 홍길동 - 일본 미야자키)';
+
+    updateCurrentProductBanner();
+    switchTab('product-new');
+    showToast(`📋 "${product.name}" 기반 견적서 작성을 시작합니다!`);
+    document.querySelector('.content').scrollTop = 0;
+  } catch(e) { showToast('❌ 오류: ' + e.message); }
+}
+
+/* 견적서 저장 (신규) */
+async function saveQuote() {
+  const quoteName = document.getElementById('productName').value.trim();
+  if (!quoteName) { showToast('❌ 견적서 이름을 입력해주세요 (예: 홍길동 - 일본 미야자키)'); document.getElementById('productName').focus(); return; }
+  const d = collectData();
+  const customerName = d.customerName || quoteName;
+  const customerPhone = d.customerPhone || '';
+  const payload = {
+    data: d,
+    quote_name: quoteName,
+    customer_name: customerName,
+    customer_phone: customerPhone,
+    status: 'draft',
+    product_id: state.baseProductId || null
+  };
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/quotes`, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`,'Prefer':'return=representation' },
+      body: JSON.stringify(payload)
+    });
+    const rows = await res.json();
+    if (!rows || !rows[0]) throw new Error('저장 실패');
+    state.currentQuoteId = rows[0].id;
+    updateCurrentProductBanner();
+    showToast('✅ 견적서 저장 완료!');
+    fetchQuotes();
+  } catch(e) { showToast('❌ 오류: ' + e.message); }
+}
+
+/* 견적서 수정저장 */
+async function updateQuote() {
+  if (!state.currentQuoteId) return;
+  const quoteName = document.getElementById('productName').value.trim();
+  const d = collectData();
+  const payload = {
+    data: d,
+    quote_name: quoteName || d.customerName || '견적서',
+    customer_name: d.customerName || '',
+    customer_phone: d.customerPhone || ''
+  };
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/quotes?id=eq.${state.currentQuoteId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}` },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) {
+      showToast('✅ 견적서 수정 완료!');
+      fetchQuotes();
+    } else { throw new Error('수정 실패'); }
+  } catch(e) { showToast('❌ 오류: ' + e.message); }
+}
+
+/* 기존 견적서 불러와서 수정 */
+async function loadQuoteById(id) {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/quotes?id=eq.${id}&select=*`, {
+      headers: { 'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}` }
+    });
+    const rows = await res.json();
+    if (!rows || !rows[0]) { showToast('❌ 견적서 불러오기 실패'); return; }
+    const q = rows[0];
+    applyProductData(q.data || {});
+    const catEl = document.getElementById('productCategory');
+    if (catEl && q.data?.category) catEl.value = q.data.category;
+
+    state.quoteMode = true;
+    state.currentQuoteId = id;
+    state.currentProductId = null;
+    state.baseProductId = q.product_id || null;
+
+    const pnEl = document.getElementById('productName');
+    if (pnEl) pnEl.value = q.quote_name || '';
+
+    updateCurrentProductBanner();
+    switchTab('product-new');
+    showToast(`📋 견적서를 불러왔어요!`);
+  } catch(e) { showToast('❌ 오류: ' + e.message); }
+}
+
+/* 견적서 링크 생성 */
+async function generateQuoteLink(id) {
+  const link = `${VIEWER_BASE}?id=${id}`;
+  try {
+    if (navigator.clipboard) { await navigator.clipboard.writeText(link); }
+    else {
+      const ta = document.createElement('textarea');
+      ta.value = link; document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+    }
+    showToast('✅ 링크 복사 완료! 카톡에 붙여넣기 하세요');
+  } catch(e) { showToast('링크: ' + link); }
+}
+
+/* 견적서 상태 변경 */
+async function changeQuoteStatus(id, newStatus) {
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/quotes?id=eq.${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}` },
+      body: JSON.stringify({ status: newStatus })
+    });
+    const q = quotesCache.find(x => x.id === id);
+    showToast(`✅ "${q?.quote_name||'견적서'}" → ${STATUS_LABEL[newStatus]} 변경`);
+    fetchQuotes();
+  } catch(e) { showToast('❌ 오류: ' + e.message); }
+}
+
+/* 견적서 삭제 */
+async function deleteQuote(id) {
+  const q = quotesCache.find(x => x.id === id);
+  if (!confirm(`"${q?.quote_name||'이 견적서'}"를 삭제할까요?`)) return;
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/quotes?id=eq.${id}`, {
+      method: 'DELETE',
+      headers: { 'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}` }
+    });
+    showToast('🗑 견적서가 삭제됐어요');
+    fetchQuotes();
+  } catch(e) { showToast('❌ 오류: ' + e.message); }
+}
+
+/* 견적서 모드 종료 → 상품 모드로 복귀 */
+function exitQuoteMode() {
+  if (!confirm('견적서 작성을 종료하고 상품 모드로 돌아갈까요?\n(저장하지 않은 내용은 사라져요)')) return;
+  state.quoteMode = false;
+  state.currentQuoteId = null;
+  state.baseProductId = null;
+  state.currentProductId = null;
+  state.currentProductName = null;
+  const pnEl = document.getElementById('productName');
+  if (pnEl) { pnEl.value = ''; pnEl.placeholder = '상품명 입력 (예: 일본 미야자키 3박4일)'; }
+  updateCurrentProductBanner();
+  switchTab('quotes');
 }
 
 /* ════════════════════════════
