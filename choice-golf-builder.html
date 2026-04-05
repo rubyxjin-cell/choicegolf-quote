@@ -151,6 +151,50 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
 ::-webkit-scrollbar{width:5px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:rgba(0,0,0,0.15);border-radius:10px}
+
+/* ── LIBRARY ── */
+.lib-tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+.lib-tab-btn{padding:8px 18px;border-radius:20px;border:1.5px solid var(--line);background:var(--input-bg);font-size:13px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;color:var(--ink2);transition:all .15s;font-weight:500}
+.lib-tab-btn.active{background:var(--accent);color:white;border-color:var(--accent)}
+.lib-tab-btn:hover:not(.active){background:var(--accent);color:white;border-color:var(--accent)}
+.lib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:16px}
+.lib-card{background:var(--white);border:1.5px solid var(--line);border-radius:12px;overflow:hidden;cursor:pointer;transition:all .18s;position:relative}
+.lib-card:hover{border-color:var(--accent);box-shadow:0 4px 16px rgba(28,61,46,.12)}
+.lib-card-photo{width:100%;height:130px;object-fit:cover;background:var(--input-bg);display:flex;align-items:center;justify-content:center;font-size:32px}
+.lib-card-photo img{width:100%;height:100%;object-fit:cover}
+.lib-card-body{padding:12px 14px 14px}
+.lib-card-name{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lib-card-desc{font-size:11px;color:var(--ink3);line-height:1.5;height:32px;overflow:hidden}
+.lib-card-actions{display:flex;gap:6px;margin-top:10px}
+.lib-card-btn{flex:1;padding:6px;border-radius:6px;border:1px solid var(--line);background:var(--input-bg);font-size:11px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;color:var(--ink2);transition:all .15s}
+.lib-card-btn.edit:hover{background:var(--accent);color:white;border-color:var(--accent)}
+.lib-card-btn.del:hover{background:var(--red);color:white;border-color:var(--red)}
+.lib-card-btn.pick:hover{background:#2563EB;color:white;border-color:#2563EB}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal-box{background:var(--white);border-radius:16px;width:100%;max-width:680px;max-height:90vh;overflow-y:auto;padding:32px;position:relative}
+.modal-title{font-size:17px;font-weight:700;color:var(--ink);margin-bottom:24px;display:flex;align-items:center;gap:8px}
+.modal-close{position:absolute;top:18px;right:20px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--ink3);line-height:1}
+.modal-close:hover{color:var(--ink)}
+
+/* ── PHOTO UPLOAD GRID ── */
+.photo-upload-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px}
+.photo-slot{aspect-ratio:1;border:1.5px dashed var(--line);border-radius:8px;background:var(--input-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;overflow:hidden;position:relative;transition:border-color .15s}
+.photo-slot:hover{border-color:var(--accent)}
+.photo-slot img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.photo-slot-icon{font-size:20px;color:var(--ink3)}
+.photo-slot-label{font-size:10px;color:var(--ink3)}
+.photo-slot-del{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.5);color:white;border:none;border-radius:50%;width:20px;height:20px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+
+/* ── PICKER MODAL ── */
+.picker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;max-height:400px;overflow-y:auto;padding-right:4px}
+.picker-card{border:2px solid var(--line);border-radius:10px;overflow:hidden;cursor:pointer;transition:all .15s}
+.picker-card:hover{border-color:var(--accent);box-shadow:0 2px 10px rgba(28,61,46,.15)}
+.picker-card.selected{border-color:var(--accent);background:#F0F7F4}
+.picker-card-photo{height:90px;background:var(--input-bg);display:flex;align-items:center;justify-content:center;font-size:24px}
+.picker-card-photo img{width:100%;height:100%;object-fit:cover}
+.picker-card-name{padding:8px 10px;font-size:12px;font-weight:600;color:var(--ink)}
 </style>
 </head>
 <body>
@@ -180,6 +224,12 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
       </div>
       <div class="sidebar-item" onclick="switchTab('product-new')" id="tab-product-new">
         <span class="sidebar-item-icon">✏️</span> 상품 등록/수정
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">콘텐츠 라이브러리</div>
+      <div class="sidebar-item" onclick="switchTab('library')" id="tab-library">
+        <span class="sidebar-item-icon">📚</span> 라이브러리
       </div>
     </div>
     <div class="sidebar-section" id="sectionNavWrap" style="display:none">
@@ -223,6 +273,24 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
         <button onclick="newProduct()" style="display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:white;border:none;padding:12px 28px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">
           ✏️ 새 상품 등록하기
         </button>
+      </div>
+    </div>
+
+    <!-- ③ 라이브러리 -->
+    <div class="tab-panel" id="panel-library">
+      <div class="form-card">
+        <div class="form-card-title"><span class="form-card-title-icon">📚</span> 콘텐츠 라이브러리</div>
+        <div style="font-size:13px;color:var(--ink3);margin-bottom:16px">골프장·호텔·관광지·옵션 소개 카드를 미리 저장해두고, 견적서 작성 시 불러오세요.</div>
+        <div class="lib-tabs">
+          <button class="lib-tab-btn active" onclick="switchLibTab('golf')" id="libtab-golf">⛳ 골프장</button>
+          <button class="lib-tab-btn" onclick="switchLibTab('hotel')" id="libtab-hotel">🏨 호텔</button>
+          <button class="lib-tab-btn" onclick="switchLibTab('tour')" id="libtab-tour">🗺 관광지</button>
+          <button class="lib-tab-btn" onclick="switchLibTab('option')" id="libtab-option">🎁 옵션</button>
+        </div>
+        <div class="lib-grid" id="libGrid">
+          <div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--ink3)">로딩 중...</div>
+        </div>
+        <button class="btn-add" onclick="openLibItemModal(null)" style="margin-top:4px">+ 새 항목 추가</button>
       </div>
     </div>
 
@@ -358,7 +426,7 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
       <div id="sec-hotel" style="font-size:11px;font-weight:700;letter-spacing:2px;color:var(--ink3);text-transform:uppercase;margin:24px 0 12px;padding-left:2px">🏨 호텔</div>
 
       <div class="form-card">
-        <div class="form-card-title"><span class="form-card-title-icon">🏨</span> 숙박 호텔</div>
+        <div class="form-card-title" style="justify-content:space-between"><span style="display:flex;align-items:center;gap:8px"><span class="form-card-title-icon">🏨</span> 숙박 호텔</span><button onclick="openPickerModal('hotel','single')" style="display:inline-flex;align-items:center;gap:5px;background:rgba(28,61,46,0.07);border:1.5px solid var(--accent);border-radius:8px;padding:6px 13px;font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;font-family:'Noto Sans KR',sans-serif">📚 라이브러리에서 불러오기</button></div>
         <div class="form-row col2">
           <div class="field"><label>호텔명 (영문)</label><input type="text" id="hotelName" placeholder="Phoenix Seagaia Resort"></div>
           <div class="field"><label>호텔명 (한글)</label><input type="text" id="hotelNameKr" placeholder="피닉스 시가이어 리조트"></div>
@@ -407,9 +475,27 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
       <div id="sec-golf" style="font-size:11px;font-weight:700;letter-spacing:2px;color:var(--ink3);text-transform:uppercase;margin:24px 0 12px;padding-left:2px">⛳ 골프장</div>
 
       <div class="form-card">
-        <div class="form-card-title"><span class="form-card-title-icon">⛳</span> 골프장 정보</div>
+        <div class="form-card-title" style="justify-content:space-between"><span style="display:flex;align-items:center;gap:8px"><span class="form-card-title-icon">⛳</span> 골프장 정보</span><button onclick="openPickerModal('golf','multi')" style="display:inline-flex;align-items:center;gap:5px;background:rgba(28,61,46,0.07);border:1.5px solid var(--accent);border-radius:8px;padding:6px 13px;font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;font-family:'Noto Sans KR',sans-serif">📚 라이브러리에서 불러오기</button></div>
         <div class="course-cards" id="courseCards"></div>
-        <button class="btn-add" style="margin-top:8px" onclick="addCourse()">+ 골프장 추가</button>
+        <button class="btn-add" style="margin-top:8px" onclick="addCourse()">+ 골프장 직접 입력</button>
+      </div>
+
+      <!-- 🗺 관광지 -->
+      <div id="sec-tour" style="font-size:11px;font-weight:700;letter-spacing:2px;color:var(--ink3);text-transform:uppercase;margin:24px 0 12px;padding-left:2px">🗺 관광지</div>
+
+      <div class="form-card">
+        <div class="form-card-title" style="justify-content:space-between"><span style="display:flex;align-items:center;gap:8px"><span class="form-card-title-icon">🗺</span> 관광지 소개</span><button onclick="openPickerModal('tour','multi')" style="display:inline-flex;align-items:center;gap:5px;background:rgba(28,61,46,0.07);border:1.5px solid var(--accent);border-radius:8px;padding:6px 13px;font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;font-family:'Noto Sans KR',sans-serif">📚 라이브러리에서 불러오기</button></div>
+        <div id="tourCards" style="display:flex;flex-direction:column;gap:12px;margin-bottom:8px"></div>
+        <button class="btn-add" onclick="addExtraCard('tour')">+ 관광지 직접 입력</button>
+      </div>
+
+      <!-- 🎁 옵션 -->
+      <div id="sec-option" style="font-size:11px;font-weight:700;letter-spacing:2px;color:var(--ink3);text-transform:uppercase;margin:24px 0 12px;padding-left:2px">🎁 옵션</div>
+
+      <div class="form-card">
+        <div class="form-card-title" style="justify-content:space-between"><span style="display:flex;align-items:center;gap:8px"><span class="form-card-title-icon">🎁</span> 선택 옵션</span><button onclick="openPickerModal('option','multi')" style="display:inline-flex;align-items:center;gap:5px;background:rgba(28,61,46,0.07);border:1.5px solid var(--accent);border-radius:8px;padding:6px 13px;font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;font-family:'Noto Sans KR',sans-serif">📚 라이브러리에서 불러오기</button></div>
+        <div id="optionCards" style="display:flex;flex-direction:column;gap:12px;margin-bottom:8px"></div>
+        <button class="btn-add" onclick="addExtraCard('option')">+ 옵션 직접 입력</button>
       </div>
 
       <!-- 📞 연락처 -->
@@ -446,6 +532,58 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
 </div><!-- /main -->
 
 <div class="toast" id="toast"></div>
+
+<!-- ─── 라이브러리 항목 등록/수정 모달 ─── -->
+<div class="modal-overlay" id="libModal" style="display:none" onclick="if(event.target===this)closeLibModal()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeLibModal()">✕</button>
+    <div class="modal-title" id="libModalTitle">📚 새 항목 등록</div>
+
+    <div class="field" style="margin-bottom:14px">
+      <label>이름 *</label>
+      <input type="text" id="libName" placeholder="예: Phoenix Seagaia CC" style="background:var(--input-bg);border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;font-size:13px;width:100%;font-family:'Noto Sans KR',sans-serif;outline:none">
+    </div>
+
+    <div class="field" style="margin-bottom:14px">
+      <label>사진 (최대 4장)</label>
+      <div class="photo-upload-grid" id="libPhotoGrid">
+        <!-- JS로 렌더 -->
+      </div>
+      <div style="font-size:11px;color:var(--ink3)">사진을 클릭하면 업로드할 수 있어요</div>
+    </div>
+
+    <div class="field" style="margin-bottom:14px">
+      <label>소개글</label>
+      <textarea id="libDesc" placeholder="소개 내용을 입력하세요" style="background:var(--input-bg);border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;font-size:13px;width:100%;font-family:'Noto Sans KR',sans-serif;outline:none;min-height:90px;resize:vertical;line-height:1.6"></textarea>
+    </div>
+
+    <div class="field" style="margin-bottom:20px">
+      <label>태그 (쉼표 구분)</label>
+      <input type="text" id="libTags" placeholder="예: 18홀, 오션뷰, 카트 포함" style="background:var(--input-bg);border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;font-size:13px;width:100%;font-family:'Noto Sans KR',sans-serif;outline:none">
+    </div>
+
+    <div style="display:flex;gap:10px">
+      <button onclick="saveLibItem()" style="flex:1;background:var(--accent);color:white;border:none;padding:12px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">💾 저장</button>
+      <button onclick="closeLibModal()" style="background:var(--input-bg);border:1.5px solid var(--line);color:var(--ink2);padding:12px 20px;border-radius:8px;font-size:13px;cursor:pointer;font-family:'Noto Sans KR',sans-serif">취소</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── 라이브러리 선택(Picker) 모달 ─── -->
+<div class="modal-overlay" id="pickerModal" style="display:none" onclick="if(event.target===this)closePickerModal()">
+  <div class="modal-box" style="max-width:740px">
+    <button class="modal-close" onclick="closePickerModal()">✕</button>
+    <div class="modal-title" id="pickerModalTitle">📚 라이브러리에서 선택</div>
+    <div style="font-size:12px;color:var(--ink3);margin-bottom:14px" id="pickerHint">클릭하여 선택하세요</div>
+    <div class="picker-grid" id="pickerGrid">
+      <div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--ink3)">로딩 중...</div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:18px">
+      <button onclick="confirmPickerSelection()" style="flex:1;background:var(--accent);color:white;border:none;padding:12px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">✅ 선택 완료</button>
+      <button onclick="closePickerModal()" style="background:var(--input-bg);border:1.5px solid var(--line);color:var(--ink2);padding:12px 20px;border-radius:8px;font-size:13px;cursor:pointer;font-family:'Noto Sans KR',sans-serif">취소</button>
+    </div>
+  </div>
+</div>
 
 <script>
 /* ════════════════════════════
@@ -535,6 +673,7 @@ function switchTab(name) {
   const navWrap = document.getElementById('sectionNavWrap');
   if (navWrap) navWrap.style.display = (name === 'product-new') ? 'block' : 'none';
   if (name === 'products') renderProductList();
+  if (name === 'library') { libState.currentCat = 'golf'; fetchLibrary(); }
   // scroll to top
   document.querySelector('.content').scrollTop = 0;
 }
@@ -1563,6 +1702,329 @@ function saveDraft() {
     sessionStorage.setItem('draft', JSON.stringify(d));
     showToast('💾 임시저장 완료');
   } catch(e) { showToast('저장 실패: ' + e.message); }
+}
+
+/* ════════════════════════════
+   EXTRA CARDS (관광지 / 옵션 직접입력)
+════════════════════════════ */
+function addExtraCard(type, data={}) {
+  const container = document.getElementById(type + 'Cards');
+  const id = type + '_' + Date.now() + Math.floor(Math.random()*9999);
+  const div = document.createElement('div');
+  div.id = id;
+  div.style.cssText = 'background:var(--input-bg);border:1.5px solid var(--line);border-radius:10px;padding:14px;position:relative';
+  div.innerHTML = `
+    <button onclick="document.getElementById('${id}').remove()" style="position:absolute;top:10px;right:12px;background:none;border:none;cursor:pointer;color:var(--ink3);font-size:16px">✕</button>
+    <div style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:10px">${type==='tour'?'🗺':'🎁'} ${(data.name)||'항목'}</div>
+    <div class="form-row col2" style="margin-bottom:10px">
+      <div class="field"><label>이름</label><input type="text" value="${data.name||''}" placeholder="${type==='tour'?'예: 아오시마 신사':'예: 온천 스파'}" style="font-size:12px"></div>
+      <div class="field"><label>태그</label><input type="text" value="${(data.tags||[]).join(', ')}" placeholder="쉼표로 구분" style="font-size:12px"></div>
+    </div>
+    <div class="field"><label>소개글</label><textarea placeholder="소개 내용" style="font-size:12px;min-height:60px">${data.description||''}</textarea></div>
+    ${(data.photos||[]).length?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${(data.photos||[]).map(u=>`<img src="${u}" style="height:60px;border-radius:6px;object-fit:cover">`).join('')}</div>`:''}
+  `;
+  container.appendChild(div);
+}
+
+/* ════════════════════════════
+   LIBRARY STATE
+════════════════════════════ */
+const libState = {
+  currentCat: 'golf',
+  editingId: null,
+  photos: ['','','',''],        // 최대 4장
+  pickerCat: null,
+  pickerMode: 'single',
+  pickerSelected: new Set(),
+  pickerCallback: null
+};
+
+const CAT_LABEL = {golf:'⛳ 골프장', hotel:'🏨 호텔', tour:'🗺 관광지', option:'🎁 옵션'};
+const CAT_ICON  = {golf:'⛳', hotel:'🏨', tour:'🗺', option:'🎁'};
+
+/* ─── Library Tab switch ─── */
+function switchLibTab(cat) {
+  libState.currentCat = cat;
+  document.querySelectorAll('.lib-tab-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('libtab-' + cat);
+  if (btn) btn.classList.add('active');
+  fetchLibrary();
+}
+
+/* ─── Fetch Library ─── */
+async function fetchLibrary(cat) {
+  const c = cat || libState.currentCat;
+  const grid = document.getElementById('libGrid');
+  if (grid) grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--ink3)">로딩 중...</div>';
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/library?category=eq.${c}&order=created_at.desc`, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+    });
+    const items = await res.json();
+    renderLibGrid(items, grid);
+  } catch(e) { if(grid) grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--red)">불러오기 실패</div>'; }
+}
+
+function renderLibGrid(items, grid) {
+  if (!grid) return;
+  if (!items || !items.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--ink3);font-size:13px">등록된 항목이 없어요.<br>아래 "+ 새 항목 추가" 버튼으로 등록하세요 😊</div>';
+    return;
+  }
+  grid.innerHTML = items.map(item => {
+    const photo = (item.photos && item.photos[0]) ? item.photos[0] : '';
+    const photoEl = photo
+      ? `<div class="lib-card-photo"><img src="${photo}" alt=""></div>`
+      : `<div class="lib-card-photo">${CAT_ICON[item.category]||'📷'}</div>`;
+    return `
+      <div class="lib-card">
+        ${photoEl}
+        <div class="lib-card-body">
+          <div class="lib-card-name">${item.name}</div>
+          <div class="lib-card-desc">${item.description||''}</div>
+          <div class="lib-card-actions">
+            <button class="lib-card-btn edit" onclick="openLibItemModal('${item.id}')">✏️ 수정</button>
+            <button class="lib-card-btn del" onclick="deleteLibItem('${item.id}','${item.name.replace(/'/g,'')}')">🗑</button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+/* ─── Library Item Modal ─── */
+async function openLibItemModal(id) {
+  libState.editingId = id;
+  libState.photos = ['','','',''];
+  document.getElementById('libName').value = '';
+  document.getElementById('libDesc').value = '';
+  document.getElementById('libTags').value = '';
+  if (id) {
+    document.getElementById('libModalTitle').textContent = '✏️ 항목 수정';
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/library?id=eq.${id}`, {
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      });
+      const [item] = await res.json();
+      if (item) {
+        document.getElementById('libName').value = item.name || '';
+        document.getElementById('libDesc').value = item.description || '';
+        document.getElementById('libTags').value = (item.tags || []).join(', ');
+        libState.photos = [...(item.photos || []),'','','',''].slice(0,4);
+      }
+    } catch(e) {}
+  } else {
+    document.getElementById('libModalTitle').textContent = `${CAT_LABEL[libState.currentCat]} 새 항목 등록`;
+  }
+  renderPhotoGrid();
+  document.getElementById('libModal').style.display = 'flex';
+}
+
+function closeLibModal() {
+  document.getElementById('libModal').style.display = 'none';
+}
+
+/* ─── Photo Grid Render ─── */
+function renderPhotoGrid() {
+  const grid = document.getElementById('libPhotoGrid');
+  grid.innerHTML = libState.photos.map((url, i) => `
+    <div class="photo-slot" onclick="triggerPhotoUpload(${i})">
+      ${url ? `<img src="${url}" alt=""><button class="photo-slot-del" onclick="event.stopPropagation();removeLibPhoto(${i})">✕</button>` : `<div class="photo-slot-icon">${i===0?'📷':'➕'}</div><div class="photo-slot-label">${i===0?'대표':'추가'} 사진</div>`}
+    </div>
+  `).join('');
+}
+
+function triggerPhotoUpload(idx) {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    showToast('⏳ 사진 업로드 중...');
+    try {
+      const url = await uploadLibPhoto(file);
+      libState.photos[idx] = url;
+      renderPhotoGrid();
+      showToast('✅ 사진 업로드 완료!');
+    } catch(err) { showToast('❌ 업로드 실패: ' + err.message); }
+  };
+  input.click();
+}
+
+function removeLibPhoto(idx) {
+  libState.photos[idx] = '';
+  // compact: move non-empty to front
+  const filled = libState.photos.filter(u => u);
+  libState.photos = [...filled, ...Array(4-filled.length).fill('')];
+  renderPhotoGrid();
+}
+
+async function uploadLibPhoto(file) {
+  const ext = file.name.split('.').pop();
+  const filename = `library/${libState.currentCat}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/golf-images/${filename}`, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': file.type,
+      'x-upsert': 'true'
+    },
+    body: file
+  });
+  if (!res.ok) throw new Error('스토리지 업로드 실패');
+  return `${SUPABASE_URL}/storage/v1/object/public/golf-images/${filename}`;
+}
+
+/* ─── Save Library Item ─── */
+async function saveLibItem() {
+  const name = document.getElementById('libName').value.trim();
+  if (!name) { showToast('❌ 이름을 입력해주세요'); return; }
+  const photos = libState.photos.filter(u => u);
+  const tags = document.getElementById('libTags').value.split(',').map(t=>t.trim()).filter(Boolean);
+  const description = document.getElementById('libDesc').value.trim();
+  const payload = {
+    category: libState.currentCat,
+    name, description, tags, photos
+  };
+  try {
+    let res;
+    if (libState.editingId) {
+      res = await fetch(`${SUPABASE_URL}/rest/v1/library?id=eq.${libState.editingId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type':'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` },
+        body: JSON.stringify(payload)
+      });
+    } else {
+      res = await fetch(`${SUPABASE_URL}/rest/v1/library`, {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Prefer':'return=minimal' },
+        body: JSON.stringify(payload)
+      });
+    }
+    if (res.ok) {
+      showToast('✅ 저장 완료!');
+      closeLibModal();
+      fetchLibrary();
+    } else { throw new Error('저장 실패'); }
+  } catch(e) { showToast('❌ 오류: ' + e.message); }
+}
+
+/* ─── Delete Library Item ─── */
+async function deleteLibItem(id, name) {
+  if (!confirm(`"${name}" 항목을 삭제할까요?`)) return;
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/library?id=eq.${id}`, {
+      method: 'DELETE',
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+    });
+    showToast('🗑 삭제됐어요');
+    fetchLibrary();
+  } catch(e) { showToast('❌ 오류: ' + e.message); }
+}
+
+/* ─── Picker Modal ─── */
+async function openPickerModal(cat, mode) {
+  libState.pickerCat = cat;
+  libState.pickerMode = mode; // 'single' | 'multi'
+  libState.pickerSelected.clear();
+  const title = document.getElementById('pickerModalTitle');
+  const hint  = document.getElementById('pickerHint');
+  title.textContent = `📚 ${CAT_LABEL[cat]} 불러오기`;
+  hint.textContent = mode === 'multi' ? '여러 개 선택 가능 — 선택 후 [선택 완료]를 누르세요' : '하나만 선택하세요';
+  const grid = document.getElementById('pickerGrid');
+  grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--ink3)">로딩 중...</div>';
+  document.getElementById('pickerModal').style.display = 'flex';
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/library?category=eq.${cat}&order=created_at.desc`, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+    });
+    const items = await res.json();
+    libState._pickerItems = items;
+    renderPickerGrid(items);
+  } catch(e) { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--red)">불러오기 실패</div>'; }
+}
+
+function renderPickerGrid(items) {
+  const grid = document.getElementById('pickerGrid');
+  if (!items || !items.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--ink3)">등록된 항목이 없어요.<br>라이브러리에서 먼저 항목을 등록해주세요 😊</div>`;
+    return;
+  }
+  grid.innerHTML = items.map(item => {
+    const photo = (item.photos && item.photos[0]) ? item.photos[0] : '';
+    const photoEl = photo
+      ? `<div class="picker-card-photo"><img src="${photo}" alt=""></div>`
+      : `<div class="picker-card-photo">${CAT_ICON[item.category]||'📷'}</div>`;
+    return `
+      <div class="picker-card" id="pc_${item.id}" onclick="togglePickerCard('${item.id}')">
+        ${photoEl}
+        <div class="picker-card-name">${item.name}</div>
+      </div>`;
+  }).join('');
+}
+
+function togglePickerCard(id) {
+  if (libState.pickerMode === 'single') {
+    libState.pickerSelected.clear();
+    document.querySelectorAll('.picker-card').forEach(c => c.classList.remove('selected'));
+  }
+  const card = document.getElementById('pc_' + id);
+  if (libState.pickerSelected.has(id)) {
+    libState.pickerSelected.delete(id);
+    card.classList.remove('selected');
+  } else {
+    libState.pickerSelected.add(id);
+    card.classList.add('selected');
+  }
+}
+
+function closePickerModal() {
+  document.getElementById('pickerModal').style.display = 'none';
+}
+
+/* ─── Confirm Picker Selection → 견적서에 적용 ─── */
+function confirmPickerSelection() {
+  const selected = (libState._pickerItems || []).filter(i => libState.pickerSelected.has(i.id));
+  if (!selected.length) { showToast('❌ 항목을 선택해주세요'); return; }
+  const cat = libState.pickerCat;
+
+  if (cat === 'hotel') {
+    // 첫 번째 선택 항목을 호텔 폼에 적용
+    const h = selected[0];
+    if (h.name) { const el = document.getElementById('hotelName'); if(el) el.value = h.name; }
+    if (h.description) { const el = document.getElementById('hotelDesc'); if(el) el.value = h.description; }
+    if (h.photos && h.photos[0]) {
+      const urlEl = document.getElementById('hotelPhotoUrl');
+      if (urlEl) { urlEl.value = h.photos[0]; previewHotelPhoto(h.photos[0]); }
+    }
+    if (h.tags) {
+      const wrap = document.getElementById('hotelFacilities-wrap');
+      const input = document.getElementById('hotelFacilities-input');
+      if (wrap && input) { wrap.querySelectorAll('.tag-item').forEach(t=>t.remove()); h.tags.forEach(t=>addTagItem('hotelFacilities',t)); }
+    }
+    showToast(`✅ "${h.name}" 불러오기 완료!`);
+  }
+
+  if (cat === 'golf') {
+    selected.forEach(g => {
+      addCourse({
+        name: g.name || '',
+        nameJp: '',
+        desc: g.description || '',
+        features: (g.tags || []).join(','),
+        photoUrl: g.photos && g.photos[0] ? g.photos[0] : ''
+      });
+    });
+    showToast(`✅ 골프장 ${selected.length}개 불러오기 완료!`);
+  }
+
+  if (cat === 'tour' || cat === 'option') {
+    selected.forEach(item => addExtraCard(cat, item));
+    showToast(`✅ ${selected.length}개 불러오기 완료!`);
+  }
+
+  closePickerModal();
 }
 
 /* ════════════════════════════
