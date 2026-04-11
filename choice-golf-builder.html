@@ -1806,9 +1806,12 @@ let productsCache = [];
 let currentCategory = '';
 
 /* ═══ 폴더 네비게이션 상태 ═══ */
-let prodViewLevel = 'country'; // 'country' | 'region' | 'product'
+let prodViewLevel = 'country';
 let prodViewCountry = '';
 let prodViewRegion = '';
+let customFolders = JSON.parse(localStorage.getItem('cg_folders') || '{}');
+
+function saveFolders() { localStorage.setItem('cg_folders', JSON.stringify(customFolders)); }
 
 function onCountryChange() {
   const country = document.getElementById('productCategory')?.value || '';
@@ -1817,7 +1820,8 @@ function onCountryChange() {
     regionSel.innerHTML = '<option value="">📍 지역</option>';
     const prodRegions = productsCache.filter(p=>p.category===country).map(p=>p.region).filter(Boolean);
     const flightRegions = flightsCache.filter(f=>f.category===country).map(f=>f.destination).filter(Boolean);
-    [...new Set([...prodRegions, ...flightRegions])].sort().forEach(r => {
+    const customRegions = customFolders[country] || [];
+    [...new Set([...prodRegions, ...flightRegions, ...customRegions])].sort().forEach(r => {
       const opt = document.createElement('option');
       opt.value = r; opt.textContent = r;
       regionSel.appendChild(opt);
@@ -1829,15 +1833,26 @@ function onCountryChange() {
 function addCountry() {
   const country = prompt('추가할 국가명을 입력하세요 (예: 일본, 태국):');
   if (!country || !country.trim()) return;
-  prodViewCountry = country.trim();
+  const c = country.trim();
+  if (!customFolders[c]) customFolders[c] = [];
+  saveFolders();
+  prodViewCountry = c;
   prodViewLevel = 'region';
   renderProductList();
+  showToast(`📁 "${c}" 국가가 추가됐어요. 지역을 추가하세요!`);
 }
 
 function addRegion() {
   const region = prompt(`"${prodViewCountry}"에 추가할 지역명을 입력하세요:`);
   if (!region || !region.trim()) return;
-  newProductWithCategory(prodViewCountry, region.trim());
+  const r = region.trim();
+  if (!customFolders[prodViewCountry]) customFolders[prodViewCountry] = [];
+  if (!customFolders[prodViewCountry].includes(r)) customFolders[prodViewCountry].push(r);
+  saveFolders();
+  prodViewRegion = r;
+  prodViewLevel = 'product';
+  renderProductList();
+  showToast(`📁 "${r}" 지역이 추가됐어요. 상품을 추가하세요!`);
 }
 
 function openCountry(country) {
@@ -1964,12 +1979,9 @@ function renderProductList() {
   // === 국가 목록 ===
   if (prodViewLevel === 'country') {
     bc.innerHTML = `<span style="font-size:16px;font-weight:700;color:var(--ink)">📦 상품 목록</span>`;
-    const countries = [...new Set(productsCache.map(p => p.category).filter(Boolean))];
-    if (!countries.length && !productsCache.length) {
-      wrap.innerHTML = `<div onclick="addCountry()" style="${addBtnS}">+ 국가 추가하고 상품 등록 시작하기</div>
-        <div style="text-align:center;padding:30px;color:var(--ink3);font-size:13px">아직 등록된 상품이 없어요</div>`;
-      return;
-    }
+    const fromProducts = productsCache.map(p => p.category).filter(Boolean);
+    const fromCustom = Object.keys(customFolders);
+    const countries = [...new Set([...fromProducts, ...fromCustom])].sort();
     wrap.innerHTML =
       countries.map(c => {
         const count = productsCache.filter(p=>p.category===c).length;
@@ -1983,6 +1995,7 @@ function renderProductList() {
       `<div onclick="addCountry()" style="${addBtnS}" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--line)'">
         <span style="font-size:22px">➕</span> 국가 추가
       </div>`;
+    if (!countries.length) wrap.innerHTML = `<div onclick="addCountry()" style="${addBtnS}"><span style="font-size:22px">➕</span> 국가 추가하고 시작하기</div>`;
     return;
   }
 
@@ -1992,7 +2005,9 @@ function renderProductList() {
     bc.innerHTML = `<span onclick="prodGoBack()" style="cursor:pointer;color:var(--accent);font-weight:500">📦 상품 목록</span>
       <span style="color:var(--ink3)">›</span>
       <span style="font-size:15px;font-weight:700;color:var(--ink)">${flag} ${prodViewCountry}</span>`;
-    const regions = [...new Set(productsCache.filter(p=>p.category===prodViewCountry).map(p=>p.region).filter(Boolean))];
+    const fromProducts = productsCache.filter(p=>p.category===prodViewCountry).map(p=>p.region).filter(Boolean);
+    const fromCustom = customFolders[prodViewCountry] || [];
+    const regions = [...new Set([...fromProducts, ...fromCustom])].sort();
     wrap.innerHTML =
       regions.map(r => {
         const count = productsCache.filter(p=>p.category===prodViewCountry && p.region===r).length;
