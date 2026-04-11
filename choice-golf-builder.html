@@ -41,23 +41,19 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
 .btn-publish:disabled{background:#6B7280;cursor:not-allowed}
 
 /* ── PRODUCT NAV BAR ── */
-.pnav-item{position:relative;padding:16px 24px;color:rgba(255,255,255,0.8);font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;border-bottom:3px solid transparent;letter-spacing:.3px}
+.pnav-item{position:relative;padding:16px 28px;color:rgba(255,255,255,0.8);font-size:16px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;border-bottom:3px solid transparent}
 .pnav-item:hover,.pnav-item.active{color:white;background:rgba(255,255,255,0.12);border-bottom-color:var(--gold-lt)}
-.pnav-item::after{content:'▾';margin-left:5px;font-size:10px;opacity:.5}
+.pnav-item::after{content:'▾';margin-left:6px;font-size:11px;opacity:.5}
 .pnav-item .pnav-drop{display:none;position:absolute;top:100%;left:0;background:white;border-radius:0 0 12px 12px;box-shadow:0 12px 32px rgba(0,0,0,0.18);min-width:200px;z-index:300;padding:8px 0}
 .pnav-item:hover .pnav-drop{display:block}
 .pnav-drop a{display:block;padding:12px 20px;color:var(--ink);font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;border-left:3px solid transparent}
-.pnav-drop a:hover{background:#F0F7F4;color:var(--accent);border-left-color:var(--accent)}
+.pnav-drop a:hover{background:#F8F7F5;color:var(--accent);border-left-color:var(--accent)}
 .pnav-drop .pnav-drop-add{border-top:1.5px solid var(--line);margin-top:6px;padding-top:10px;color:var(--accent);font-weight:700}
-.pnav-drop .pnav-drop-danger{color:var(--red);font-size:13px;opacity:.7}
-.pnav-drop .pnav-drop-danger:hover{opacity:1;background:#FDF4F4;border-left-color:var(--red)}
-.pnav-drop .pnav-drop-muted{color:var(--ink3);font-size:13px}
-.pnav-drop .pnav-drop-muted:hover{background:#F8F7F5}
-.pnav-add{padding:16px 20px;color:rgba(255,255,255,0.5);font-size:14px;cursor:pointer;font-weight:700;display:flex;align-items:center;gap:6px;transition:all .2s;letter-spacing:.3px}
+.pnav-add{padding:16px 24px;color:rgba(255,255,255,0.45);font-size:15px;cursor:pointer;font-weight:700;display:flex;align-items:center;gap:6px;transition:all .2s}
 .pnav-add::after{display:none}
 .pnav-add:hover{color:var(--gold-lt);background:rgba(255,255,255,0.08)}
-.region-chip{padding:10px 20px;border-radius:24px;border:2px solid var(--line);background:white;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Noto Sans KR',sans-serif;color:var(--ink2)}
-.region-chip:hover{background:#F0F7F4;border-color:var(--accent);color:var(--accent)}
+.region-chip{padding:10px 22px;border-radius:24px;border:1.5px solid var(--line);background:white;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Noto Sans KR',sans-serif;color:var(--ink2)}
+.region-chip:hover{border-color:var(--accent);color:var(--accent)}
 .region-chip.active{background:var(--accent);color:white;border-color:var(--accent)}
 
 /* ── MAIN LAYOUT ── */
@@ -333,7 +329,7 @@ select option{background:#1C3D2E;color:white}
           <input type="text" placeholder="🔍 상품 검색..." oninput="searchProducts(this.value)" style="width:240px;padding:10px 16px;border:2px solid var(--line);border-radius:10px;font-size:14px;font-family:'Noto Sans KR',sans-serif;outline:none;background:var(--input-bg)" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--line)'">
         </div>
         <!-- 지역 필터 (선택된 국가의 지역들) -->
-        <div id="prodRegionBar" style="display:none;flex-wrap:wrap;gap:8px;margin-bottom:18px;padding:12px 16px;background:#F5FAF7;border-radius:10px;border:1.5px solid #C4DFD0"></div>
+        <div id="prodRegionBar" style="display:none;flex-wrap:wrap;gap:8px;margin-bottom:18px;padding:14px 16px;background:var(--input-bg);border-radius:10px;border:1.5px solid var(--line)"></div>
         <!-- 상품 목록 / 액션 -->
         <div id="productListWrap"></div>
       </div>
@@ -849,12 +845,8 @@ const state = {
   baseProductId: null
 };
 
-/* ═══ 국가 플래그 매핑 ═══ */
-const COUNTRY_FLAGS = {
-  '일본':'🇯🇵','중국':'🇨🇳','대만':'🇹🇼','태국':'🇹🇭','베트남':'🇻🇳',
-  '필리핀':'🇵🇭','인도네시아':'🇮🇩','말레이시아':'🇲🇾','캄보디아':'🇰🇭',
-  '괌/사이판':'🌺','기타':'🌐'
-};
+/* ═══ 국가 플래그 매핑 (Windows에서 국기 이모지 미지원으로 제거) ═══ */
+const COUNTRY_FLAGS = {};
 
 let currentRegion = '';
 
@@ -1867,7 +1859,7 @@ function onCountryChange() {
     const prodRegions = productsCache.filter(p=>p.category===country).map(p=>p.region).filter(Boolean);
     const flightRegions = flightsCache.filter(f=>f.category===country).map(f=>f.destination).filter(Boolean);
     const customRegions = customFolders[country] || [];
-    [...new Set([...prodRegions, ...flightRegions, ...customRegions])].sort().forEach(r => {
+    [...new Set([...prodRegions, ...flightRegions, ...customRegions])].forEach(r => {
       const opt = document.createElement('option');
       opt.value = r; opt.textContent = r;
       regionSel.appendChild(opt);
@@ -2144,7 +2136,7 @@ function renderSettings() {
   if (!wrap) return;
   const fromProducts = productsCache.map(p => p.category).filter(Boolean);
   const fromCustom = Object.keys(customFolders);
-  const countries = [...new Set([...fromProducts, ...fromCustom])].sort();
+  const countries = [...new Set([...fromProducts, ...fromCustom])];
 
   const itemS = 'display:flex;align-items:center;gap:12px;padding:14px 18px;border:1.5px solid var(--line);border-radius:10px;margin-bottom:8px;background:var(--white)';
   const btnEdit = 'background:none;border:1.5px solid var(--line);border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:Noto Sans KR,sans-serif;color:var(--ink2);transition:all .15s';
@@ -2157,11 +2149,11 @@ function renderSettings() {
     const regs = [...new Set([
       ...productsCache.filter(p=>p.category===c).map(p=>p.region).filter(Boolean),
       ...(customFolders[c]||[])
-    ])].sort();
+    ])];
 
     html += `<div style="margin-bottom:20px;border:2px solid var(--line);border-radius:14px;overflow:hidden">`;
     // 국가 헤더
-    html += `<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;background:#F5FAF7;border-bottom:1.5px solid var(--line)">
+    html += `<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;background:var(--input-bg);border-bottom:1.5px solid var(--line)">
       <span style="font-size:24px">${flag}</span>
       <div style="flex:1"><span style="font-size:17px;font-weight:700;color:var(--ink)">${c}</span><span style="font-size:13px;color:var(--ink3);margin-left:8px">${cnt}개 상품</span></div>
       <button onclick="renameFolder('country','${c}')" style="${btnEdit}">이름 수정</button>
@@ -2178,11 +2170,11 @@ function renderSettings() {
         <button onclick="prodViewCountry='${c}';deleteFolder('region','${r}')" style="${btnDel}">삭제</button>
       </div>`;
     });
-    html += `<button onclick="prodViewCountry='${c}';addRegion()" style="width:100%;padding:12px;border:2px dashed var(--accent);border-radius:10px;background:#F5FAF7;color:var(--accent);font-size:14px;font-weight:700;cursor:pointer;font-family:Noto Sans KR,sans-serif;margin-top:4px">+ ${c}에 지역 추가</button>`;
+    html += `<button onclick="prodViewCountry='${c}';addRegion()" style="width:100%;padding:12px;border:2px dashed var(--accent);border-radius:10px;background:var(--input-bg);color:var(--accent);font-size:14px;font-weight:700;cursor:pointer;font-family:Noto Sans KR,sans-serif;margin-top:4px">+ ${c}에 지역 추가</button>`;
     html += `</div></div>`;
   });
 
-  html += `<button onclick="addCountry()" style="width:100%;padding:16px;border:2.5px dashed var(--accent);border-radius:14px;background:#F5FAF7;color:var(--accent);font-size:16px;font-weight:700;cursor:pointer;font-family:Noto Sans KR,sans-serif;margin-top:8px">+ 국가 추가</button>`;
+  html += `<button onclick="addCountry()" style="width:100%;padding:16px;border:2.5px dashed var(--accent);border-radius:14px;background:var(--input-bg);color:var(--accent);font-size:16px;font-weight:700;cursor:pointer;font-family:Noto Sans KR,sans-serif;margin-top:8px">+ 국가 추가</button>`;
 
   wrap.innerHTML = html;
 }
@@ -2193,7 +2185,7 @@ function renderProductList() {
   const locLabel = document.getElementById('prodLocationLabel');
   const regionBar = document.getElementById('prodRegionBar');
 
-  const addBtnS = 'display:flex;align-items:center;gap:10px;padding:18px 20px;border:2.5px dashed var(--accent);border-radius:14px;margin-bottom:10px;background:#F5FAF7;cursor:pointer;color:var(--accent);font-size:15px;font-weight:700;font-family:Noto Sans KR,sans-serif';
+  const addBtnS = 'display:flex;align-items:center;gap:10px;padding:18px 20px;border:2px dashed var(--line);border-radius:14px;margin-bottom:10px;background:var(--white);cursor:pointer;color:var(--accent);font-size:15px;font-weight:700;font-family:Noto Sans KR,sans-serif';
 
   // 검색 모드
   if (prodSearchTerm) {
@@ -2222,10 +2214,10 @@ function renderProductList() {
   }
 
   // 국가 선택됨 → 지역 바 표시
-  const flag = COUNTRY_FLAGS[prodViewCountry] || '🌐';
+  
   const fromProducts = productsCache.filter(p=>p.category===prodViewCountry).map(p=>p.region).filter(Boolean);
   const fromCustom = customFolders[prodViewCountry] || [];
-  const regions = [...new Set([...fromProducts, ...fromCustom])].sort();
+  const regions = [...new Set([...fromProducts, ...fromCustom])];
 
   // 지역 칩 렌더링
   if (regions.length > 0) {
@@ -2247,12 +2239,12 @@ function renderProductList() {
   let products = productsCache.filter(p => p.category === prodViewCountry);
   if (prodViewRegion) products = products.filter(p => p.region === prodViewRegion);
 
-  const title = prodViewRegion ? `${flag} ${prodViewCountry} > ${prodViewRegion}` : `${flag} ${prodViewCountry} 전체`;
+  const title = prodViewRegion ? `${prodViewCountry} > ${prodViewRegion}` : `${prodViewCountry} 전체`;
   locLabel.innerHTML = `${title} <span style="font-size:14px;color:var(--ink3);font-weight:500">${products.length}개</span>`;
 
   const addTarget = prodViewRegion || '';
   wrap.innerHTML =
-    `<div onclick="newProductWithCategory('${prodViewCountry}','${addTarget}')" style="${addBtnS}" onmouseover="this.style.background='#E8F5EE'" onmouseout="this.style.background='#F5FAF7'">
+    `<div onclick="newProductWithCategory('${prodViewCountry}','${addTarget}')" style="${addBtnS}" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--line)'">
       <span style="font-size:24px">➕</span> 상품 추가
     </div>` +
     (!products.length ? '<div style="text-align:center;padding:40px;color:var(--ink3);font-size:15px">상품이 없습니다</div>' :
@@ -2264,7 +2256,7 @@ function renderProdNavBar() {
   if (!nav) return;
   const fromProducts = productsCache.map(p => p.category).filter(Boolean);
   const fromCustom = Object.keys(customFolders);
-  const countries = [...new Set([...fromProducts, ...fromCustom])].sort();
+  const countries = [...new Set([...fromProducts, ...fromCustom])];
 
   nav.innerHTML =
     `<div class="pnav-item ${!prodViewCountry?'active':''}" onclick="selectProdCountry('')" style="padding:16px 22px">전체</div>` +
@@ -2273,12 +2265,12 @@ function renderProdNavBar() {
       const regs = [...new Set([
         ...productsCache.filter(p=>p.category===c).map(p=>p.region).filter(Boolean),
         ...(customFolders[c]||[])
-      ])].sort();
+      ])];
       let dropItems = '';
       if (regs.length) dropItems += regs.map(r => `<a onclick="event.stopPropagation();selectProdCountryRegion('${c}','${r}')">${r}</a>`).join('');
       dropItems += `<a class="pnav-drop-add" onclick="event.stopPropagation();prodViewCountry='${c}';addRegion()">+ 지역 추가</a>`;
       return `<div class="pnav-item ${prodViewCountry===c?'active':''}" onclick="selectProdCountry('${c}')">
-        ${flag} ${c}
+        ${c}
         <div class="pnav-drop">${dropItems}</div>
       </div>`;
     }).join('') +
@@ -3391,7 +3383,7 @@ function populateFlightCountryList() {
   const fromProducts = productsCache.map(p => p.category).filter(Boolean);
   const fromFlights = flightsCache.map(f => f.category).filter(Boolean);
   const fromCustom = Object.keys(customFolders);
-  const countries = [...new Set([...fromProducts, ...fromFlights, ...fromCustom])].sort();
+  const countries = [...new Set([...fromProducts, ...fromFlights, ...fromCustom])];
   dl.innerHTML = countries.map(c => `<option value="${c}">${(COUNTRY_FLAGS[c]||'🌐')} ${c}</option>`).join('');
 }
 
@@ -3403,7 +3395,7 @@ function updateFlightRegionList() {
   const fromProducts = productsCache.filter(p => p.category === country).map(p => p.region).filter(Boolean);
   const fromFlights = flightsCache.filter(f => f.category === country).map(f => f.destination).filter(Boolean);
   const fromCustom = customFolders[country] || [];
-  const regions = [...new Set([...fromProducts, ...fromFlights, ...fromCustom])].sort();
+  const regions = [...new Set([...fromProducts, ...fromFlights, ...fromCustom])];
   dl.innerHTML = regions.map(r => `<option value="${r}">`).join('');
 }
 
