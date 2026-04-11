@@ -470,46 +470,43 @@ select option{background:#1C3D2E;color:white}
     <!-- ② 상품 등록/수정 (모든 섹션 통합) -->
     <div class="tab-panel" id="panel-product-new">
 
-      <!-- 상단 저장 바 -->
-      <div class="form-card" id="currentProductBanner" style="background:linear-gradient(135deg,#1C3D2E,#2A5240);border:none;position:sticky;top:0;z-index:10;margin-bottom:16px;padding:16px 20px">
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-          <div style="flex:1;min-width:160px">
-            <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:6px" id="bannerLabel">새 상품 등록</div>
-            <div style="display:flex;gap:6px;align-items:center">
-              <select id="productCategory" onchange="loadFlightPicker()" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.25);border-radius:7px;padding:6px 10px;font-size:12px;color:white;font-family:'Noto Sans KR',sans-serif;outline:none;flex-shrink:0;max-width:130px">
-                <option value="">🌏 국가</option>
-                <option value="일본">🇯🇵 일본</option>
-                <option value="중국">🇨🇳 중국</option>
-                <option value="대만">🇹🇼 대만</option>
-                <option value="태국">🇹🇭 태국</option>
-                <option value="베트남">🇻🇳 베트남</option>
-                <option value="필리핀">🇵🇭 필리핀</option>
-                <option value="인도네시아">🇮🇩 인도네시아</option>
-                <option value="말레이시아">🇲🇾 말레이시아</option>
-                <option value="캄보디아">🇰🇭 캄보디아</option>
-                <option value="괌/사이판">🌺 괌/사이판</option>
-                <option value="기타">🌐 기타</option>
-              </select>
-              <input type="text" id="productName" placeholder="상품명 / 견적서명 입력" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);border-radius:7px;padding:6px 12px;font-size:13px;font-weight:600;color:white;font-family:'Noto Sans KR',sans-serif;outline:none;flex:1" oninput="this.style.color='white'">
-            </div>
-          </div>
+      <!-- 통합 상단 바 -->
+      <div class="form-card" id="currentProductBanner" style="background:linear-gradient(135deg,#1C3D2E,#2A5240);border:none;position:sticky;top:0;z-index:10;margin-bottom:16px;padding:14px 20px 12px">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+          <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5)" id="bannerLabel">새 상품 등록</div>
+          <div style="flex:1"></div>
           <div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap">
-            <button id="btnSaveNew" onclick="saveProduct()" style="background:var(--gold);color:white;border:none;padding:8px 16px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">💾 상품저장</button>
-            <button id="btnUpdate" onclick="updateProduct()" style="display:none;background:#2563EB;color:white;border:none;padding:8px 16px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">🔄 상품업데이트</button>
-            <button id="btnSaveQuote" onclick="saveQuote()" style="display:none;background:var(--gold);color:white;border:none;padding:8px 16px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">📋 견적서 저장</button>
-            <button id="btnUpdateQuote" onclick="updateQuote()" style="display:none;background:#059669;color:white;border:none;padding:8px 16px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">🔄 수정저장</button>
-            <button id="btnExitQuote" onclick="exitQuoteMode()" style="display:none;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.8);border:1px solid rgba(255,255,255,0.25);padding:8px 12px;border-radius:7px;font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">✕ 종료</button>
+            <button id="btnSaveNew" onclick="saveProduct()" style="background:var(--gold);color:white;border:none;padding:7px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">💾 상품저장</button>
+            <button id="btnUpdate" onclick="updateProduct()" style="display:none;background:#2563EB;color:white;border:none;padding:7px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">🔄 상품업데이트</button>
+            <button id="btnSaveQuote" onclick="saveQuote()" style="display:none;background:var(--gold);color:white;border:none;padding:7px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">📋 견적서 저장</button>
+            <button id="btnUpdateQuote" onclick="updateQuote()" style="display:none;background:#059669;color:white;border:none;padding:7px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">🔄 수정저장</button>
+            <button id="btnExitQuote" onclick="exitQuoteMode()" style="display:none;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.8);border:1px solid rgba(255,255,255,0.25);padding:7px 12px;border-radius:7px;font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">✕ 종료</button>
           </div>
         </div>
-      </div>
-
-      <!-- 요약 바 -->
-      <div class="summary-bar" id="summary-bar">
-        <div class="summary-item"><div class="summary-label">여행지</div><div class="summary-value" id="s-dest">—</div></div>
-        <div class="summary-divider"></div>
-        <div class="summary-item"><div class="summary-label">기간</div><div class="summary-value" id="s-period">—</div></div>
-        <div class="summary-divider"></div>
-        <div class="summary-item"><div class="summary-label">인원</div><div class="summary-value" id="s-pax">—</div></div>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+          <select id="productCategory" onchange="loadFlightPicker()" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.25);border-radius:7px;padding:7px 10px;font-size:12px;color:white;font-family:'Noto Sans KR',sans-serif;outline:none;flex-shrink:0">
+            <option value="">🌏 국가</option>
+            <option value="일본">🇯🇵 일본</option>
+            <option value="중국">🇨🇳 중국</option>
+            <option value="대만">🇹🇼 대만</option>
+            <option value="태국">🇹🇭 태국</option>
+            <option value="베트남">🇻🇳 베트남</option>
+            <option value="필리핀">🇵🇭 필리핀</option>
+            <option value="인도네시아">🇮🇩 인도네시아</option>
+            <option value="말레이시아">🇲🇾 말레이시아</option>
+            <option value="캄보디아">🇰🇭 캄보디아</option>
+            <option value="괌/사이판">🌺 괌/사이판</option>
+            <option value="기타">🌐 기타</option>
+          </select>
+          <input type="text" id="productName" placeholder="상품명 입력" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);border-radius:7px;padding:7px 12px;font-size:13px;font-weight:600;color:white;font-family:'Noto Sans KR',sans-serif;outline:none;flex:1;min-width:140px" oninput="this.style.color='white'">
+        </div>
+        <div style="display:flex;gap:16px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.1)">
+          <div><div style="font-size:9px;color:rgba(255,255,255,0.4);letter-spacing:1px;margin-bottom:2px">여행지</div><div style="font-size:13px;color:white;font-weight:500" id="s-dest">—</div></div>
+          <div style="width:1px;background:rgba(255,255,255,0.1)"></div>
+          <div><div style="font-size:9px;color:rgba(255,255,255,0.4);letter-spacing:1px;margin-bottom:2px">기간</div><div style="font-size:13px;color:white;font-weight:500" id="s-period">—</div></div>
+          <div style="width:1px;background:rgba(255,255,255,0.1)"></div>
+          <div><div style="font-size:9px;color:rgba(255,255,255,0.4);letter-spacing:1px;margin-bottom:2px">인원</div><div style="font-size:13px;color:white;font-weight:500" id="s-pax">—</div></div>
+        </div>
       </div>
 
       <!-- ── 섹션: 기본정보 ── -->
@@ -3035,32 +3032,20 @@ function loadFlightPicker() {
   const dayNames = ['일','월','화','수','목','금','토'];
   const d = new Date(dateFrom);
   const dayOfWeek = dayNames[d.getDay()];
-  if (infoEl) infoEl.innerHTML = `출발일: <strong>${dateFrom}</strong> (<strong style="color:var(--accent)">${dayOfWeek}요일</strong>)${category ? ` · ${category}` : ''} · ${pickerDep}출발`;
+  if (infoEl) infoEl.innerHTML = `출발일: <strong>${dateFrom}</strong> · <strong style="color:var(--accent)">${dayOfWeek}요일</strong>`;
 
-  // Filter by operating day + category + dep airport
   let filtered = flightsCache.filter(f => {
     const days = (f.operating_days || '').split(',');
     return days.includes(dayOfWeek);
   });
   if (category) filtered = filtered.filter(f => f.category === category);
-
-  // 선택된 출발공항 필터
   let depFiltered = filtered.filter(f => f.dep_airport === pickerDep);
-
-  // 인천출발 우선: 없으면 다른 공항 항공편 표시
-  if (!depFiltered.length && pickerDep === '인천') {
-    depFiltered = filtered;
-    if (depFiltered.length && infoEl) infoEl.innerHTML += ` <span style="color:var(--red);font-size:11px">(인천편 없음 — 다른 공항 표시)</span>`;
-  }
-
-  // 탭 자동 전환: 현재 탭에 결과 없으면 있는 공항으로 전환 표시
   if (!depFiltered.length) {
     for (const dep of ['인천','부산','청주']) {
       const tmp = filtered.filter(f => f.dep_airport === dep);
       if (tmp.length) {
         depFiltered = tmp;
         document.querySelectorAll('[data-pdep]').forEach(b => b.classList.toggle('cat-active', b.dataset.pdep === dep));
-        if (infoEl) infoEl.innerHTML += ` <span style="color:var(--red);font-size:11px">(${dep}출발만 있음)</span>`;
         break;
       }
     }
@@ -3073,16 +3058,38 @@ function loadFlightPicker() {
   }
   if (emptyEl) emptyEl.style.display = 'none';
 
+  const cellS = 'padding:8px 12px;border-right:1px solid #EFEFED';
+  const labelS = 'font-size:9px;color:#888;letter-spacing:.5px;margin-bottom:3px';
+  const valS = 'font-size:14px;font-weight:700;color:#111';
+  const valS2 = 'font-size:13px;font-weight:600;color:#333';
+
   listEl.innerHTML = depFiltered.map(f => `
-    <div onclick="selectFlight('${f.id}')" style="display:flex;align-items:center;gap:14px;padding:12px 16px;border:1.5px solid var(--line);border-radius:10px;cursor:pointer;transition:all .15s;background:var(--white)" onmouseover="this.style.borderColor='var(--accent)';this.style.background='#F0F7F4'" onmouseout="this.style.borderColor='var(--line)';this.style.background='var(--white)'">
-      <div style="flex:1">
-        <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px">${f.airline} &nbsp;${f.dep_airport} ↔ ${f.arr_airport||f.destination}</div>
-        <div style="font-size:13px;color:var(--ink2);display:flex;gap:20px">
-          <span>🛫 <strong>${f.flight_out}</strong> ${f.dep_time_out}→${f.arr_time_out}</span>
-          <span>🛬 <strong>${f.flight_in}</strong> ${f.dep_time_in}→${f.arr_time_in}</span>
+    <div onclick="selectFlight('${f.id}')" style="border:1.5px solid var(--line);border-radius:10px;cursor:pointer;transition:all .15s;background:var(--white);overflow:hidden" onmouseover="this.style.borderColor='var(--accent)';this.style.boxShadow='0 2px 12px rgba(28,61,46,.12)'" onmouseout="this.style.borderColor='var(--line)';this.style.boxShadow='none'">
+      <div style="display:flex;align-items:stretch">
+        <div style="${cellS};min-width:100px;background:#F8F7F5;display:flex;flex-direction:column;justify-content:center">
+          <div style="${labelS}">항공사</div>
+          <div style="${valS}">${f.airline||''}</div>
+        </div>
+        <div style="${cellS};flex:1">
+          <div style="${labelS}">🛫 가는편</div>
+          <div style="display:flex;gap:14px;align-items:baseline">
+            <span style="${valS2}">${f.dep_airport} → ${f.arr_airport||f.destination}</span>
+            <span style="font-size:12px;color:#A07840;font-weight:700">${f.flight_out||''}</span>
+            <span style="font-size:13px;color:#555">${f.dep_time_out||''} ~ ${f.arr_time_out||''}</span>
+          </div>
+        </div>
+        <div style="${cellS};flex:1">
+          <div style="${labelS}">🛬 오는편</div>
+          <div style="display:flex;gap:14px;align-items:baseline">
+            <span style="${valS2}">${f.arr_airport||f.destination} → ${f.dep_airport}</span>
+            <span style="font-size:12px;color:#A07840;font-weight:700">${f.flight_in||''}</span>
+            <span style="font-size:13px;color:#555">${f.dep_time_in||''} ~ ${f.arr_time_in||''}</span>
+          </div>
+        </div>
+        <div style="padding:8px 16px;display:flex;align-items:center;background:#F0F7F4">
+          <span style="font-size:12px;color:var(--accent);font-weight:700;white-space:nowrap">선택 →</span>
         </div>
       </div>
-      <span style="font-size:12px;color:var(--accent);font-weight:700;white-space:nowrap">선택 →</span>
     </div>
   `).join('');
 }
@@ -3101,7 +3108,14 @@ function selectFlight(id) {
   const selEl = document.getElementById('flightSelected');
   const selInfo = document.getElementById('flightSelectedInfo');
   if (selEl) selEl.style.display = 'block';
-  if (selInfo) selInfo.innerHTML = `<strong>${f.airline}</strong> &nbsp;${f.dep_airport} ↔ ${f.arr_airport||f.destination}<br>🛫 <strong>${f.flight_out}</strong> ${f.dep_time_out}→${f.arr_time_out} &nbsp;&nbsp; 🛬 <strong>${f.flight_in}</strong> ${f.dep_time_in}→${f.arr_time_in}`;
+  if (selInfo) {
+    const cellS = 'padding:6px 10px;border-right:1px solid #C4DFD0';
+    selInfo.innerHTML = `<div style="display:flex;align-items:stretch;gap:0;margin:-4px -4px 4px;background:white;border-radius:8px;overflow:hidden;border:1px solid #C4DFD0">
+      <div style="${cellS};font-weight:700;color:#1C3D2E">${f.airline}</div>
+      <div style="${cellS};color:#333">🛫 ${f.dep_airport}→${f.arr_airport||f.destination} <strong>${f.flight_out}</strong> ${f.dep_time_out}~${f.arr_time_out}</div>
+      <div style="padding:6px 10px;color:#333">🛬 ${f.arr_airport||f.destination}→${f.dep_airport} <strong>${f.flight_in}</strong> ${f.dep_time_in}~${f.arr_time_in}</div>
+    </div>`;
+  }
 
   // 일정표에 자동 반영
   applyFlightToItinerary(f);
