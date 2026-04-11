@@ -384,6 +384,12 @@ select option{background:#1C3D2E;color:white}
         <div class="form-card-title"><span class="form-card-title-icon">✈️</span> 항공편 스케줄 관리</div>
         <div style="font-size:13px;color:var(--ink3);margin-bottom:16px">노선별 항공편을 등록하면, 견적서 작성 시 출발일 요일에 맞는 항공편만 자동으로 표시됩니다.</div>
 
+        <!-- 출발공항 필터 -->
+        <div style="display:flex;gap:6px;margin-bottom:10px">
+          <button onclick="filterFlightsDep('인천')" class="cat-btn cat-active" data-fdep="인천">🛫 인천출발</button>
+          <button onclick="filterFlightsDep('부산')" class="cat-btn" data-fdep="부산">🛫 부산출발</button>
+          <button onclick="filterFlightsDep('청주')" class="cat-btn" data-fdep="청주">🛫 청주출발</button>
+        </div>
         <!-- 나라별 필터 -->
         <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">
           <button onclick="filterFlights('')" class="cat-btn cat-active" data-fcat="">전체</button>
@@ -427,7 +433,13 @@ select option{background:#1C3D2E;color:white}
         </div>
         <div class="form-row col2" style="margin-bottom:12px">
           <div class="field"><label>항공사</label><input type="text" id="fm_airline" placeholder="아시아나항공"></div>
-          <div class="field"><label>출발 공항</label><input type="text" id="fm_depAirport" placeholder="인천"></div>
+          <div class="field"><label>출발 공항</label>
+            <select id="fm_depAirport" style="width:100%;padding:8px;border:1.5px solid var(--line);border-radius:8px;font-size:13px;background:var(--input-bg)">
+              <option value="인천">인천</option>
+              <option value="부산">부산</option>
+              <option value="청주">청주</option>
+            </select>
+          </div>
         </div>
         <div style="font-size:12px;font-weight:600;color:var(--ink2);margin:14px 0 8px;border-top:1px solid var(--line);padding-top:12px">🛫 가는편</div>
         <div class="form-row col3" style="margin-bottom:12px">
@@ -545,10 +557,15 @@ select option{background:#1C3D2E;color:white}
       <!-- ── 섹션: 항공편 선택 ── -->
       <div class="sec-header" id="sec-flight" onclick="toggleSection('body-flight')">
         <div class="sec-header-left"><span>✈️</span> 항공편</div>
-        <span class="sec-toggle collapsed" id="tog-flight">▼</span>
+        <span class="sec-toggle" id="tog-flight">▼</span>
       </div>
-      <div class="sec-body hidden" id="body-flight">
+      <div class="sec-body" id="body-flight">
         <div class="form-card" style="margin-bottom:10px">
+          <div style="display:flex;gap:6px;margin-bottom:10px">
+            <button onclick="setPickerDep('인천')" class="cat-btn cat-active" data-pdep="인천">🛫 인천출발</button>
+            <button onclick="setPickerDep('부산')" class="cat-btn" data-pdep="부산">🛫 부산출발</button>
+            <button onclick="setPickerDep('청주')" class="cat-btn" data-pdep="청주">🛫 청주출발</button>
+          </div>
           <div id="flightPickerInfo" style="font-size:12px;color:var(--ink3);margin-bottom:10px">출발일을 입력하면 해당 요일에 운항하는 항공편이 표시됩니다.</div>
           <div id="flightPickerList" style="display:flex;flex-direction:column;gap:6px"></div>
           <div id="flightPickerEmpty" style="display:none;text-align:center;padding:20px;color:var(--ink3);font-size:13px">해당 요일에 운항하는 항공편이 없습니다.</div>
@@ -1187,9 +1204,9 @@ function autoGenDays() {
 
   if (isLong) {
     // 30박 이상: 압축 표시
-    addDay({ title: '출발일', sub: '현지 도착' }, 1, from, fromDate);
+    addDay({ title: '', sub: '' }, 1, from, fromDate);
     const d2 = new Date(fromDate); d2.setDate(fromDate.getDate() + 1);
-    addDay({ title: '현지 일정', sub: '' }, 2, from, d2);
+    addDay({ title: '', sub: '' }, 2, from, d2);
     // 중간 요약 블록
     const midDiv = document.createElement('div');
     midDiv.className = 'day-block';
@@ -1197,16 +1214,13 @@ function autoGenDays() {
     midDiv.innerHTML = `<div class="day-block-header" style="background:#9CA3AF"><span class="day-block-num">Day 3 ~ Day ${nights-1}</span><span style="color:rgba(255,255,255,0.8);font-size:12px">장기 체류 기간 (직접 입력하세요)</span></div><div style="padding:16px;font-size:13px;color:var(--ink3);text-align:center">📝 장기 일정 중간 기간입니다. 필요한 내용을 자유롭게 기재해주세요.<br><textarea style="width:100%;margin-top:10px;padding:10px;border-radius:8px;border:1.5px solid var(--line);font-family:'Noto Sans KR',sans-serif;font-size:13px;min-height:80px" placeholder="중간 일정 내용 (예: 매일 골프 라운드, 현지 관광 등)..."></textarea></div>`;
     document.getElementById('dayBlocks').appendChild(midDiv);
     const dn1 = new Date(fromDate); dn1.setDate(fromDate.getDate() + nights - 1);
-    addDay({ title: '귀국 전일', sub: '' }, nights, from, dn1);
-    addDay({ title: '귀국일', sub: '귀국' }, nights + 1, from, toDate);
+    addDay({ title: '' }, nights, from, dn1);
+    addDay({ title: '' }, nights + 1, from, toDate);
   } else {
     for (let i = 0; i < totalDays; i++) {
       const d = new Date(fromDate);
       d.setDate(fromDate.getDate() + i);
-      let title = '';
-      if (i === 0) title = '출발일';
-      else if (i === totalDays - 1) title = '귀국일';
-      addDay({ title }, i + 1, from, d);
+      addDay({ title: '' }, i + 1, from, d);
     }
   }
   updateSummary();
@@ -1482,7 +1496,7 @@ function generateHTML(d) {
   const daysHTML = d.days.map((day, i) => {
     const isLast = i === d.days.length - 1;
     const dayLabel = dayLabels[i] || (i+1)+'일차';
-    const headerBg = isLast ? '#5A4030' : '#2A4A5E';
+    const headerBg = '#2A4A5E';
 
     const rowsHTML = (day.items||[]).map((it, ri) => {
       const bg = ri%2===0 ? 'white' : '#FAFAF8';
@@ -2854,11 +2868,13 @@ function confirmPickerSelection() {
 ════════════════════════════ */
 let flightsCache = [];
 let flightFilterCat = '';
+let flightFilterDep = '인천';
+let pickerDep = '인천';
 let selectedFlightData = null;
 
 async function fetchFlights() {
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/flights?order=category,destination,airline`, {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/flights?order=dep_airport,category,destination,airline`, {
       headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
     });
     flightsCache = await res.json();
@@ -2872,10 +2888,24 @@ function filterFlights(cat) {
   renderFlightList();
 }
 
+function filterFlightsDep(dep) {
+  flightFilterDep = dep;
+  document.querySelectorAll('[data-fdep]').forEach(b => b.classList.toggle('cat-active', b.dataset.fdep === dep));
+  renderFlightList();
+}
+
+function setPickerDep(dep) {
+  pickerDep = dep;
+  document.querySelectorAll('[data-pdep]').forEach(b => b.classList.toggle('cat-active', b.dataset.pdep === dep));
+  loadFlightPicker();
+}
+
 function renderFlightList() {
   const wrap = document.getElementById('flightListWrap');
   if (!wrap) return;
-  const list = flightFilterCat ? flightsCache.filter(f => f.category === flightFilterCat) : flightsCache;
+  let list = flightsCache;
+  if (flightFilterDep) list = list.filter(f => f.dep_airport === flightFilterDep);
+  if (flightFilterCat) list = list.filter(f => f.category === flightFilterCat);
   if (!list.length) {
     wrap.innerHTML = '<div style="text-align:center;padding:30px;color:var(--ink3);font-size:13px">등록된 항공편이 없어요</div>';
     return;
@@ -2886,8 +2916,8 @@ function renderFlightList() {
     const dayBadges = dayNames.map(d => `<span style="font-size:10px;padding:2px 5px;border-radius:4px;${days.includes(d)?'background:#1C3D2E;color:white':'background:#EEEDEB;color:#aaa'}">${d}</span>`).join('');
     return `<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border:1.5px solid var(--line);border-radius:10px;margin-bottom:6px;background:var(--white)">
       <div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px">${f.airline||''} · ${f.destination||''} <span style="font-size:11px;color:var(--ink3);font-weight:400">(${f.category||''})</span></div>
-        <div style="font-size:11px;color:var(--ink2);margin-bottom:4px">🛫 ${f.dep_airport||''}→${f.arr_airport||''} ${f.flight_out||''} ${f.dep_time_out||''}-${f.arr_time_out||''} &nbsp; 🛬 ${f.flight_in||''} ${f.dep_time_in||''}-${f.arr_time_in||''}</div>
+        <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px">${f.airline||''} · ${f.dep_airport}→${f.arr_airport||f.destination} <span style="font-size:11px;color:var(--ink3);font-weight:400">(${f.category||''})</span></div>
+        <div style="font-size:11px;color:var(--ink2);margin-bottom:4px">🛫 ${f.flight_out||''} ${f.dep_time_out||''}→${f.arr_time_out||''} &nbsp;|&nbsp; 🛬 ${f.flight_in||''} ${f.dep_time_in||''}→${f.arr_time_in||''}</div>
         <div style="display:flex;gap:3px">${dayBadges}</div>
       </div>
       <button onclick="openFlightModal('${f.id}')" style="background:none;border:1px solid var(--line);border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;color:var(--ink2);font-family:'Noto Sans KR',sans-serif">수정</button>
@@ -3005,29 +3035,54 @@ function loadFlightPicker() {
   const dayNames = ['일','월','화','수','목','금','토'];
   const d = new Date(dateFrom);
   const dayOfWeek = dayNames[d.getDay()];
-  if (infoEl) infoEl.innerHTML = `출발일: <strong>${dateFrom}</strong> (<strong style="color:var(--accent)">${dayOfWeek}요일</strong>)${category ? ` · 국가: <strong>${category}</strong>` : ''}`;
+  if (infoEl) infoEl.innerHTML = `출발일: <strong>${dateFrom}</strong> (<strong style="color:var(--accent)">${dayOfWeek}요일</strong>)${category ? ` · ${category}` : ''} · ${pickerDep}출발`;
 
-  // Filter flights by operating day + category
+  // Filter by operating day + category + dep airport
   let filtered = flightsCache.filter(f => {
     const days = (f.operating_days || '').split(',');
     return days.includes(dayOfWeek);
   });
   if (category) filtered = filtered.filter(f => f.category === category);
 
-  if (!filtered.length) {
+  // 선택된 출발공항 필터
+  let depFiltered = filtered.filter(f => f.dep_airport === pickerDep);
+
+  // 인천출발 우선: 없으면 다른 공항 항공편 표시
+  if (!depFiltered.length && pickerDep === '인천') {
+    depFiltered = filtered;
+    if (depFiltered.length && infoEl) infoEl.innerHTML += ` <span style="color:var(--red);font-size:11px">(인천편 없음 — 다른 공항 표시)</span>`;
+  }
+
+  // 탭 자동 전환: 현재 탭에 결과 없으면 있는 공항으로 전환 표시
+  if (!depFiltered.length) {
+    for (const dep of ['인천','부산','청주']) {
+      const tmp = filtered.filter(f => f.dep_airport === dep);
+      if (tmp.length) {
+        depFiltered = tmp;
+        document.querySelectorAll('[data-pdep]').forEach(b => b.classList.toggle('cat-active', b.dataset.pdep === dep));
+        if (infoEl) infoEl.innerHTML += ` <span style="color:var(--red);font-size:11px">(${dep}출발만 있음)</span>`;
+        break;
+      }
+    }
+  }
+
+  if (!depFiltered.length) {
     listEl.innerHTML = '';
     if (emptyEl) emptyEl.style.display = 'block';
     return;
   }
   if (emptyEl) emptyEl.style.display = 'none';
 
-  listEl.innerHTML = filtered.map(f => `
-    <div onclick="selectFlight('${f.id}')" style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1.5px solid var(--line);border-radius:8px;cursor:pointer;transition:all .15s;background:var(--white)" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--line)'">
+  listEl.innerHTML = depFiltered.map(f => `
+    <div onclick="selectFlight('${f.id}')" style="display:flex;align-items:center;gap:14px;padding:12px 16px;border:1.5px solid var(--line);border-radius:10px;cursor:pointer;transition:all .15s;background:var(--white)" onmouseover="this.style.borderColor='var(--accent)';this.style.background='#F0F7F4'" onmouseout="this.style.borderColor='var(--line)';this.style.background='var(--white)'">
       <div style="flex:1">
-        <div style="font-size:13px;font-weight:600;color:var(--ink)">${f.airline} · ${f.destination}</div>
-        <div style="font-size:11px;color:var(--ink2);margin-top:3px">🛫 ${f.dep_airport}→${f.arr_airport} ${f.flight_out} ${f.dep_time_out}~${f.arr_time_out} &nbsp;|&nbsp; 🛬 ${f.flight_in} ${f.dep_time_in}~${f.arr_time_in}</div>
+        <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px">${f.airline} &nbsp;${f.dep_airport} ↔ ${f.arr_airport||f.destination}</div>
+        <div style="font-size:13px;color:var(--ink2);display:flex;gap:20px">
+          <span>🛫 <strong>${f.flight_out}</strong> ${f.dep_time_out}→${f.arr_time_out}</span>
+          <span>🛬 <strong>${f.flight_in}</strong> ${f.dep_time_in}→${f.arr_time_in}</span>
+        </div>
       </div>
-      <span style="font-size:11px;color:var(--accent);font-weight:600">선택 →</span>
+      <span style="font-size:12px;color:var(--accent);font-weight:700;white-space:nowrap">선택 →</span>
     </div>
   `).join('');
 }
@@ -3035,13 +3090,18 @@ function loadFlightPicker() {
 function selectFlight(id) {
   const f = flightsCache.find(x => x.id === id);
   if (!f) return;
+
+  // 이전 항공편이 선택되어 있으면 먼저 해제 (중복 방지)
+  if (selectedFlightData) {
+    removeFlightFromItinerary();
+  }
   selectedFlightData = f;
 
   // 선택 표시
   const selEl = document.getElementById('flightSelected');
   const selInfo = document.getElementById('flightSelectedInfo');
   if (selEl) selEl.style.display = 'block';
-  if (selInfo) selInfo.innerHTML = `<strong>${f.airline}</strong> · ${f.destination}<br>🛫 ${f.dep_airport}→${f.arr_airport} <strong>${f.flight_out}</strong> ${f.dep_time_out}~${f.arr_time_out}<br>🛬 <strong>${f.flight_in}</strong> ${f.dep_time_in}~${f.arr_time_in}`;
+  if (selInfo) selInfo.innerHTML = `<strong>${f.airline}</strong> &nbsp;${f.dep_airport} ↔ ${f.arr_airport||f.destination}<br>🛫 <strong>${f.flight_out}</strong> ${f.dep_time_out}→${f.arr_time_out} &nbsp;&nbsp; 🛬 <strong>${f.flight_in}</strong> ${f.dep_time_in}→${f.arr_time_in}`;
 
   // 일정표에 자동 반영
   applyFlightToItinerary(f);
@@ -3049,36 +3109,46 @@ function selectFlight(id) {
 }
 
 function clearFlightSelection() {
+  if (selectedFlightData) removeFlightFromItinerary();
   selectedFlightData = null;
   const selEl = document.getElementById('flightSelected');
   if (selEl) selEl.style.display = 'none';
+}
+
+function removeFlightFromItinerary() {
+  // data-flight-auto 마킹된 일정 아이템 삭제
+  document.querySelectorAll('.schedule-item[data-flight-auto]').forEach(el => el.remove());
 }
 
 function applyFlightToItinerary(f) {
   const dayBlocks = document.querySelectorAll('.day-block');
   if (!dayBlocks.length) return;
 
-  // 첫째 날 - 출발편 추가 (맨 앞에)
+  // 첫째 날 - 출발편
   const firstDay = dayBlocks[0];
   const firstSched = firstDay.querySelector('.schedule-items');
   if (firstSched) {
     const dayId = firstDay.id;
-    // 기존 일정 앞에 출국편 2줄 추가
     const depItem = scheduleItemHTML(dayId, f.dep_airport, f.flight_out, f.dep_time_out, `${f.dep_airport} 국제공항 출발`, '');
-    const arrItem = scheduleItemHTML(dayId, f.arr_airport, '', f.arr_time_out, `${f.arr_airport} 공항 도착`, '');
-    firstSched.insertAdjacentHTML('afterbegin', arrItem);
-    firstSched.insertAdjacentHTML('afterbegin', depItem);
+    const arrItem = scheduleItemHTML(dayId, f.arr_airport||f.destination, '', f.arr_time_out, `${f.arr_airport||f.destination} 공항 도착`, '');
+    // 마킹 추가
+    const depMarked = depItem.replace('class="schedule-item"', 'class="schedule-item" data-flight-auto="1"');
+    const arrMarked = arrItem.replace('class="schedule-item"', 'class="schedule-item" data-flight-auto="1"');
+    firstSched.insertAdjacentHTML('afterbegin', arrMarked);
+    firstSched.insertAdjacentHTML('afterbegin', depMarked);
   }
 
-  // 마지막 날 - 귀국편 추가 (맨 뒤에)
+  // 마지막 날 - 귀국편
   const lastDay = dayBlocks[dayBlocks.length - 1];
   const lastSched = lastDay.querySelector('.schedule-items');
   if (lastSched) {
     const dayId = lastDay.id;
-    const depItem = scheduleItemHTML(dayId, f.arr_airport, f.flight_in, f.dep_time_in, `${f.arr_airport} 공항 출발`, '');
-    const arrItem = scheduleItemHTML(dayId, '', '', f.arr_time_in, `${f.dep_airport} 국제공항 도착`, '');
-    lastSched.insertAdjacentHTML('beforeend', depItem);
-    lastSched.insertAdjacentHTML('beforeend', arrItem);
+    const depItem = scheduleItemHTML(dayId, f.arr_airport||f.destination, f.flight_in, f.dep_time_in, `${f.arr_airport||f.destination} 공항 출발`, '');
+    const arrItem = scheduleItemHTML(dayId, f.dep_airport, '', f.arr_time_in, `${f.dep_airport} 국제공항 도착`, '');
+    const depMarked = depItem.replace('class="schedule-item"', 'class="schedule-item" data-flight-auto="1"');
+    const arrMarked = arrItem.replace('class="schedule-item"', 'class="schedule-item" data-flight-auto="1"');
+    lastSched.insertAdjacentHTML('beforeend', depMarked);
+    lastSched.insertAdjacentHTML('beforeend', arrMarked);
   }
 }
 
