@@ -41,17 +41,26 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
 .btn-publish:disabled{background:#6B7280;cursor:not-allowed}
 
 /* ── PRODUCT NAV BAR ── */
-.pnav-item{position:relative;padding:14px 20px;color:rgba(255,255,255,0.75);font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap;border-bottom:3px solid transparent}
-.pnav-item:hover,.pnav-item.active{color:white;background:rgba(255,255,255,0.1);border-bottom-color:var(--gold-lt)}
-.pnav-item .pnav-drop{display:none;position:absolute;top:100%;left:0;background:white;border-radius:0 0 10px 10px;box-shadow:0 8px 24px rgba(0,0,0,0.15);min-width:180px;z-index:300;padding:6px 0}
+.pnav-item{position:relative;padding:16px 24px;color:rgba(255,255,255,0.8);font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;border-bottom:3px solid transparent;letter-spacing:.3px}
+.pnav-item:hover,.pnav-item.active{color:white;background:rgba(255,255,255,0.12);border-bottom-color:var(--gold-lt)}
+.pnav-item::after{content:'▾';margin-left:5px;font-size:10px;opacity:.5}
+.pnav-item .pnav-drop{display:none;position:absolute;top:100%;left:0;background:white;border-radius:0 0 12px 12px;box-shadow:0 12px 32px rgba(0,0,0,0.18);min-width:200px;z-index:300;padding:8px 0}
 .pnav-item:hover .pnav-drop{display:block}
-.pnav-drop a{display:block;padding:10px 18px;color:var(--ink);font-size:14px;font-weight:500;cursor:pointer;transition:background .1s}
-.pnav-drop a:hover{background:#F0F7F4;color:var(--accent)}
-.pnav-drop .pnav-drop-add{border-top:1px solid var(--line);margin-top:4px;padding-top:8px;color:var(--accent);font-weight:700}
-.pnav-add{padding:14px 18px;color:rgba(255,255,255,0.5);font-size:13px;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:6px;transition:all .15s}
-.pnav-add:hover{color:white;background:rgba(255,255,255,0.1)}
-.region-chip{padding:8px 16px;border-radius:20px;border:2px solid var(--line);background:white;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;font-family:'Noto Sans KR',sans-serif;color:var(--ink2)}
-.region-chip:hover,.region-chip.active{background:var(--accent);color:white;border-color:var(--accent)}
+.pnav-drop a{display:block;padding:12px 20px;color:var(--ink);font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;border-left:3px solid transparent}
+.pnav-drop a:hover{background:#F0F7F4;color:var(--accent);border-left-color:var(--accent)}
+.pnav-drop .pnav-drop-add{border-top:1.5px solid var(--line);margin-top:6px;padding-top:10px;color:var(--accent);font-weight:700}
+.pnav-drop .pnav-drop-danger{color:var(--red);font-size:13px;opacity:.7}
+.pnav-drop .pnav-drop-danger:hover{opacity:1;background:#FDF4F4;border-left-color:var(--red)}
+.pnav-drop .pnav-drop-muted{color:var(--ink3);font-size:13px}
+.pnav-drop .pnav-drop-muted:hover{background:#F8F7F5}
+.pnav-add{padding:16px 20px;color:rgba(255,255,255,0.5);font-size:14px;cursor:pointer;font-weight:700;display:flex;align-items:center;gap:6px;transition:all .2s;letter-spacing:.3px}
+.pnav-add::after{display:none}
+.pnav-add:hover{color:var(--gold-lt);background:rgba(255,255,255,0.08)}
+.region-chip{padding:10px 20px;border-radius:24px;border:2px solid var(--line);background:white;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Noto Sans KR',sans-serif;color:var(--ink2)}
+.region-chip:hover{background:#F0F7F4;border-color:var(--accent);color:var(--accent)}
+.region-chip.active{background:var(--accent);color:white;border-color:var(--accent)}
+.region-act{background:none;border:none;cursor:pointer;font-size:16px;padding:4px 6px;border-radius:6px;opacity:.4;transition:all .15s}
+.region-act:hover{opacity:1;background:#F0F0EE}
 
 /* ── MAIN LAYOUT ── */
 .main{display:flex;flex:1;overflow:hidden}
@@ -2162,7 +2171,7 @@ function renderProductList() {
       `<button onclick="selectProdRegion('')" class="region-chip ${!prodViewRegion?'active':''}">전체</button>` +
       regions.map(r => {
         const cnt = productsCache.filter(p=>p.category===prodViewCountry&&p.region===r).length;
-        return `<button onclick="selectProdRegion('${r}')" class="region-chip ${prodViewRegion===r?'active':''}">${r} <span style="font-size:11px;opacity:.6">(${cnt})</span></button>`;
+        return `<span style="display:inline-flex;align-items:center;gap:2px"><button onclick="selectProdRegion('${r}')" class="region-chip ${prodViewRegion===r?'active':''}">${r} (${cnt})</button><button onclick="renameFolder('region','${r}')" class="region-act" title="이름 수정">✏️</button><button onclick="deleteFolder('region','${r}')" class="region-act" title="삭제">🗑️</button></span>`;
       }).join('') +
       `<button onclick="addRegion()" class="region-chip" style="border-style:dashed;color:var(--accent);border-color:var(--accent)">+ 지역 추가</button>`;
   } else {
@@ -2195,23 +2204,24 @@ function renderProdNavBar() {
   const countries = [...new Set([...fromProducts, ...fromCustom])].sort();
 
   nav.innerHTML =
-    `<div class="pnav-item ${!prodViewCountry?'active':''}" onclick="selectProdCountry('')">전체</div>` +
+    `<div class="pnav-item ${!prodViewCountry?'active':''}" onclick="selectProdCountry('')" style="padding:16px 22px">전체</div>` +
     countries.map(c => {
       const flag = COUNTRY_FLAGS[c] || '🌐';
       const regs = [...new Set([
         ...productsCache.filter(p=>p.category===c).map(p=>p.region).filter(Boolean),
         ...(customFolders[c]||[])
       ])].sort();
-      const dropHtml = regs.length ?
-        regs.map(r => `<a onclick="event.stopPropagation();selectProdCountryRegion('${c}','${r}')">${r}</a>`).join('') +
-        `<a class="pnav-drop-add" onclick="event.stopPropagation();prodViewCountry='${c}';addRegion()">+ 지역 추가</a>` :
-        `<a class="pnav-drop-add" onclick="event.stopPropagation();prodViewCountry='${c}';addRegion()">+ 지역 추가</a>`;
+      let dropItems = '';
+      if (regs.length) dropItems += regs.map(r => `<a onclick="event.stopPropagation();selectProdCountryRegion('${c}','${r}')">${r}</a>`).join('');
+      dropItems += `<a class="pnav-drop-add" onclick="event.stopPropagation();prodViewCountry='${c}';addRegion()">+ 지역 추가</a>`;
+      dropItems += `<a class="pnav-drop-muted" onclick="event.stopPropagation();renameFolder('country','${c}')">✏️ 이름 수정</a>`;
+      dropItems += `<a class="pnav-drop-danger" onclick="event.stopPropagation();deleteFolder('country','${c}')">🗑 삭제</a>`;
       return `<div class="pnav-item ${prodViewCountry===c?'active':''}" onclick="selectProdCountry('${c}')">
         ${flag} ${c}
-        <div class="pnav-drop">${dropHtml}</div>
+        <div class="pnav-drop">${dropItems}</div>
       </div>`;
     }).join('') +
-    `<div class="pnav-add" onclick="addCountry()">➕ 국가 추가</div>`;
+    `<div class="pnav-add" onclick="addCountry()">+ 국가 추가</div>`;
 }
 
 function selectProdCountry(c) {
