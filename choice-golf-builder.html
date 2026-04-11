@@ -306,8 +306,8 @@ select option{background:white;color:var(--ink)}
     </div>
     <div class="sidebar-section" id="sectionNavWrap" style="display:none">
       <div class="sidebar-label">섹션 이동</div>
-      <div class="sidebar-item" onclick="scrollToSection('sec-basic')"><span class="sidebar-item-icon">📋</span> 기본 정보</div>
-      <div class="sidebar-item" onclick="scrollToSection('sec-price')"><span class="sidebar-item-icon">💰</span> 요금표</div>
+      <div class="sidebar-item" onclick="scrollToSection('sec-basic')"><span class="sidebar-item-icon">📋</span> 기본정보·요금</div>
+      <div class="sidebar-item" onclick="scrollToSection('sec-flight')"><span class="sidebar-item-icon">✈️</span> 항공편</div>
       <div class="sidebar-item" onclick="scrollToSection('sec-schedule')"><span class="sidebar-item-icon">🗓</span> 일정표</div>
       <div class="sidebar-item" onclick="scrollToSection('sec-hotel')"><span class="sidebar-item-icon">🏨</span> 호텔</div>
       <div class="sidebar-item" onclick="scrollToSection('sec-golf')"><span class="sidebar-item-icon">⛳</span> 골프장</div>
@@ -444,7 +444,7 @@ select option{background:white;color:var(--ink)}
     <div class="tab-panel" id="panel-product-new">
 
       <!-- 통합 상단 바 -->
-      <div class="form-card" id="currentProductBanner" style="background:linear-gradient(135deg,#2C2C2C,#3D3D3D);border:none;position:sticky;top:0;z-index:10;margin-bottom:16px;padding:14px 20px 12px">
+      <div class="form-card" id="currentProductBanner" style="background:linear-gradient(135deg,#2C2C2C,#3D3D3D);border:none;margin-bottom:16px;padding:14px 20px 12px">
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px">
           <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5)" id="bannerLabel">새 상품 등록</div>
           <div style="flex:1"></div>
@@ -487,44 +487,85 @@ select option{background:white;color:var(--ink)}
 
       <!-- ── 섹션: 기본정보 ── -->
       <div class="sec-header" id="sec-basic" onclick="toggleSection('body-basic')">
-        <div class="sec-header-left"><span>📋</span> 기본 정보</div>
+        <div class="sec-header-left"><span>📋</span> 기본 정보 · 요금</div>
         <span class="sec-toggle" id="tog-basic">▼</span>
       </div>
       <div class="sec-body" id="body-basic">
         <div class="form-card" style="margin-bottom:10px">
+          <!-- 고객 + 여행지 -->
           <div class="form-row col2" style="margin-bottom:10px">
             <div class="field"><label>수신 (고객명)</label><input type="text" id="customerName" placeholder="홍길동" oninput="updateSummary()"></div>
-            <div class="field"><label>담당자</label><input type="text" id="agent" placeholder="김담당"></div>
+            <div class="field"><label>여행지</label><input type="text" id="destination" placeholder="일본 미야자키" oninput="updateSummary()"></div>
           </div>
-          <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+          <!-- 날짜 + 인원 -->
+          <div class="form-row col4" style="margin-bottom:10px">
             <div class="field"><label>출발일</label><input type="date" id="dateFrom" oninput="updateSummary();autoGenDays();loadFlightPicker()"></div>
             <div class="field">
               <label>박수 선택</label>
               <select id="tripNights" onchange="autoGenDays()" style="width:100%;padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;font-family:'Noto Sans KR',sans-serif;font-size:13px;background:var(--input-bg);color:var(--ink)">
                 <option value="">선택...</option>
                 <option value="1,2">1박 2일</option>
-                <option value="1,3">1박 3일 (항공박 포함)</option>
+                <option value="1,3">1박 3일 (항공박)</option>
                 <option value="2,3">2박 3일</option>
-                <option value="2,4">2박 4일 (항공박 포함)</option>
+                <option value="2,4">2박 4일 (항공박)</option>
                 <option value="3,4">3박 4일</option>
-                <option value="3,5">3박 5일 (항공박 포함)</option>
+                <option value="3,5">3박 5일 (항공박)</option>
                 <option value="4,5">4박 5일</option>
-                <option value="4,6">4박 6일 (항공박 포함)</option>
+                <option value="4,6">4박 6일 (항공박)</option>
                 <option value="5,6">5박 6일</option>
-                <option value="5,7">5박 7일 (항공박 포함)</option>
+                <option value="5,7">5박 7일 (항공박)</option>
                 <option value="6,7">6박 7일</option>
-                <option value="6,8">6박 8일 (항공박 포함)</option>
+                <option value="6,8">6박 8일 (항공박)</option>
                 <option value="custom">직접 입력</option>
               </select>
             </div>
-            <div class="field" id="customNightField" style="display:none"><label>박수 직접입력</label><input type="number" id="customNights" placeholder="7" min="1" oninput="autoGenDays()" style="width:100%"></div>
+            <div class="field"><label>인원</label><input type="text" id="pax" placeholder="예: 4명" oninput="updateSummary();calcTotal()"></div>
+            <div class="field"><label>견적 발송일</label><input type="date" id="quoteDate"></div>
+          </div>
+          <div class="field" id="customNightField" style="display:none;margin-bottom:10px"><label>박수 직접입력</label><input type="number" id="customNights" placeholder="7" min="1" oninput="autoGenDays()" style="width:200px"></div>
+          <!-- 요금 -->
+          <div style="border-top:1.5px solid var(--line);padding-top:12px;margin-top:4px">
+            <div class="form-row col2" style="margin-bottom:10px">
+              <div class="field"><label>성인 1인 요금 (원)</label><input type="number" id="pricePerPerson" placeholder="1020000" oninput="calcTotal()"></div>
+              <div class="field"><label>담당자</label><input type="text" id="agent" placeholder="김담당"></div>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+              <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" id="chkNoFlight" onchange="toggleExtraPrice()" style="width:15px;height:15px"> 항공권 미포함 견적</label>
+              <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" id="chkChild" onchange="toggleExtraPrice()" style="width:15px;height:15px"> 아동 요금</label>
+              <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" id="chkInfant" onchange="toggleExtraPrice()" style="width:15px;height:15px"> 유아 요금</label>
+            </div>
+            <div id="extraPriceFields" style="display:none;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
+              <div class="field" id="noFlightField" style="display:none"><label>항공권 제외 시 1인</label><input type="number" id="priceNoFlight" placeholder="750000"></div>
+              <div class="field" id="childField" style="display:none"><label>아동 1인 요금</label><input type="number" id="priceChild" placeholder="800000"></div>
+              <div class="field" id="infantField" style="display:none"><label>유아 1인 요금</label><input type="number" id="priceInfant" placeholder="300000"></div>
+            </div>
+            <div class="field"><label>요금 안내 메모</label><textarea id="priceNote" placeholder="※ 환율·항공 시세에 따라 변동될 수 있습니다" style="min-height:50px"></textarea></div>
+          </div>
+          <!-- 포함/불포함 -->
+          <div style="border-top:1.5px solid var(--line);padding-top:12px;margin-top:12px">
+            <div class="form-row col2">
+              <div class="field">
+                <label>포함 사항</label>
+                <div class="tags-wrap" id="includes-wrap" onclick="focusTagInput('includes-input')">
+                  <input class="tag-input" id="includes-input" placeholder="항목 입력 후 Enter" onkeydown="addTag(event,'includes')">
+                </div>
+              </div>
+              <div class="field">
+                <label>불포함 사항</label>
+                <div class="tags-wrap" id="excludes-wrap" onclick="focusTagInput('excludes-input')">
+                  <input class="tag-input" id="excludes-input" placeholder="항목 입력 후 Enter" onkeydown="addTag(event,'excludes')">
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <!-- 숨김 필드 (데이터 유지용) -->
+        <!-- 숨김 필드 -->
         <input type="hidden" id="airport">
         <input type="hidden" id="customerPhone">
         <input type="hidden" id="agentTeam">
         <input type="hidden" id="dateTo">
+        <input type="hidden" id="rounds" value="2">
+        <input type="hidden" id="priceTotal">
       </div>
 
       <!-- ── 섹션: 항공편 선택 ── -->
@@ -543,61 +584,9 @@ select option{background:white;color:var(--ink)}
           <div id="flightPickerList" style="display:flex;flex-direction:column;gap:6px"></div>
           <div id="flightPickerEmpty" style="display:none;text-align:center;padding:20px;color:var(--ink3);font-size:13px">해당 요일에 운항하는 항공편이 없습니다.</div>
           <div id="flightSelected" style="display:none;margin-top:10px;padding:12px;background:#F5F5F5;border:1.5px solid #E5E5E5;border-radius:10px">
-            <div style="font-size:11px;font-weight:700;color:#2C2C2C;margin-bottom:8px">✅ 선택된 항공편</div>
+            <div style="font-size:11px;font-weight:700;color:var(--ink);margin-bottom:8px">✅ 선택된 항공편</div>
             <div id="flightSelectedInfo" style="font-size:13px;color:#111;line-height:1.8"></div>
             <button onclick="clearFlightSelection()" style="margin-top:8px;background:none;border:1px solid var(--line);border-radius:6px;padding:4px 12px;font-size:11px;cursor:pointer;color:var(--ink3);font-family:'Noto Sans KR',sans-serif">선택 해제</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- ── 섹션: 요금표 ── -->
-      <div class="sec-header" id="sec-price" onclick="toggleSection('body-price')">
-        <div class="sec-header-left"><span>💰</span> 요금표</div>
-        <span class="sec-toggle" id="tog-price">▼</span>
-      </div>
-      <div class="sec-body" id="body-price">
-        <div class="form-card" style="margin-bottom:10px">
-          <!-- 여행 기본 -->
-          <div class="form-row col4" style="margin-bottom:14px">
-            <div class="field"><label>여행지</label><input type="text" id="destination" placeholder="일본 미야자키" oninput="updateSummary()"></div>
-            <div class="field"><label>인원</label><input type="text" id="pax" placeholder="예: 4명" oninput="updateSummary();calcTotal()"></div>
-            <div class="field"><label>라운드 수</label><input type="number" id="rounds" placeholder="2" min="1"></div>
-            <div class="field"><label>견적 발송일</label><input type="date" id="quoteDate"></div>
-          </div>
-          <!-- 성인 기본 요금 -->
-          <div style="font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:8px">패키지 요금</div>
-          <div class="form-row col2" style="margin-bottom:14px">
-            <div class="field"><label>성인 1인 요금 (원)</label><input type="number" id="pricePerPerson" placeholder="1020000" oninput="calcTotal()"></div>
-            <div class="field"><label>총액 (자동계산)</label><input type="text" id="priceTotal" placeholder="자동계산" readonly style="background:#F0F0EE;color:var(--ink3)"></div>
-          </div>
-          <!-- 선택적 추가 요금 -->
-          <div style="font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:8px;border-top:1px solid var(--line);padding-top:12px">선택 추가 요금 (해당 시 입력)</div>
-          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px">
-            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" id="chkNoFlight" onchange="toggleExtraPrice()" style="width:15px;height:15px"> 항공권 미포함 견적</label>
-            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" id="chkChild" onchange="toggleExtraPrice()" style="width:15px;height:15px"> 아동 요금</label>
-            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" id="chkInfant" onchange="toggleExtraPrice()" style="width:15px;height:15px"> 유아 요금</label>
-          </div>
-          <div id="extraPriceFields" style="display:none;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
-            <div class="field" id="noFlightField" style="display:none"><label>항공권 제외 시 1인</label><input type="number" id="priceNoFlight" placeholder="750000"></div>
-            <div class="field" id="childField" style="display:none"><label>아동 1인 요금</label><input type="number" id="priceChild" placeholder="800000"></div>
-            <div class="field" id="infantField" style="display:none"><label>유아 1인 요금</label><input type="number" id="priceInfant" placeholder="300000"></div>
-          </div>
-          <div class="field"><label>요금 안내 메모</label><textarea id="priceNote" placeholder="※ 환율·항공 시세에 따라 변동될 수 있습니다" style="min-height:55px"></textarea></div>
-        </div>
-        <div class="form-card" style="margin-bottom:10px">
-          <div class="form-row col2">
-            <div class="field">
-              <label>포함 사항</label>
-              <div class="tags-wrap" id="includes-wrap" onclick="focusTagInput('includes-input')">
-                <input class="tag-input" id="includes-input" placeholder="항목 입력 후 Enter" onkeydown="addTag(event,'includes')">
-              </div>
-            </div>
-            <div class="field">
-              <label>불포함 사항</label>
-              <div class="tags-wrap" id="excludes-wrap" onclick="focusTagInput('excludes-input')">
-                <input class="tag-input" id="excludes-input" placeholder="항목 입력 후 Enter" onkeydown="addTag(event,'excludes')">
-              </div>
-            </div>
           </div>
         </div>
       </div>
