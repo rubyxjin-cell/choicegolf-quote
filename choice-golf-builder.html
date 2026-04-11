@@ -260,9 +260,6 @@ select option{background:#1C3D2E;color:white}
       <div class="sidebar-item active" onclick="switchTab('products')" id="tab-products">
         <span class="sidebar-item-icon">📦</span> 상품 목록
       </div>
-      <div class="sidebar-item" onclick="switchTab('product-new')" id="tab-product-new">
-        <span class="sidebar-item-icon">✏️</span> 상품 등록/수정
-      </div>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-label">견적서</div>
@@ -3143,9 +3140,9 @@ function applyFlightToItinerary(f) {
   const firstSched = firstDay.querySelector('.schedule-items');
   if (firstSched) {
     const dayId = firstDay.id;
-    const depItem = scheduleItemHTML(dayId, f.dep_airport, f.flight_out, f.dep_time_out, `${f.dep_airport} 국제공항 출발`, '');
-    const arrItem = scheduleItemHTML(dayId, f.arr_airport||f.destination, '', f.arr_time_out, `${f.arr_airport||f.destination} 공항 도착`, '');
-    // 마킹 추가
+    // scheduleItemHTML(dayId, place, time, transport, text, color)
+    const depItem = scheduleItemHTML(dayId, f.dep_airport, f.dep_time_out, f.flight_out, `${f.dep_airport} 국제공항 출발`, '');
+    const arrItem = scheduleItemHTML(dayId, f.arr_airport||f.destination, f.arr_time_out, '', `${f.arr_airport||f.destination} 공항 도착`, '');
     const depMarked = depItem.replace('class="schedule-item"', 'class="schedule-item" data-flight-auto="1"');
     const arrMarked = arrItem.replace('class="schedule-item"', 'class="schedule-item" data-flight-auto="1"');
     firstSched.insertAdjacentHTML('afterbegin', arrMarked);
@@ -3157,8 +3154,8 @@ function applyFlightToItinerary(f) {
   const lastSched = lastDay.querySelector('.schedule-items');
   if (lastSched) {
     const dayId = lastDay.id;
-    const depItem = scheduleItemHTML(dayId, f.arr_airport||f.destination, f.flight_in, f.dep_time_in, `${f.arr_airport||f.destination} 공항 출발`, '');
-    const arrItem = scheduleItemHTML(dayId, f.dep_airport, '', f.arr_time_in, `${f.dep_airport} 국제공항 도착`, '');
+    const depItem = scheduleItemHTML(dayId, f.arr_airport||f.destination, f.dep_time_in, f.flight_in, `${f.arr_airport||f.destination} 공항 출발`, '');
+    const arrItem = scheduleItemHTML(dayId, f.dep_airport, f.arr_time_in, '', `${f.dep_airport} 국제공항 도착`, '');
     const depMarked = depItem.replace('class="schedule-item"', 'class="schedule-item" data-flight-auto="1"');
     const arrMarked = arrItem.replace('class="schedule-item"', 'class="schedule-item" data-flight-auto="1"');
     lastSched.insertAdjacentHTML('beforeend', depMarked);
