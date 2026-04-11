@@ -635,6 +635,23 @@ select option{background:#1C3D2E;color:white}
         </div>
       </div>
 
+      <!-- ── 섹션: 예약 안내 (인보이스) ── -->
+      <div class="sec-header" id="sec-invoice" onclick="toggleSection('body-invoice')">
+        <div class="sec-header-left"><span>🧾</span> 예약 안내 (인보이스)</div>
+        <span class="sec-toggle collapsed" id="tog-invoice">▼</span>
+      </div>
+      <div class="sec-body hidden" id="body-invoice">
+        <div class="form-card" style="margin-bottom:10px">
+          <div class="form-row col2">
+            <div class="field"><label>예약금</label><input type="text" id="deposit" placeholder="1인 50만원 / 총 금액의 30%"></div>
+            <div class="field"><label>입금 계좌</label><input type="text" id="bankAccount" placeholder="국민은행 000-000-00-000000 (주)초이스골프"></div>
+          </div>
+          <div class="form-row">
+            <div class="field"><label>취소 및 환불 규정</label><textarea id="cancelPolicy" placeholder="출발 30일 전: 100% 환불&#10;출발 15~29일 전: 80% 환불&#10;출발 7~14일 전: 50% 환불&#10;출발 6일 이내: 환불 불가" style="min-height:90px"></textarea></div>
+          </div>
+        </div>
+      </div>
+
       <!-- ── 섹션: 연락처 ── -->
       <div class="sec-header" id="sec-contact" onclick="toggleSection('body-contact')">
         <div class="sec-header-left"><span>📞</span> 연락처 & 회사</div>
@@ -648,6 +665,9 @@ select option{background:#1C3D2E;color:white}
           </div>
         </div>
         <div class="form-card" style="margin-bottom:10px">
+          <div class="form-row">
+            <div class="field"><label>로고 이미지 URL</label><input type="text" id="logoUrl" placeholder="https://... 로고 이미지 URL"></div>
+          </div>
           <div class="form-row col2">
             <div class="field"><label>회사명 (한글)</label><input type="text" id="companyName" placeholder="초이스골프" value="초이스골프"></div>
             <div class="field"><label>회사명 (영문)</label><input type="text" id="companyNameEn" placeholder="Choice Golf Tour" value="Choice Golf Tour"></div>
@@ -900,7 +920,7 @@ function clearForm() {
   const ids = ['destination','airport','dateFrom','dateTo','rounds','quoteDate','agent','agentTeam',
     'pricePerPerson','priceNote','priceNoFlight','priceChild','priceInfant',
     'hotelName','hotelNameKr','hotelRoom','hotelNights','hotelDesc',
-    'contactPhone','contactKakao','companyName','companyNameEn','productName','pax','customerName','customerPhone'];
+    'contactPhone','contactKakao','companyName','companyNameEn','logoUrl','deposit','bankAccount','cancelPolicy','productName','pax','customerName','customerPhone'];
   ids.forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
   const cn = document.getElementById('companyName'); if(cn) cn.value = '초이스골프';
   const ce = document.getElementById('companyNameEn'); if(ce) ce.value = 'Choice Golf Tour';
@@ -1355,7 +1375,9 @@ function collectData() {
     hotelPhotoUrl: v('hotelPhotoUrl'),
     courses,
     contactPhone: v('contactPhone'), contactKakao: v('contactKakao'),
-    companyName: v('companyName'), companyNameEn: v('companyNameEn')
+    companyName: v('companyName'), companyNameEn: v('companyNameEn'),
+    logoUrl: v('logoUrl'),
+    deposit: v('deposit'), bankAccount: v('bankAccount'), cancelPolicy: v('cancelPolicy')
   };
 }
 
@@ -2017,6 +2039,10 @@ function applyProductData(d) {
   set('companyName', d.companyName);
   set('companyNameEn', d.companyNameEn);
   set('hotelPhotoUrl', d.hotelPhotoUrl);
+  set('logoUrl', d.logoUrl);
+  set('deposit', d.deposit);
+  set('bankAccount', d.bankAccount);
+  set('cancelPolicy', d.cancelPolicy);
   // 견적발송일 오늘 날짜
   const qd = document.getElementById('quoteDate');
   if(qd && !qd.value) qd.value = new Date().toISOString().split('T')[0];
