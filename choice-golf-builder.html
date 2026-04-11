@@ -110,7 +110,7 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
 .golf-fields{background:rgba(28,61,46,0.04);border-radius:8px;padding:14px;margin-bottom:14px;display:none}
 .golf-fields.show{display:block}
 
-.schedule-item{display:grid;grid-template-columns:70px 90px 1fr 30px 28px;gap:6px;align-items:center;margin-bottom:5px}
+.schedule-item{display:grid;grid-template-columns:60px 60px 60px 1fr 30px 28px;gap:6px;align-items:center;margin-bottom:5px}
 .schedule-item input{background:var(--white);border:1.5px solid var(--line);border-radius:6px;padding:6px 8px;font-size:12px;color:var(--ink);font-family:'Noto Sans KR',sans-serif;outline:none;transition:border-color .15s}
 .schedule-item input:focus{border-color:var(--accent)}
 .schedule-item-del{background:none;border:none;cursor:pointer;color:var(--ink3);font-size:14px;display:flex;align-items:center;justify-content:center;border-radius:4px;transition:all .15s;width:28px;height:28px}
@@ -1120,8 +1120,8 @@ function addDay(data={}, num=null, fromStr=null, dateObj=null) {
     dateLabel = ` (${d.getMonth()+1}/${d.getDate()})`;
   }
 
-  const schedItems = (data.items || [{time:'',transport:'',text:'',color:''}])
-    .map(it => scheduleItemHTML(id, it.time||'', it.transport||'', it.text||'', it.color||'')).join('');
+  const schedItems = (data.items || [{place:'',time:'',transport:'',text:'',color:''}])
+    .map(it => scheduleItemHTML(id, it.place||'', it.time||'', it.transport||'', it.text||'', it.color||'')).join('');
 
   const meals = data.meals || {bf:'', lunch:'', dinner:''};
   const hotelName = data.hotelStay || '';
@@ -1143,9 +1143,10 @@ function addDay(data={}, num=null, fromStr=null, dateObj=null) {
         <div class="day-meal-field"><label>🍽 석식</label><input type="text" placeholder="미입력 시 미표기" value="${meals.dinner||''}" data-meal="dinner"></div>
       </div>
       <!-- 시간표 헤더 -->
-      <div style="display:grid;grid-template-columns:70px 90px 1fr 30px 28px;gap:6px;margin:8px 0 4px">
-        <span style="font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;letter-spacing:.5px">시간</span>
+      <div style="display:grid;grid-template-columns:60px 60px 60px 1fr 30px 28px;gap:6px;margin:8px 0 4px">
+        <span style="font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;letter-spacing:.5px">장소</span>
         <span style="font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;letter-spacing:.5px">교통</span>
+        <span style="font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;letter-spacing:.5px">시간</span>
         <span style="font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;letter-spacing:.5px">일정 내용</span>
         <span style="font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;letter-spacing:.5px">색상</span>
         <span></span>
@@ -1165,14 +1166,15 @@ function addDay(data={}, num=null, fromStr=null, dateObj=null) {
 const SCHED_COLORS = ['', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8'];
 const COLOR_LABELS = ['기본', '🔴', '🟦', '🔵', '🟢', '🟡', '🟣', '🩵'];
 
-function scheduleItemHTML(dayId, time='', transport='', text='', color='') {
+function scheduleItemHTML(dayId, place='', time='', transport='', text='', color='') {
   const bgStyle = color ? `background:${color}20;border-left:3px solid ${color}` : '';
   const colorOpts = SCHED_COLORS.map((c,i) =>
     `<option value="${c}" ${color===c?'selected':''}>${COLOR_LABELS[i]}</option>`
   ).join('');
   return `<div class="schedule-item" style="${bgStyle}">
-    <input type="text" placeholder="09:00" value="${time}" style="text-align:center;font-size:12px" oninput="updateSchedColor(this)">
-    <input type="text" placeholder="버스/전세기" value="${transport}" style="font-size:12px">
+    <input type="text" placeholder="인천" value="${place}" style="font-size:12px" oninput="updateSchedColor(this)">
+    <input type="text" placeholder="버스" value="${transport}" style="font-size:12px">
+    <input type="text" placeholder="09:00" value="${time}" style="text-align:center;font-size:12px">
     <input type="text" placeholder="일정 내용" value="${text}" style="font-size:12px">
     <select onchange="applySchedColor(this)" style="font-size:12px;border:1.5px solid var(--line);border-radius:6px;padding:4px 2px;background:var(--input-bg);width:30px;text-align:center;cursor:pointer">${colorOpts}</select>
     <button class="schedule-item-del" onclick="this.parentElement.remove()">✕</button>
@@ -1278,11 +1280,12 @@ function collectData() {
     block.querySelectorAll('.schedule-item').forEach(si => {
       const ins = si.querySelectorAll('input');
       const colorSel = si.querySelector('select');
-      const time = ins[0]?.value || '';
+      const place = ins[0]?.value || '';
       const transport = ins[1]?.value || '';
-      const text = ins[2]?.value || '';
+      const time = ins[2]?.value || '';
+      const text = ins[3]?.value || '';
       const color = colorSel?.value || '';
-      if(text || time) items.push({time, transport, text, color});
+      if(text || time || place) items.push({place, time, transport, text, color});
     });
     // 식사 텍스트 수집
     const meals = {
