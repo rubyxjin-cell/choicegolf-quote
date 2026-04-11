@@ -11,9 +11,9 @@
 :root{
   --bg:#FFFFFF;
   --white:#FFFFFF;
-  --sidebar:#2C2C2C;
-  --sidebar-hover:#3D3D3D;
-  --accent:#2C2C2C;
+  --sidebar:#FFFFFF;
+  --sidebar-hover:#F5F5F5;
+  --accent:#333333;
   --gold:#A07840;
   --gold-lt:#C9A268;
   --line:#E5E5E5;
@@ -28,30 +28,30 @@ html,body{height:100%}
 body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;color:var(--ink);display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
 
 /* ── TOP BAR ── */
-.topbar{height:64px;background:var(--sidebar);display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0;z-index:200}
-.topbar-logo{font-family:"Cormorant Garamond",serif;font-size:20px;font-weight:600;color:var(--gold-lt);letter-spacing:.5px;cursor:pointer;transition:opacity .15s}
+.topbar{height:64px;background:#FFFFFF;display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0;z-index:200;border-bottom:1.5px solid var(--line)}
+.topbar-logo{font-family:"Cormorant Garamond",serif;font-size:20px;font-weight:600;color:var(--ink);letter-spacing:.5px;cursor:pointer;transition:opacity .15s}
 .topbar-right{display:flex;align-items:center;gap:10px}
 .btn-preview{display:flex;align-items:center;gap:7px;background:var(--gold);color:white;border:none;padding:9px 20px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:background .15s}
 .btn-preview:hover{background:var(--gold-lt)}
 .btn-preview-icon{font-size:15px}
-.btn-save{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.8);border:1px solid rgba(255,255,255,0.2);padding:9px 18px;border-radius:8px;font-size:13px;font-weight:400;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:background .15s}
-.btn-save:hover{background:rgba(255,255,255,0.2)}
+.btn-save{display:flex;align-items:center;gap:7px;background:#F5F5F5;color:var(--ink2);border:1.5px solid var(--line);padding:9px 18px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:background .15s}
+.btn-save:hover{background:#EEEEEE}
 .btn-publish{display:flex;align-items:center;gap:7px;background:#2563EB;color:white;border:none;padding:9px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:background .15s}
 .btn-publish:hover{background:#1D4ED8}
 .btn-publish:disabled{background:#6B7280;cursor:not-allowed}
 
 /* ── PRODUCT NAV BAR ── */
-.pnav-item{position:relative;padding:16px 28px;color:rgba(255,255,255,0.8);font-size:16px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;border-bottom:3px solid transparent}
-.pnav-item:hover,.pnav-item.active{color:white;background:rgba(255,255,255,0.12);border-bottom-color:var(--gold-lt)}
-.pnav-item::after{content:'▾';margin-left:6px;font-size:11px;opacity:.5}
-.pnav-item .pnav-drop{display:none;position:absolute;top:100%;left:0;background:white;border-radius:0 0 12px 12px;box-shadow:0 12px 32px rgba(0,0,0,0.18);min-width:200px;z-index:300;padding:8px 0}
+.pnav-item{position:relative;padding:16px 28px;color:var(--ink2);font-size:16px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;border-bottom:3px solid transparent}
+.pnav-item:hover,.pnav-item.active{color:var(--ink);background:#FFFFFF;border-bottom-color:var(--gold)}
+.pnav-item::after{content:'▾';margin-left:6px;font-size:11px;opacity:.4}
+.pnav-item .pnav-drop{display:none;position:absolute;top:100%;left:0;background:white;border-radius:0 0 12px 12px;box-shadow:0 12px 32px rgba(0,0,0,0.12);min-width:200px;z-index:300;padding:8px 0;border:1px solid var(--line)}
 .pnav-item:hover .pnav-drop{display:block}
 .pnav-drop a{display:block;padding:12px 20px;color:var(--ink);font-size:14px;font-weight:500;cursor:pointer;transition:all .15s;border-left:3px solid transparent}
-.pnav-drop a:hover{background:#F8F7F5;color:var(--accent);border-left-color:var(--accent)}
-.pnav-drop .pnav-drop-add{border-top:1.5px solid var(--line);margin-top:6px;padding-top:10px;color:var(--accent);font-weight:700}
-.pnav-add{padding:16px 24px;color:rgba(255,255,255,0.45);font-size:15px;cursor:pointer;font-weight:700;display:flex;align-items:center;gap:6px;transition:all .2s}
+.pnav-drop a:hover{background:#F5F5F5;color:var(--gold);border-left-color:var(--gold)}
+.pnav-drop .pnav-drop-add{border-top:1.5px solid var(--line);margin-top:6px;padding-top:10px;color:var(--gold);font-weight:700}
+.pnav-add{padding:16px 24px;color:var(--ink3);font-size:15px;cursor:pointer;font-weight:700;display:flex;align-items:center;gap:6px;transition:all .2s}
 .pnav-add::after{display:none}
-.pnav-add:hover{color:var(--gold-lt);background:rgba(255,255,255,0.08)}
+.pnav-add:hover{color:var(--gold);background:#FFFFFF}
 .region-chip{padding:10px 22px;border-radius:24px;border:1.5px solid var(--line);background:white;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Noto Sans KR',sans-serif;color:var(--ink2)}
 .region-chip:hover{border-color:var(--accent);color:var(--accent)}
 .region-chip.active{background:var(--accent);color:white;border-color:var(--accent)}
@@ -60,12 +60,12 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
 .main{display:flex;flex:1;overflow:hidden}
 
 /* ── SIDEBAR TABS ── */
-.sidebar{width:220px;background:var(--sidebar);flex-shrink:0;padding:20px 0;overflow-y:auto}
+.sidebar{width:220px;background:var(--sidebar);flex-shrink:0;padding:20px 0;overflow-y:auto;border-right:1.5px solid var(--line)}
 .sidebar-section{margin-bottom:4px;padding:0 12px}
-.sidebar-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.3);padding:0 8px;margin-bottom:8px;margin-top:16px}
-.sidebar-item{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:8px;color:rgba(255,255,255,0.6);cursor:pointer;transition:all .15s;font-size:14px;font-weight:400}
-.sidebar-item:hover{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.9)}
-.sidebar-item.active{background:rgba(255,255,255,0.14);color:white;font-weight:500}
+.sidebar-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink3);padding:0 8px;margin-bottom:8px;margin-top:16px}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:8px;color:var(--ink2);cursor:pointer;transition:all .15s;font-size:14px;font-weight:400}
+.sidebar-item:hover{background:#F0F0F0;color:var(--ink)}
+.sidebar-item.active{background:#EEEEEE;color:var(--ink);font-weight:600}
 .sidebar-item-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
 .sidebar-badge{margin-left:auto;background:var(--gold);color:white;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500}
 
@@ -321,7 +321,7 @@ select option{background:#2C2C2C;color:white}
     <!-- ① 상품 목록 (네비게이션 스타일) -->
     <div class="tab-panel active" id="panel-products">
       <!-- 국가 네비게이션 바 -->
-      <div style="background:var(--accent);border-radius:12px 12px 0 0;display:flex;flex-wrap:wrap;align-items:stretch;position:relative" id="prodNavBar"></div>
+      <div style="background:#FAFAFA;border-radius:12px 12px 0 0;display:flex;flex-wrap:wrap;align-items:stretch;position:relative;border:1.5px solid var(--line);border-bottom:none" id="prodNavBar"></div>
       <div class="form-card" style="border-radius:0 0 12px 12px;margin-top:0">
         <!-- 현재 위치 + 검색 -->
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap">
