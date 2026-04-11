@@ -310,6 +310,7 @@ select option{background:#1C3D2E;color:white}
           <button onclick="filterByCategory('괌/사이판')" class="cat-btn" data-cat="괌/사이판">🌺 괌/사이판</button>
           <button onclick="filterByCategory('기타')" class="cat-btn" data-cat="기타">🌐 기타</button>
         </div>
+        <div id="regionFilterWrap" style="display:none;flex-wrap:wrap;gap:6px;margin-bottom:16px;padding:8px 12px;background:#F0F7F4;border-radius:8px;border:1px solid #C4DFD0"></div>
         <div id="productListWrap">
           <div style="text-align:center;padding:40px;color:var(--ink3);font-size:13px">로딩 중...</div>
         </div>
@@ -481,7 +482,7 @@ select option{background:#1C3D2E;color:white}
           </div>
         </div>
         <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-          <select id="productCategory" onchange="loadFlightPicker()" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.25);border-radius:7px;padding:7px 10px;font-size:12px;color:white;font-family:'Noto Sans KR',sans-serif;outline:none;flex-shrink:0">
+          <select id="productCategory" onchange="onCountryChange()" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.25);border-radius:7px;padding:7px 10px;font-size:12px;color:white;font-family:'Noto Sans KR',sans-serif;outline:none;flex-shrink:0">
             <option value="">🌏 국가</option>
             <option value="일본">🇯🇵 일본</option>
             <option value="중국">🇨🇳 중국</option>
@@ -494,6 +495,9 @@ select option{background:#1C3D2E;color:white}
             <option value="캄보디아">🇰🇭 캄보디아</option>
             <option value="괌/사이판">🌺 괌/사이판</option>
             <option value="기타">🌐 기타</option>
+          </select>
+          <select id="productRegion" onchange="loadFlightPicker()" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.25);border-radius:7px;padding:7px 10px;font-size:12px;color:white;font-family:'Noto Sans KR',sans-serif;outline:none;flex-shrink:0">
+            <option value="">📍 지역</option>
           </select>
           <input type="text" id="productName" placeholder="상품명 입력" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);border-radius:7px;padding:7px 12px;font-size:13px;font-weight:600;color:white;font-family:'Noto Sans KR',sans-serif;outline:none;flex:1;min-width:140px" oninput="this.style.color='white'">
         </div>
@@ -874,6 +878,23 @@ const state = {
   baseProductId: null
 };
 
+/* ═══ 국가 > 지역 매핑 ═══ */
+const REGION_MAP = {
+  '일본': ['나고야','오사카','후쿠오카','미야자키','오키나와','홋카이도','도쿄','기타'],
+  '중국': ['하이난','상해','칭다오','쿤밍','광저우','기타'],
+  '대만': ['타이베이','가오슝','타이중','기타'],
+  '태국': ['방콕','파타야','치앙마이','푸켓','기타'],
+  '베트남': ['다낭','호치민','하노이','나트랑','기타'],
+  '필리핀': ['세부','마닐라','클라크','기타'],
+  '인도네시아': ['발리','자카르타','기타'],
+  '말레이시아': ['쿠알라룸푸르','코타키나발루','랑카위','기타'],
+  '캄보디아': ['씨엠립','프놈펜','기타'],
+  '괌/사이판': ['괌','사이판','기타'],
+  '기타': ['기타']
+};
+
+let currentRegion = '';
+
 /* ════════════════════════════
    INIT
 ════════════════════════════ */
@@ -1037,6 +1058,9 @@ function clearForm() {
   document.getElementById('courseCards').innerHTML = '';
   // 박수 선택 초기화
   const sel = document.getElementById('tripNights'); if(sel) sel.value = '';
+  // 국가/지역 초기화
+  const catEl = document.getElementById('productCategory'); if(catEl) catEl.value = '';
+  const regEl = document.getElementById('productRegion'); if(regEl) regEl.innerHTML = '<option value="">📍 지역</option>';
   calcTotal();
   updateSummary();
 }
@@ -1450,6 +1474,8 @@ function collectData() {
   }
 
   return {
+    category: document.getElementById('productCategory')?.value || '',
+    region: document.getElementById('productRegion')?.value || '',
     customerName: v('customerName'), customerPhone: v('customerPhone'),
     pax: v('pax'), destination: v('destination'), airport: v('airport'),
     dateFrom: from, dateTo: to, period, nights,
@@ -1866,10 +1892,52 @@ let currentCategory = '';
 
 function filterByCategory(cat) {
   currentCategory = cat;
-  document.querySelectorAll('.cat-btn').forEach(b => {
+  currentRegion = '';
+  document.querySelectorAll('[data-cat]').forEach(b => {
     b.classList.toggle('cat-active', b.dataset.cat === cat);
   });
+  updateRegionFilter(cat);
   renderProductList();
+}
+
+function updateRegionFilter(country) {
+  const wrap = document.getElementById('regionFilterWrap');
+  if (!wrap) return;
+  if (!country || !REGION_MAP[country]) {
+    wrap.style.display = 'none';
+    wrap.innerHTML = '';
+    return;
+  }
+  const regions = REGION_MAP[country];
+  wrap.style.display = 'flex';
+  wrap.innerHTML = `<span style="font-size:11px;font-weight:700;color:var(--accent);align-self:center;margin-right:6px">📍 지역</span>` +
+    `<button onclick="filterByRegion('')" class="cat-btn cat-active" data-region="">전체</button>` +
+    regions.map(r => `<button onclick="filterByRegion('${r}')" class="cat-btn" data-region="${r}">${r}</button>`).join('');
+}
+
+function filterByRegion(region) {
+  currentRegion = region;
+  document.querySelectorAll('[data-region]').forEach(b => {
+    b.classList.toggle('cat-active', b.dataset.region === region);
+  });
+  renderProductList();
+}
+
+function onCountryChange() {
+  const country = document.getElementById('productCategory')?.value || '';
+  const regionSel = document.getElementById('productRegion');
+  if (regionSel) {
+    regionSel.innerHTML = '<option value="">📍 지역</option>';
+    if (country && REGION_MAP[country]) {
+      REGION_MAP[country].forEach(r => {
+        const opt = document.createElement('option');
+        opt.value = r;
+        opt.textContent = r;
+        regionSel.appendChild(opt);
+      });
+    }
+  }
+  loadFlightPicker();
 }
 
 function previewHotelPhoto(url) {
@@ -1950,12 +2018,12 @@ function renderProductList() {
     return;
   }
   const filtered = currentCategory
-    ? productsCache.filter(p => p.category === currentCategory)
+    ? productsCache.filter(p => p.category === currentCategory && (!currentRegion || p.region === currentRegion))
     : productsCache;
 
   wrap.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-      <span style="font-size:13px;color:var(--ink3)">${currentCategory ? currentCategory+' ' : ''}총 ${filtered.length}개</span>
+      <span style="font-size:13px;color:var(--ink3)">${currentCategory ? currentCategory+' ' : ''}${currentRegion ? currentRegion+' ' : ''}총 ${filtered.length}개</span>
       <button onclick="fetchProducts()" style="font-size:12px;padding:6px 14px;background:none;border:1px solid var(--line);border-radius:8px;cursor:pointer;color:var(--ink3);font-family:'Noto Sans KR',sans-serif">🔄 새로고침</button>
     </div>
     ${filtered.length === 0
@@ -1965,6 +2033,7 @@ function renderProductList() {
       <div style="flex:1">
         <div style="display:flex;align-items:center;gap:6px">
           ${p.category ? `<span style="font-size:10px;padding:2px 8px;background:var(--accent);color:white;border-radius:10px">${p.category}</span>` : ''}
+          ${p.region ? `<span style="font-size:10px;padding:2px 8px;background:#2563EB;color:white;border-radius:10px">${p.region}</span>` : ''}
           <span style="font-size:14px;font-weight:500;color:var(--ink)">${p.name}</span>
         </div>
         <div style="font-size:11px;color:var(--ink3);margin-top:3px">${new Date(p.created_at).toLocaleDateString('ko-KR')} 등록</div>
@@ -1980,6 +2049,7 @@ async function saveProduct() {
   const name = document.getElementById('productName').value.trim();
   if (!name) { showToast('❌ 상품명을 입력해주세요'); return; }
   const category = document.getElementById('productCategory')?.value || '';
+  const region = document.getElementById('productRegion')?.value || '';
   const d = collectData();
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/products`, {
@@ -1990,7 +2060,7 @@ async function saveProduct() {
         'Authorization': `Bearer ${SUPABASE_KEY}`,
         'Prefer': 'return=representation'
       },
-      body: JSON.stringify({ name, category, data: d })
+      body: JSON.stringify({ name, category, region, data: d })
     });
     const rows = await res.json();
     if (!rows || !rows[0]) throw new Error('저장 실패');
@@ -2036,6 +2106,11 @@ async function loadProductById(id) {
   // 카테고리 복원
   const catEl = document.getElementById('productCategory');
   if (catEl && p.category) catEl.value = p.category;
+
+  // 지역 복원
+  onCountryChange(); // 국가에 맞는 지역 옵션 로드
+  const regionEl = document.getElementById('productRegion');
+  if (regionEl && p.region) regionEl.value = p.region;
 
   // 현재 작업 중인 상품 기억
   state.currentProductId = p.id;
@@ -2112,7 +2187,7 @@ async function updateProduct() {
         'apikey': SUPABASE_KEY,
         'Authorization': `Bearer ${SUPABASE_KEY}`
       },
-      body: JSON.stringify({ data: d, category: document.getElementById('productCategory')?.value || '' })
+      body: JSON.stringify({ data: d, category: document.getElementById('productCategory')?.value || '', region: document.getElementById('productRegion')?.value || '' })
     });
     if (res.ok) {
       showToast(`✅ "${state.currentProductName}" 업데이트 완료!`);
@@ -2338,6 +2413,10 @@ async function startQuoteFromProduct(productId) {
     // 카테고리 세팅
     const catEl = document.getElementById('productCategory');
     if (catEl && product.category) catEl.value = product.category;
+    // 지역 세팅
+    onCountryChange();
+    const regionEl = document.getElementById('productRegion');
+    if (regionEl && product.region) regionEl.value = product.region;
 
     // 견적서 모드로 전환
     state.quoteMode = true;
@@ -2434,6 +2513,9 @@ async function loadQuoteById(id) {
     applyProductData(q.data || {});
     const catEl = document.getElementById('productCategory');
     if (catEl && q.data?.category) catEl.value = q.data.category;
+    onCountryChange();
+    const regionEl = document.getElementById('productRegion');
+    if (regionEl && q.data?.region) regionEl.value = q.data.region;
 
     state.quoteMode = true;
     state.currentQuoteId = id;
@@ -3036,6 +3118,8 @@ function loadFlightPicker() {
     return days.includes(dayOfWeek);
   });
   if (category) filtered = filtered.filter(f => f.category === category);
+  const region = document.getElementById('productRegion')?.value;
+  if (region) filtered = filtered.filter(f => f.destination === region);
   let depFiltered = filtered.filter(f => f.dep_airport === pickerDep);
   if (!depFiltered.length) {
     for (const dep of ['인천','부산','청주']) {
