@@ -1606,9 +1606,27 @@ body{padding-bottom:76px}
     ${coursesHTML}
   </section>
 
-  <!-- 05 문의 -->
+  <!-- 05 예약 안내 -->
+  ${(d.deposit || d.bankAccount || d.cancelPolicy) ? `
+  <section class="reveal" style="padding:36px 20px;border-bottom:1px solid #E8E6E1">
+    <div class="sec-title">05 &nbsp;예약 안내</div>
+    ${d.deposit ? `<div style="border:1px solid #E8E6E1;border-radius:12px;padding:16px;margin-bottom:12px;background:#FAFAF8">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#888;margin-bottom:8px">예약금</div>
+      <div style="font-size:18px;font-weight:700;color:#C0392B">${d.deposit}</div>
+    </div>` : ''}
+    ${d.bankAccount ? `<div style="border:1px solid #E8E6E1;border-radius:12px;padding:16px;margin-bottom:12px;background:#FAFAF8">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#888;margin-bottom:8px">입금 계좌</div>
+      <div style="font-size:14px;font-weight:600;color:#111;line-height:1.8">${d.bankAccount}</div>
+    </div>` : ''}
+    ${d.cancelPolicy ? `<div style="border:1px solid #E8E6E1;border-radius:12px;padding:16px;margin-bottom:12px;background:#FFF9F0">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#8B6020;margin-bottom:10px">취소 및 환불 규정</div>
+      <div style="font-size:12px;color:#444;line-height:1.9">${(d.cancelPolicy||'').replace(/\n/g,'<br>')}</div>
+    </div>` : ''}
+  </section>` : ''}
+
+  <!-- 06 문의 -->
   <div class="contact-sec reveal" style="padding:36px 20px;border-bottom:1px solid #E8E6E1">
-    <div class="sec-title">05 &nbsp;문의 · 예약</div>
+    <div class="sec-title">06 &nbsp;문의 · 예약</div>
     <div style="border:1px solid #E8E6E1;border-radius:14px;overflow:hidden">
       <a href="tel:${d.contactPhone}" style="display:flex;align-items:center;gap:14px;padding:16px 18px;border-bottom:1px solid #E8E6E1;text-decoration:none;color:inherit">
         <div style="width:40px;height:40px;border-radius:10px;background:#E8F2EC;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">📞</div>
