@@ -323,27 +323,12 @@ function renderPage(d) {
   }).join('');
 
   wrap.innerHTML = `
-    <!-- HEADER -->
-    <header class="site-header" style="padding:0;flex-direction:column;align-items:stretch;height:auto">
-      <div style="padding:10px 16px 8px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #F0EDE8">
-        <div style="display:flex;align-items:center;gap:8px">
-          <div style="width:36px;height:36px;border-radius:8px;background:#1C3D2E;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#C9A268;flex-shrink:0;letter-spacing:.5px">CG</div>
-          <div>
-            <div style="font-size:14px;font-weight:700;color:#111;line-height:1.2">${d.companyName||'초이스골프'}</div>
-            <div style="font-size:9px;color:#444;letter-spacing:2px;text-transform:uppercase">${d.companyNameEn||'Choice Golf Tour'}</div>
-          </div>
-        </div>
-        <div style="font-size:10px;color:#444;letter-spacing:1px;text-transform:uppercase;border:1px solid #D4D1CA;padding:4px 10px;border-radius:20px">견적서</div>
+    <!-- HEADER (간결하게 로고 + 견적서 뱃지만) -->
+    <header class="site-header" style="padding:10px 16px;height:auto">
+      <div style="display:flex;align-items:center;gap:10px">
+        ${d.logoUrl ? `<img src="${d.logoUrl}" style="height:36px;object-fit:contain">` : `<div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:8px;background:#1C3D2E;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#C9A268;flex-shrink:0">CG</div><div><div style="font-size:14px;font-weight:700;color:#111">${d.companyName||'초이스골프'}</div><div style="font-size:9px;color:#444;letter-spacing:2px;text-transform:uppercase">${d.companyNameEn||'Choice Golf Tour'}</div></div></div>`}
       </div>
-      <div style="padding:6px 16px 8px;background:#F8F7F4">
-        <div style="font-size:10px;color:#6B6B65;line-height:1.8;letter-spacing:0.2px">
-          <span style="font-weight:600;color:#333">(주)초이스골프</span>&nbsp;|&nbsp;☎ 1533-3160
-          ${d.quoteDate ? `&nbsp;|&nbsp;견적발송일: <strong>${d.quoteDate}</strong>` : ''}
-        </div>
-        <div style="font-size:10px;color:#6B6B65;letter-spacing:0.2px">
-          사업자등록 594-88-03010&nbsp;|&nbsp;관광사업 제2025-000011호&nbsp;|&nbsp;통신판매업 제2025-서울중구-213호
-        </div>
-      </div>
+      <div style="font-size:10px;color:#444;letter-spacing:1px;text-transform:uppercase;border:1px solid #D4D1CA;padding:4px 10px;border-radius:20px">견적서</div>
     </header>
 
     <!-- HERO -->
@@ -368,15 +353,17 @@ function renderPage(d) {
     <!-- 01 요금 안내 -->
     <section class="reveal">
       <div class="sec-hd"><span class="sec-n">01</span><span class="sec-t">여행 요금 안내</span><span class="sec-l"></span></div>
-      <div style="background:#1C3D2E;border-radius:16px;padding:20px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-end">
-        <div>
-          <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.75);margin-bottom:6px">패키지 요금</div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:600;color:#C9A268;line-height:1;letter-spacing:-1px">${perPersonMan}</div>
-          <div style="font-size:11px;color:rgba(255,255,255,0.7);margin-top:4px">1인 기준 · ${d.destination||''}</div>
-        </div>
-        <div style="text-align:right">
-          <div style="font-size:11px;color:rgba(255,255,255,0.75);margin-bottom:4px">성인 1인</div>
-          <div style="font-size:18px;font-weight:700;color:white">${perPersonStr}</div>
+      <div style="border:1px solid #E8E6E1;border-radius:16px;padding:20px;margin-bottom:16px;background:#FAFAF8">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end">
+          <div>
+            <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#888;margin-bottom:6px">패키지 요금</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:600;color:#C0392B;line-height:1;letter-spacing:-1px">${perPersonMan}</div>
+            <div style="font-size:11px;color:#888;margin-top:4px">1인 기준 · ${d.destination||''}</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:11px;color:#888;margin-bottom:4px">성인 1인</div>
+            <div style="font-size:20px;font-weight:700;color:#C0392B">${perPersonStr}</div>
+          </div>
         </div>
       </div>
       ${extraPriceHTML ? `<div style="border:1px solid #E8E6E1;border-radius:12px;overflow:hidden;margin-bottom:14px">${extraPriceHTML}</div>` : ''}
@@ -423,9 +410,30 @@ function renderPage(d) {
       <div>${coursesHTML}</div>
     </section>` : ''}
 
-    <!-- 05 문의 -->
+    <!-- 05 예약 안내 (인보이스) -->
+    ${(d.deposit || d.bankAccount || d.cancelPolicy) ? `
+    <section class="reveal">
+      <div class="sec-hd"><span class="sec-n">05</span><span class="sec-t">예약 안내</span><span class="sec-l"></span></div>
+      ${d.deposit ? `
+      <div style="border:1px solid #E8E6E1;border-radius:12px;padding:16px;margin-bottom:12px;background:#FAFAF8">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#888;margin-bottom:8px">예약금</div>
+        <div style="font-size:18px;font-weight:700;color:#C0392B">${d.deposit}</div>
+      </div>` : ''}
+      ${d.bankAccount ? `
+      <div style="border:1px solid #E8E6E1;border-radius:12px;padding:16px;margin-bottom:12px;background:#FAFAF8">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#888;margin-bottom:8px">입금 계좌</div>
+        <div style="font-size:14px;font-weight:600;color:#111;line-height:1.8">${(d.bankAccount||'').replace(/\\n/g,'<br>')}</div>
+      </div>` : ''}
+      ${d.cancelPolicy ? `
+      <div style="border:1px solid #E8E6E1;border-radius:12px;padding:16px;margin-bottom:12px;background:#FFF9F0">
+        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#8B6020;margin-bottom:10px">취소 및 환불 규정</div>
+        <div style="font-size:12px;color:#444;line-height:1.9">${(d.cancelPolicy||'').replace(/\\n/g,'<br>')}</div>
+      </div>` : ''}
+    </section>` : ''}
+
+    <!-- 06 문의 -->
     <div class="contact-sec reveal">
-      <div class="sec-hd"><span class="sec-n">05</span><span class="sec-t">문의 · 예약</span><span class="sec-l"></span></div>
+      <div class="sec-hd"><span class="sec-n">06</span><span class="sec-t">문의 · 예약</span><span class="sec-l"></span></div>
       <div style="border:1px solid #E8E6E1;border-radius:14px;overflow:hidden">
         <a href="tel:${d.contactPhone||''}" style="display:flex;align-items:center;gap:14px;padding:15px 18px;border-bottom:1px solid #E8E6E1;text-decoration:none;color:inherit">
           <div style="width:36px;height:36px;border-radius:10px;background:#E8F2EC;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">📞</div>
@@ -440,11 +448,16 @@ function renderPage(d) {
       </div>
     </div>
 
-    <!-- FOOTER -->
-    <footer class="site-footer" style="padding:32px 20px 80px;text-align:center;background:#F8F7F5;border-top:1px solid #E8E6E1">
-      <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:#111;letter-spacing:.5px;margin-bottom:4px">${d.companyName||'초이스골프'}</div>
+    <!-- FOOTER (회사정보 하단) -->
+    <footer class="site-footer" style="padding:28px 20px 80px;text-align:center;background:#F4F3F0;border-top:1px solid #E8E6E1">
+      ${d.logoUrl ? `<img src="${d.logoUrl}" style="height:32px;object-fit:contain;margin-bottom:10px">` : `<div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:#111;letter-spacing:.5px;margin-bottom:4px">${d.companyName||'초이스골프'}</div>`}
       <div style="font-size:11px;color:#444;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px">${d.companyNameEn||'Choice Golf Tour'}</div>
-      <div style="font-size:11px;color:#444;line-height:2">광고 없는 맞춤 견적 페이지 · 본 페이지는 ${d.companyName||'초이스골프'} 전용입니다</div>
+      <div style="font-size:10px;color:#888;line-height:2">
+        <span style="font-weight:600;color:#555">(주)초이스골프</span>&nbsp;|&nbsp;☎ 1533-3160 / 02-545-5055<br>
+        사업자등록 594-88-03010&nbsp;|&nbsp;관광사업 제2025-000011호<br>
+        통신판매업 제2025-서울중구-213호
+        ${d.quoteDate ? `<br>견적발송일: ${d.quoteDate}` : ''}
+      </div>
     </footer>
 
     <!-- SHARE BAR -->
