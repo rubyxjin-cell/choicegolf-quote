@@ -276,6 +276,9 @@ select option{background:#1C3D2E;color:white}
       <div class="sidebar-item" onclick="switchTab('library')" id="tab-library">
         <span class="sidebar-item-icon">📚</span> 상품소개서
       </div>
+      <div class="sidebar-item" onclick="switchTab('flights')" id="tab-flights">
+        <span class="sidebar-item-icon">✈️</span> 항공편 관리
+      </div>
     </div>
     <div class="sidebar-section" id="sectionNavWrap" style="display:none">
       <div class="sidebar-label">섹션 이동</div>
@@ -375,6 +378,83 @@ select option{background:#1C3D2E;color:white}
       </div>
     </div>
 
+    <!-- ⑤ 항공편 관리 -->
+    <div class="tab-panel" id="panel-flights">
+      <div class="form-card">
+        <div class="form-card-title"><span class="form-card-title-icon">✈️</span> 항공편 스케줄 관리</div>
+        <div style="font-size:13px;color:var(--ink3);margin-bottom:16px">노선별 항공편을 등록하면, 견적서 작성 시 출발일 요일에 맞는 항공편만 자동으로 표시됩니다.</div>
+
+        <!-- 나라별 필터 -->
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">
+          <button onclick="filterFlights('')" class="cat-btn cat-active" data-fcat="">전체</button>
+          <button onclick="filterFlights('일본')" class="cat-btn" data-fcat="일본">🇯🇵 일본</button>
+          <button onclick="filterFlights('중국')" class="cat-btn" data-fcat="중국">🇨🇳 중국</button>
+          <button onclick="filterFlights('대만')" class="cat-btn" data-fcat="대만">🇹🇼 대만</button>
+          <button onclick="filterFlights('태국')" class="cat-btn" data-fcat="태국">🇹🇭 태국</button>
+          <button onclick="filterFlights('베트남')" class="cat-btn" data-fcat="베트남">🇻🇳 베트남</button>
+          <button onclick="filterFlights('필리핀')" class="cat-btn" data-fcat="필리핀">🇵🇭 필리핀</button>
+          <button onclick="filterFlights('기타')" class="cat-btn" data-fcat="기타">🌐 기타</button>
+        </div>
+
+        <div id="flightListWrap">
+          <div style="text-align:center;padding:30px;color:var(--ink3);font-size:13px">로딩 중...</div>
+        </div>
+        <button class="btn-add" onclick="openFlightModal(null)" style="margin-top:10px">+ 새 항공편 등록</button>
+      </div>
+    </div>
+
+    <!-- 항공편 등록/수정 모달 -->
+    <div class="modal-overlay" id="flightModal" style="display:none">
+      <div class="modal-box" style="max-width:600px">
+        <button class="modal-close" onclick="closeFlightModal()">✕</button>
+        <div class="modal-title">✈️ 항공편 등록</div>
+        <input type="hidden" id="fm_id">
+        <div class="form-row col2" style="margin-bottom:12px">
+          <div class="field">
+            <label>국가</label>
+            <select id="fm_category" style="width:100%;padding:8px;border:1.5px solid var(--line);border-radius:8px;font-size:13px;background:var(--input-bg)">
+              <option value="">선택</option>
+              <option value="일본">🇯🇵 일본</option>
+              <option value="중국">🇨🇳 중국</option>
+              <option value="대만">🇹🇼 대만</option>
+              <option value="태국">🇹🇭 태국</option>
+              <option value="베트남">🇻🇳 베트남</option>
+              <option value="필리핀">🇵🇭 필리핀</option>
+              <option value="기타">🌐 기타</option>
+            </select>
+          </div>
+          <div class="field"><label>도착지 (도시)</label><input type="text" id="fm_destination" placeholder="나고야"></div>
+        </div>
+        <div class="form-row col2" style="margin-bottom:12px">
+          <div class="field"><label>항공사</label><input type="text" id="fm_airline" placeholder="아시아나항공"></div>
+          <div class="field"><label>출발 공항</label><input type="text" id="fm_depAirport" placeholder="인천"></div>
+        </div>
+        <div style="font-size:12px;font-weight:600;color:var(--ink2);margin:14px 0 8px;border-top:1px solid var(--line);padding-top:12px">🛫 가는편</div>
+        <div class="form-row col3" style="margin-bottom:12px">
+          <div class="field"><label>편명</label><input type="text" id="fm_flightOut" placeholder="OZ123"></div>
+          <div class="field"><label>출발 시간</label><input type="text" id="fm_depTimeOut" placeholder="09:30"></div>
+          <div class="field"><label>도착 시간</label><input type="text" id="fm_arrTimeOut" placeholder="12:00"></div>
+        </div>
+        <div style="font-size:12px;font-weight:600;color:var(--ink2);margin:14px 0 8px;border-top:1px solid var(--line);padding-top:12px">🛬 오는편</div>
+        <div class="form-row col3" style="margin-bottom:12px">
+          <div class="field"><label>편명</label><input type="text" id="fm_flightIn" placeholder="OZ124"></div>
+          <div class="field"><label>출발 시간</label><input type="text" id="fm_depTimeIn" placeholder="19:00"></div>
+          <div class="field"><label>도착 시간</label><input type="text" id="fm_arrTimeIn" placeholder="21:30"></div>
+        </div>
+        <div style="font-size:12px;font-weight:600;color:var(--ink2);margin:14px 0 8px;border-top:1px solid var(--line);padding-top:12px">📅 운항 요일</div>
+        <div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap" id="fm_days">
+          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:6px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--input-bg)"><input type="checkbox" value="월" style="width:14px;height:14px"> 월</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:6px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--input-bg)"><input type="checkbox" value="화" style="width:14px;height:14px"> 화</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:6px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--input-bg)"><input type="checkbox" value="수" style="width:14px;height:14px"> 수</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:6px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--input-bg)"><input type="checkbox" value="목" style="width:14px;height:14px"> 목</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:6px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--input-bg)"><input type="checkbox" value="금" style="width:14px;height:14px"> 금</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:6px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--input-bg);color:var(--blue)"><input type="checkbox" value="토" style="width:14px;height:14px"> 토</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:6px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--input-bg);color:var(--red)"><input type="checkbox" value="일" style="width:14px;height:14px"> 일</label>
+        </div>
+        <button onclick="saveFlight()" style="width:100%;background:var(--accent);color:white;border:none;padding:12px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">💾 저장</button>
+      </div>
+    </div>
+
     <!-- ② 상품 등록/수정 (모든 섹션 통합) -->
     <div class="tab-panel" id="panel-product-new">
 
@@ -384,7 +464,7 @@ select option{background:#1C3D2E;color:white}
           <div style="flex:1;min-width:160px">
             <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:6px" id="bannerLabel">새 상품 등록</div>
             <div style="display:flex;gap:6px;align-items:center">
-              <select id="productCategory" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.25);border-radius:7px;padding:6px 10px;font-size:12px;color:white;font-family:'Noto Sans KR',sans-serif;outline:none;flex-shrink:0;max-width:130px">
+              <select id="productCategory" onchange="loadFlightPicker()" style="background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.25);border-radius:7px;padding:6px 10px;font-size:12px;color:white;font-family:'Noto Sans KR',sans-serif;outline:none;flex-shrink:0;max-width:130px">
                 <option value="">🌏 국가</option>
                 <option value="일본">🇯🇵 일본</option>
                 <option value="중국">🇨🇳 중국</option>
@@ -420,19 +500,6 @@ select option{background:#1C3D2E;color:white}
         <div class="summary-item"><div class="summary-label">인원</div><div class="summary-value" id="s-pax">—</div></div>
       </div>
 
-      <!-- 📋 견적서 모드: 고객 핵심정보 퀵카드 -->
-      <div class="quote-quick-card" id="quoteQuickCard">
-        <div class="quote-quick-label">👤 고객 핵심 정보 (필수 입력)</div>
-        <div class="quote-quick-grid">
-          <div class="quote-quick-field"><label>고객명</label><input type="text" id="q_customerName" placeholder="홍길동" oninput="document.getElementById('customerName').value=this.value;updateSummary()"></div>
-          <div class="quote-quick-field"><label>연락처</label><input type="text" id="q_customerPhone" placeholder="010-0000-0000" oninput="document.getElementById('customerPhone').value=this.value"></div>
-          <div class="quote-quick-field"><label>출발일</label><input type="date" id="q_dateFrom" oninput="document.getElementById('dateFrom').value=this.value;updateSummary();autoGenDays()"></div>
-          <div class="quote-quick-field"><label>인원</label><input type="text" id="q_pax" placeholder="예: 4명, 남3여1" oninput="document.getElementById('pax').value=this.value;updateSummary();calcTotal()"></div>
-          <div class="quote-quick-field"><label>성인 1인 요금</label><input type="number" id="q_price" placeholder="1020000" oninput="document.getElementById('pricePerPerson').value=this.value;calcTotal()"></div>
-          <div class="quote-quick-field"><label>견적 발송일</label><input type="date" id="q_quoteDate" oninput="document.getElementById('quoteDate').value=this.value"></div>
-        </div>
-      </div>
-
       <!-- ── 섹션: 기본정보 ── -->
       <div class="sec-header" id="sec-basic" onclick="toggleSection('body-basic')">
         <div class="sec-header-left"><span>📋</span> 기본 정보</div>
@@ -441,11 +508,11 @@ select option{background:#1C3D2E;color:white}
       <div class="sec-body" id="body-basic">
         <div class="form-card" style="margin-bottom:10px">
           <div class="form-row col2" style="margin-bottom:10px">
-            <div class="field"><label>여행지</label><input type="text" id="destination" placeholder="일본 미야자키" oninput="updateSummary()"></div>
-            <div class="field"><label>출발 공항</label><input type="text" id="airport" placeholder="김해국제공항 (PUS)"></div>
+            <div class="field"><label>수신 (고객명)</label><input type="text" id="customerName" placeholder="홍길동" oninput="updateSummary()"></div>
+            <div class="field"><label>담당자</label><input type="text" id="agent" placeholder="김담당"></div>
           </div>
-          <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
-            <div class="field"><label>출발일</label><input type="date" id="dateFrom" oninput="updateSummary();autoGenDays()"></div>
+          <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+            <div class="field"><label>출발일</label><input type="date" id="dateFrom" oninput="updateSummary();autoGenDays();loadFlightPicker()"></div>
             <div class="field">
               <label>박수 선택</label>
               <select id="tripNights" onchange="autoGenDays()" style="width:100%;padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;font-family:'Noto Sans KR',sans-serif;font-size:13px;background:var(--input-bg);color:var(--ink)">
@@ -466,17 +533,29 @@ select option{background:#1C3D2E;color:white}
               </select>
             </div>
             <div class="field" id="customNightField" style="display:none"><label>박수 직접입력</label><input type="number" id="customNights" placeholder="7" min="1" oninput="autoGenDays()" style="width:100%"></div>
-            <div class="field" id="roundsField"><label>라운드 수</label><input type="number" id="rounds" placeholder="2" min="1"></div>
           </div>
-          <div class="form-row col3" style="margin-bottom:10px">
-            <div class="field"><label>고객명</label><input type="text" id="customerName" placeholder="홍길동" oninput="updateSummary()"></div>
-            <div class="field"><label>연락처</label><input type="text" id="customerPhone" placeholder="010-0000-0000"></div>
-            <div class="field"><label>인원</label><input type="text" id="pax" placeholder="예: 4명, 남3여1" oninput="updateSummary();calcTotal()"></div>
-          </div>
-          <div class="form-row col3">
-            <div class="field"><label>담당 AGT</label><input type="text" id="agent" placeholder="김담당"></div>
-            <div class="field"><label>부서 / 팀</label><input type="text" id="agentTeam" placeholder="해외팀"></div>
-            <div class="field"><label>견적 발송일</label><input type="date" id="quoteDate"></div>
+        </div>
+        <!-- 숨김 필드 (데이터 유지용) -->
+        <input type="hidden" id="airport">
+        <input type="hidden" id="customerPhone">
+        <input type="hidden" id="agentTeam">
+        <input type="hidden" id="dateTo">
+      </div>
+
+      <!-- ── 섹션: 항공편 선택 ── -->
+      <div class="sec-header" id="sec-flight" onclick="toggleSection('body-flight')">
+        <div class="sec-header-left"><span>✈️</span> 항공편</div>
+        <span class="sec-toggle collapsed" id="tog-flight">▼</span>
+      </div>
+      <div class="sec-body hidden" id="body-flight">
+        <div class="form-card" style="margin-bottom:10px">
+          <div id="flightPickerInfo" style="font-size:12px;color:var(--ink3);margin-bottom:10px">출발일을 입력하면 해당 요일에 운항하는 항공편이 표시됩니다.</div>
+          <div id="flightPickerList" style="display:flex;flex-direction:column;gap:6px"></div>
+          <div id="flightPickerEmpty" style="display:none;text-align:center;padding:20px;color:var(--ink3);font-size:13px">해당 요일에 운항하는 항공편이 없습니다.</div>
+          <div id="flightSelected" style="display:none;margin-top:10px;padding:12px;background:#F0F7F4;border:1.5px solid #C4DFD0;border-radius:10px">
+            <div style="font-size:11px;font-weight:700;color:#1C3D2E;margin-bottom:8px">✅ 선택된 항공편</div>
+            <div id="flightSelectedInfo" style="font-size:13px;color:#111;line-height:1.8"></div>
+            <button onclick="clearFlightSelection()" style="margin-top:8px;background:none;border:1px solid var(--line);border-radius:6px;padding:4px 12px;font-size:11px;cursor:pointer;color:var(--ink3);font-family:'Noto Sans KR',sans-serif">선택 해제</button>
           </div>
         </div>
       </div>
@@ -488,6 +567,13 @@ select option{background:#1C3D2E;color:white}
       </div>
       <div class="sec-body" id="body-price">
         <div class="form-card" style="margin-bottom:10px">
+          <!-- 여행 기본 -->
+          <div class="form-row col4" style="margin-bottom:14px">
+            <div class="field"><label>여행지</label><input type="text" id="destination" placeholder="일본 미야자키" oninput="updateSummary()"></div>
+            <div class="field"><label>인원</label><input type="text" id="pax" placeholder="예: 4명" oninput="updateSummary();calcTotal()"></div>
+            <div class="field"><label>라운드 수</label><input type="number" id="rounds" placeholder="2" min="1"></div>
+            <div class="field"><label>견적 발송일</label><input type="date" id="quoteDate"></div>
+          </div>
           <!-- 성인 기본 요금 -->
           <div style="font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:8px">패키지 요금</div>
           <div class="form-row col2" style="margin-bottom:14px">
@@ -829,6 +915,7 @@ window.onload = () => {
   updateSummary();
   // fetchProducts 완료 후 반드시 renderProductList 호출
   fetchProducts();
+  fetchFlights();
 };
 
 /* ════════════════════════════
@@ -2760,6 +2847,239 @@ function confirmPickerSelection() {
   }
 
   closePickerModal();
+}
+
+/* ════════════════════════════
+   FLIGHTS SYSTEM
+════════════════════════════ */
+let flightsCache = [];
+let flightFilterCat = '';
+let selectedFlightData = null;
+
+async function fetchFlights() {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/flights?order=category,destination,airline`, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+    });
+    flightsCache = await res.json();
+    renderFlightList();
+  } catch(e) { console.error('flights fetch error', e); }
+}
+
+function filterFlights(cat) {
+  flightFilterCat = cat;
+  document.querySelectorAll('[data-fcat]').forEach(b => b.classList.toggle('cat-active', b.dataset.fcat === cat));
+  renderFlightList();
+}
+
+function renderFlightList() {
+  const wrap = document.getElementById('flightListWrap');
+  if (!wrap) return;
+  const list = flightFilterCat ? flightsCache.filter(f => f.category === flightFilterCat) : flightsCache;
+  if (!list.length) {
+    wrap.innerHTML = '<div style="text-align:center;padding:30px;color:var(--ink3);font-size:13px">등록된 항공편이 없어요</div>';
+    return;
+  }
+  const dayNames = ['월','화','수','목','금','토','일'];
+  wrap.innerHTML = list.map(f => {
+    const days = (f.operating_days || '').split(',').filter(Boolean);
+    const dayBadges = dayNames.map(d => `<span style="font-size:10px;padding:2px 5px;border-radius:4px;${days.includes(d)?'background:#1C3D2E;color:white':'background:#EEEDEB;color:#aaa'}">${d}</span>`).join('');
+    return `<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border:1.5px solid var(--line);border-radius:10px;margin-bottom:6px;background:var(--white)">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px">${f.airline||''} · ${f.destination||''} <span style="font-size:11px;color:var(--ink3);font-weight:400">(${f.category||''})</span></div>
+        <div style="font-size:11px;color:var(--ink2);margin-bottom:4px">🛫 ${f.dep_airport||''}→${f.arr_airport||''} ${f.flight_out||''} ${f.dep_time_out||''}-${f.arr_time_out||''} &nbsp; 🛬 ${f.flight_in||''} ${f.dep_time_in||''}-${f.arr_time_in||''}</div>
+        <div style="display:flex;gap:3px">${dayBadges}</div>
+      </div>
+      <button onclick="openFlightModal('${f.id}')" style="background:none;border:1px solid var(--line);border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;color:var(--ink2);font-family:'Noto Sans KR',sans-serif">수정</button>
+      <button onclick="deleteFlight('${f.id}')" style="background:none;border:1px solid var(--line);border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;color:var(--red);font-family:'Noto Sans KR',sans-serif">삭제</button>
+    </div>`;
+  }).join('');
+}
+
+function openFlightModal(id) {
+  const m = document.getElementById('flightModal');
+  ['fm_id','fm_category','fm_destination','fm_airline','fm_depAirport','fm_flightOut','fm_depTimeOut','fm_arrTimeOut','fm_flightIn','fm_depTimeIn','fm_arrTimeIn'].forEach(fid => {
+    const el = document.getElementById(fid); if(el) el.value = '';
+  });
+  document.querySelectorAll('#fm_days input[type=checkbox]').forEach(cb => cb.checked = false);
+
+  if (id) {
+    const f = flightsCache.find(x => x.id === id);
+    if (f) {
+      document.getElementById('fm_id').value = f.id;
+      document.getElementById('fm_category').value = f.category || '';
+      document.getElementById('fm_destination').value = f.destination || '';
+      document.getElementById('fm_airline').value = f.airline || '';
+      document.getElementById('fm_depAirport').value = f.dep_airport || '';
+      document.getElementById('fm_flightOut').value = f.flight_out || '';
+      document.getElementById('fm_depTimeOut').value = f.dep_time_out || '';
+      document.getElementById('fm_arrTimeOut').value = f.arr_time_out || '';
+      document.getElementById('fm_flightIn').value = f.flight_in || '';
+      document.getElementById('fm_depTimeIn').value = f.dep_time_in || '';
+      document.getElementById('fm_arrTimeIn').value = f.arr_time_in || '';
+      const days = (f.operating_days || '').split(',');
+      document.querySelectorAll('#fm_days input[type=checkbox]').forEach(cb => {
+        cb.checked = days.includes(cb.value);
+      });
+    }
+  }
+  m.style.display = 'flex';
+}
+
+function closeFlightModal() { document.getElementById('flightModal').style.display = 'none'; }
+
+async function saveFlight() {
+  const v = id => document.getElementById(id)?.value || '';
+  const days = [];
+  document.querySelectorAll('#fm_days input[type=checkbox]:checked').forEach(cb => days.push(cb.value));
+
+  const payload = {
+    category: v('fm_category'),
+    destination: v('fm_destination'),
+    airline: v('fm_airline'),
+    dep_airport: v('fm_depAirport'),
+    arr_airport: v('fm_destination'),
+    flight_out: v('fm_flightOut'),
+    dep_time_out: v('fm_depTimeOut'),
+    arr_time_out: v('fm_arrTimeOut'),
+    flight_in: v('fm_flightIn'),
+    dep_time_in: v('fm_depTimeIn'),
+    arr_time_in: v('fm_arrTimeIn'),
+    operating_days: days.join(',')
+  };
+  if (!payload.category || !payload.destination || !payload.flight_out) {
+    showToast('❌ 국가, 도착지, 편명은 필수입니다'); return;
+  }
+  try {
+    const existingId = v('fm_id');
+    let res;
+    if (existingId) {
+      res = await fetch(`${SUPABASE_URL}/rest/v1/flights?id=eq.${existingId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type':'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Prefer':'return=minimal' },
+        body: JSON.stringify(payload)
+      });
+    } else {
+      res = await fetch(`${SUPABASE_URL}/rest/v1/flights`, {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Prefer':'return=minimal' },
+        body: JSON.stringify(payload)
+      });
+    }
+    if (res.ok) {
+      showToast('✅ 항공편 저장 완료!');
+      closeFlightModal();
+      fetchFlights();
+    } else { throw new Error('저장 실패'); }
+  } catch(e) { showToast('❌ 오류: ' + e.message); }
+}
+
+async function deleteFlight(id) {
+  if (!confirm('이 항공편을 삭제할까요?')) return;
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/flights?id=eq.${id}`, {
+      method: 'DELETE',
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+    });
+    showToast('🗑 삭제 완료');
+    fetchFlights();
+  } catch(e) { showToast('❌ 오류: ' + e.message); }
+}
+
+/* ─── Flight Picker (견적서/상품 폼에서 항공편 선택) ─── */
+function loadFlightPicker() {
+  const dateFrom = document.getElementById('dateFrom')?.value;
+  const category = document.getElementById('productCategory')?.value;
+  const listEl = document.getElementById('flightPickerList');
+  const emptyEl = document.getElementById('flightPickerEmpty');
+  const infoEl = document.getElementById('flightPickerInfo');
+  if (!listEl) return;
+
+  if (!dateFrom) {
+    listEl.innerHTML = '';
+    if (emptyEl) emptyEl.style.display = 'none';
+    if (infoEl) infoEl.textContent = '출발일을 입력하면 해당 요일에 운항하는 항공편이 표시됩니다.';
+    return;
+  }
+
+  const dayNames = ['일','월','화','수','목','금','토'];
+  const d = new Date(dateFrom);
+  const dayOfWeek = dayNames[d.getDay()];
+  if (infoEl) infoEl.innerHTML = `출발일: <strong>${dateFrom}</strong> (<strong style="color:var(--accent)">${dayOfWeek}요일</strong>)${category ? ` · 국가: <strong>${category}</strong>` : ''}`;
+
+  // Filter flights by operating day + category
+  let filtered = flightsCache.filter(f => {
+    const days = (f.operating_days || '').split(',');
+    return days.includes(dayOfWeek);
+  });
+  if (category) filtered = filtered.filter(f => f.category === category);
+
+  if (!filtered.length) {
+    listEl.innerHTML = '';
+    if (emptyEl) emptyEl.style.display = 'block';
+    return;
+  }
+  if (emptyEl) emptyEl.style.display = 'none';
+
+  listEl.innerHTML = filtered.map(f => `
+    <div onclick="selectFlight('${f.id}')" style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1.5px solid var(--line);border-radius:8px;cursor:pointer;transition:all .15s;background:var(--white)" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--line)'">
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:600;color:var(--ink)">${f.airline} · ${f.destination}</div>
+        <div style="font-size:11px;color:var(--ink2);margin-top:3px">🛫 ${f.dep_airport}→${f.arr_airport} ${f.flight_out} ${f.dep_time_out}~${f.arr_time_out} &nbsp;|&nbsp; 🛬 ${f.flight_in} ${f.dep_time_in}~${f.arr_time_in}</div>
+      </div>
+      <span style="font-size:11px;color:var(--accent);font-weight:600">선택 →</span>
+    </div>
+  `).join('');
+}
+
+function selectFlight(id) {
+  const f = flightsCache.find(x => x.id === id);
+  if (!f) return;
+  selectedFlightData = f;
+
+  // 선택 표시
+  const selEl = document.getElementById('flightSelected');
+  const selInfo = document.getElementById('flightSelectedInfo');
+  if (selEl) selEl.style.display = 'block';
+  if (selInfo) selInfo.innerHTML = `<strong>${f.airline}</strong> · ${f.destination}<br>🛫 ${f.dep_airport}→${f.arr_airport} <strong>${f.flight_out}</strong> ${f.dep_time_out}~${f.arr_time_out}<br>🛬 <strong>${f.flight_in}</strong> ${f.dep_time_in}~${f.arr_time_in}`;
+
+  // 일정표에 자동 반영
+  applyFlightToItinerary(f);
+  showToast('✅ 항공편이 일정표에 반영되었습니다');
+}
+
+function clearFlightSelection() {
+  selectedFlightData = null;
+  const selEl = document.getElementById('flightSelected');
+  if (selEl) selEl.style.display = 'none';
+}
+
+function applyFlightToItinerary(f) {
+  const dayBlocks = document.querySelectorAll('.day-block');
+  if (!dayBlocks.length) return;
+
+  // 첫째 날 - 출발편 추가 (맨 앞에)
+  const firstDay = dayBlocks[0];
+  const firstSched = firstDay.querySelector('.schedule-items');
+  if (firstSched) {
+    const dayId = firstDay.id;
+    // 기존 일정 앞에 출국편 2줄 추가
+    const depItem = scheduleItemHTML(dayId, f.dep_airport, f.flight_out, f.dep_time_out, `${f.dep_airport} 국제공항 출발`, '');
+    const arrItem = scheduleItemHTML(dayId, f.arr_airport, '', f.arr_time_out, `${f.arr_airport} 공항 도착`, '');
+    firstSched.insertAdjacentHTML('afterbegin', arrItem);
+    firstSched.insertAdjacentHTML('afterbegin', depItem);
+  }
+
+  // 마지막 날 - 귀국편 추가 (맨 뒤에)
+  const lastDay = dayBlocks[dayBlocks.length - 1];
+  const lastSched = lastDay.querySelector('.schedule-items');
+  if (lastSched) {
+    const dayId = lastDay.id;
+    const depItem = scheduleItemHTML(dayId, f.arr_airport, f.flight_in, f.dep_time_in, `${f.arr_airport} 공항 출발`, '');
+    const arrItem = scheduleItemHTML(dayId, '', '', f.arr_time_in, `${f.dep_airport} 국제공항 도착`, '');
+    lastSched.insertAdjacentHTML('beforeend', depItem);
+    lastSched.insertAdjacentHTML('beforeend', arrItem);
+  }
 }
 
 /* ════════════════════════════
