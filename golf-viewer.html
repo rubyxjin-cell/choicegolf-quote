@@ -422,12 +422,12 @@ function renderPage(d) {
       ${d.bankAccount ? `
       <div style="border:1px solid #E8E6E1;border-radius:12px;padding:16px;margin-bottom:12px;background:#FAFAF8">
         <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#888;margin-bottom:8px">입금 계좌</div>
-        <div style="font-size:14px;font-weight:600;color:#111;line-height:1.8">${(d.bankAccount||'').replace(/\\n/g,'<br>')}</div>
+        <div style="font-size:14px;font-weight:600;color:#111;line-height:1.8">${(d.bankAccount||'').replace(/\n/g,'<br>')}</div>
       </div>` : ''}
       ${d.cancelPolicy ? `
       <div style="border:1px solid #E8E6E1;border-radius:12px;padding:16px;margin-bottom:12px;background:#FFF9F0">
         <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#8B6020;margin-bottom:10px">취소 및 환불 규정</div>
-        <div style="font-size:12px;color:#444;line-height:1.9">${(d.cancelPolicy||'').replace(/\\n/g,'<br>')}</div>
+        <div style="font-size:12px;color:#444;line-height:1.9">${(d.cancelPolicy||'').replace(/\n/g,'<br>')}</div>
       </div>` : ''}
     </section>` : ''}
 
