@@ -59,8 +59,6 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
 .region-chip{padding:10px 20px;border-radius:24px;border:2px solid var(--line);background:white;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Noto Sans KR',sans-serif;color:var(--ink2)}
 .region-chip:hover{background:#F0F7F4;border-color:var(--accent);color:var(--accent)}
 .region-chip.active{background:var(--accent);color:white;border-color:var(--accent)}
-.region-act{background:none;border:none;cursor:pointer;font-size:16px;padding:4px 6px;border-radius:6px;opacity:.4;transition:all .15s}
-.region-act:hover{opacity:1;background:#F0F0EE}
 
 /* ── MAIN LAYOUT ── */
 .main{display:flex;flex:1;overflow:hidden}
@@ -304,6 +302,12 @@ select option{background:#1C3D2E;color:white}
         <span class="sidebar-item-icon">✈️</span> 항공편 관리
       </div>
     </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">관리</div>
+      <div class="sidebar-item" onclick="switchTab('settings')" id="tab-settings">
+        <span class="sidebar-item-icon">⚙️</span> 카테고리 설정
+      </div>
+    </div>
     <div class="sidebar-section" id="sectionNavWrap" style="display:none">
       <div class="sidebar-label">섹션 이동</div>
       <div class="sidebar-item" onclick="scrollToSection('sec-basic')"><span class="sidebar-item-icon">📋</span> 기본 정보</div>
@@ -374,6 +378,15 @@ select option{background:#1C3D2E;color:white}
       <div class="form-card">
         <div id="flightBreadcrumb" style="display:flex;align-items:center;gap:6px;margin-bottom:16px;font-size:13px;flex-wrap:wrap"></div>
         <div id="flightListWrap"></div>
+      </div>
+    </div>
+
+    <!-- ⑤ 카테고리 설정 -->
+    <div class="tab-panel" id="panel-settings">
+      <div class="form-card">
+        <div class="form-card-title"><span class="form-card-title-icon">⚙️</span> 카테고리 설정</div>
+        <div style="font-size:14px;color:var(--ink3);margin-bottom:20px">국가 및 지역을 추가, 수정, 삭제할 수 있습니다.</div>
+        <div id="settingsWrap"></div>
       </div>
     </div>
 
@@ -919,6 +932,7 @@ function switchTab(name) {
     fetchLibrary();
   }
   if (name === 'quotes') fetchQuotes();
+  if (name === 'settings') renderSettings();
   // scroll to top
   document.querySelector('.content').scrollTop = 0;
 }
@@ -2124,6 +2138,55 @@ function renderProductSelector() {
   });
 }
 
+/* ═══ 카테고리 설정 화면 ═══ */
+function renderSettings() {
+  const wrap = document.getElementById('settingsWrap');
+  if (!wrap) return;
+  const fromProducts = productsCache.map(p => p.category).filter(Boolean);
+  const fromCustom = Object.keys(customFolders);
+  const countries = [...new Set([...fromProducts, ...fromCustom])].sort();
+
+  const itemS = 'display:flex;align-items:center;gap:12px;padding:14px 18px;border:1.5px solid var(--line);border-radius:10px;margin-bottom:8px;background:var(--white)';
+  const btnEdit = 'background:none;border:1.5px solid var(--line);border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:Noto Sans KR,sans-serif;color:var(--ink2);transition:all .15s';
+  const btnDel = 'background:none;border:1.5px solid #DFCAC9;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:Noto Sans KR,sans-serif;color:var(--red);transition:all .15s';
+
+  let html = '';
+  countries.forEach(c => {
+    const flag = COUNTRY_FLAGS[c] || '🌐';
+    const cnt = productsCache.filter(p=>p.category===c).length;
+    const regs = [...new Set([
+      ...productsCache.filter(p=>p.category===c).map(p=>p.region).filter(Boolean),
+      ...(customFolders[c]||[])
+    ])].sort();
+
+    html += `<div style="margin-bottom:20px;border:2px solid var(--line);border-radius:14px;overflow:hidden">`;
+    // 국가 헤더
+    html += `<div style="display:flex;align-items:center;gap:12px;padding:16px 20px;background:#F5FAF7;border-bottom:1.5px solid var(--line)">
+      <span style="font-size:24px">${flag}</span>
+      <div style="flex:1"><span style="font-size:17px;font-weight:700;color:var(--ink)">${c}</span><span style="font-size:13px;color:var(--ink3);margin-left:8px">${cnt}개 상품</span></div>
+      <button onclick="renameFolder('country','${c}')" style="${btnEdit}">이름 수정</button>
+      <button onclick="deleteFolder('country','${c}')" style="${btnDel}">삭제</button>
+    </div>`;
+    // 지역 목록
+    html += `<div style="padding:12px 16px">`;
+    regs.forEach(r => {
+      const rcnt = productsCache.filter(p=>p.category===c&&p.region===r).length;
+      html += `<div style="${itemS}">
+        <span style="font-size:18px">📍</span>
+        <div style="flex:1"><span style="font-size:15px;font-weight:600">${r}</span><span style="font-size:12px;color:var(--ink3);margin-left:8px">${rcnt}개 상품</span></div>
+        <button onclick="renameFolder('region','${r}');prodViewCountry='${c}'" style="${btnEdit}">이름 수정</button>
+        <button onclick="prodViewCountry='${c}';deleteFolder('region','${r}')" style="${btnDel}">삭제</button>
+      </div>`;
+    });
+    html += `<button onclick="prodViewCountry='${c}';addRegion()" style="width:100%;padding:12px;border:2px dashed var(--accent);border-radius:10px;background:#F5FAF7;color:var(--accent);font-size:14px;font-weight:700;cursor:pointer;font-family:Noto Sans KR,sans-serif;margin-top:4px">+ ${c}에 지역 추가</button>`;
+    html += `</div></div>`;
+  });
+
+  html += `<button onclick="addCountry()" style="width:100%;padding:16px;border:2.5px dashed var(--accent);border-radius:14px;background:#F5FAF7;color:var(--accent);font-size:16px;font-weight:700;cursor:pointer;font-family:Noto Sans KR,sans-serif;margin-top:8px">+ 국가 추가</button>`;
+
+  wrap.innerHTML = html;
+}
+
 function renderProductList() {
   renderProdNavBar();
   const wrap = document.getElementById('productListWrap');
@@ -2171,7 +2234,7 @@ function renderProductList() {
       `<button onclick="selectProdRegion('')" class="region-chip ${!prodViewRegion?'active':''}">전체</button>` +
       regions.map(r => {
         const cnt = productsCache.filter(p=>p.category===prodViewCountry&&p.region===r).length;
-        return `<span style="display:inline-flex;align-items:center;gap:2px"><button onclick="selectProdRegion('${r}')" class="region-chip ${prodViewRegion===r?'active':''}">${r} (${cnt})</button><button onclick="renameFolder('region','${r}')" class="region-act" title="이름 수정">✏️</button><button onclick="deleteFolder('region','${r}')" class="region-act" title="삭제">🗑️</button></span>`;
+        return `<button onclick="selectProdRegion('${r}')" class="region-chip ${prodViewRegion===r?'active':''}">${r} (${cnt})</button>`;
       }).join('') +
       `<button onclick="addRegion()" class="region-chip" style="border-style:dashed;color:var(--accent);border-color:var(--accent)">+ 지역 추가</button>`;
   } else {
@@ -2214,8 +2277,6 @@ function renderProdNavBar() {
       let dropItems = '';
       if (regs.length) dropItems += regs.map(r => `<a onclick="event.stopPropagation();selectProdCountryRegion('${c}','${r}')">${r}</a>`).join('');
       dropItems += `<a class="pnav-drop-add" onclick="event.stopPropagation();prodViewCountry='${c}';addRegion()">+ 지역 추가</a>`;
-      dropItems += `<a class="pnav-drop-muted" onclick="event.stopPropagation();renameFolder('country','${c}')">✏️ 이름 수정</a>`;
-      dropItems += `<a class="pnav-drop-danger" onclick="event.stopPropagation();deleteFolder('country','${c}')">🗑 삭제</a>`;
       return `<div class="pnav-item ${prodViewCountry===c?'active':''}" onclick="selectProdCountry('${c}')">
         ${flag} ${c}
         <div class="pnav-drop">${dropItems}</div>
