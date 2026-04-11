@@ -72,6 +72,14 @@ section,.contact-sec{padding:44px 20px;border-bottom:1px solid var(--line)}
 .share-btn:active{opacity:.8;transform:scale(.98)}
 .btn-kakao{background:#FEE500;color:#3A1D1D}
 .btn-link{background:var(--accent);color:white}
+
+/* ITINERARY RESPONSIVE */
+.itin-desktop{display:none}
+.itin-mobile{display:block}
+@media(min-width:768px){
+  .itin-desktop{display:block}
+  .itin-mobile{display:none}
+}
 </style>
 </head>
 <body>
@@ -164,15 +172,64 @@ function renderPage(d) {
   const hotelFacHTML = (d.hotelFacilities || []).map(f =>
     `<span style="font-size:11px;padding:4px 10px;background:#F8F7F5;border:1px solid #E8E6E1;border-radius:20px;color:#111">${f}</span>`).join('');
 
-  // ── 일정표 (장소/교통/시간/일정 + 식사 + 호텔)
+  // ── 일정표 (모바일 카드 + 데스크톱 테이블)
   const dayLabels = ['1일차','2일차','3일차','4일차','5일차','6일차','7일차','8일차','9일차','10일차'];
 
+  // ── 모바일 카드 레이아웃
+  const dayCardsMobile = (d.days || []).map((day, i) => {
+    const dayLabel = dayLabels[i] || (i+1)+'일차';
+
+    // 식사
+    const mealParts = [];
+    if (day.meals) {
+      if (day.meals.bf) mealParts.push(`조: ${day.meals.bf}`);
+      if (day.meals.lunch) mealParts.push(`중: ${day.meals.lunch}`);
+      if (day.meals.dinner) mealParts.push(`석: ${day.meals.dinner}`);
+    }
+    const mealHTML = mealParts.length ? `<div style="display:flex;flex-wrap:wrap;gap:6px;padding:8px 12px;background:#FFFDF5;border-top:1px solid #EDE8D8">${mealParts.map(m => `<span style="font-size:10px;font-weight:600;color:#6B5A30;background:#FFF8E8;padding:3px 8px;border-radius:12px;border:1px solid #E8DFC0">${m}</span>`).join('')}</div>` : '';
+
+    // 일정 아이템
+    const itemsHTML = (day.items || []).map((it, ri) => {
+      const isGolf = it.color || it.isGolf;
+      const bg = isGolf ? '#F0F9F0' : (ri % 2 === 0 ? '#fff' : '#FAFAF8');
+      const borderL = isGolf ? 'border-left:3px solid #2E8B57' : 'border-left:3px solid transparent';
+      const golfIcon = isGolf ? '⛳ ' : '';
+      const textColor = isGolf ? 'color:#1C6B3A;font-weight:700' : 'color:#111;font-weight:400';
+
+      const tags = [];
+      if (it.place) tags.push(`<span style="font-size:10px;font-weight:600;color:#333;background:#EEEDEB;padding:2px 7px;border-radius:4px">${it.place}</span>`);
+      if (it.transport) tags.push(`<span style="font-size:10px;color:#666;background:#F0F0EE;padding:2px 7px;border-radius:4px">${it.transport}</span>`);
+      if (it.time) tags.push(`<span style="font-size:10px;font-weight:700;color:#8A6020;background:#FFF8E8;padding:2px 7px;border-radius:4px">${it.time}</span>`);
+      const tagsRow = tags.length ? `<div style="display:flex;gap:4px;margin-bottom:4px;flex-wrap:wrap">${tags.join('')}</div>` : '';
+
+      return `<div style="padding:9px 12px;background:${bg};${borderL};border-bottom:1px solid #EFEFED">
+        ${tagsRow}
+        <div style="font-size:13px;${textColor};line-height:1.6">${golfIcon}${it.text||''}</div>
+      </div>`;
+    }).join('');
+
+    // 호텔
+    const hotelHTML = day.hotelStay ? `<div style="padding:8px 12px;background:#EDF4FF;border-top:1px solid #C7DEFF;display:flex;align-items:center;gap:6px">
+      <span style="background:#1A4BAB;color:white;font-size:8px;padding:2px 7px;border-radius:10px;letter-spacing:.5px;font-weight:700">HOTEL</span>
+      <span style="font-size:11px;font-weight:600;color:#1A4BAB">${day.hotelStay}</span>
+    </div>` : '';
+
+    return `<div style="border:1px solid #D4D1CA;border-radius:12px;overflow:hidden;margin-bottom:12px">
+      <div style="padding:10px 12px;background:#1C3D2E;display:flex;align-items:center;justify-content:space-between">
+        <div><span style="font-size:14px;font-weight:900;color:white">${dayLabel}</span><span style="font-size:11px;color:rgba(255,255,255,0.7);margin-left:8px">${day.title||''}</span></div>
+      </div>
+      ${itemsHTML}
+      ${mealHTML}
+      ${hotelHTML}
+    </div>`;
+  }).join('');
+
+  // ── 데스크톱 테이블 레이아웃
   const dayRowsAll = (d.days || []).map((day, i) => {
     const isLast = i === d.days.length - 1;
     const dayLabel = dayLabels[i] || (i+1)+'일차';
     const itemCount = (day.items || []).length;
 
-    // 식사 셀 내용
     const mealLines = [];
     if (day.meals) {
       if (day.meals.bf) mealLines.push(`조: ${day.meals.bf}`);
@@ -182,48 +239,47 @@ function renderPage(d) {
     const mealCellContent = mealLines.join('<br>');
     const totalRows = itemCount + (day.hotelStay ? 1 : 0);
 
-    // 일정 행들
     const itemRows = (day.items || []).map((it, ri) => {
       const isGolf = it.color || it.isGolf;
       const bg = isGolf ? '#F0F9F0' : (ri % 2 === 0 ? '#fff' : '#FAFAF8');
       const textStyle = isGolf ? 'font-weight:700;color:#1C6B3A' : 'font-weight:400;color:#111';
       const golfIcon = isGolf ? '⛳ ' : '';
-      // 첫 행에 날짜 + 식사 rowspan
-      const dayCell = ri === 0 ? `<td rowspan="${totalRows}" style="padding:10px 8px;vertical-align:top;text-align:center;background:#F4F3F0;border-right:2px solid #D4D1CA;width:58px;min-width:58px">
+      const dayCell = ri === 0 ? `<td rowspan="${totalRows}" style="padding:10px 8px;vertical-align:top;text-align:center;background:#F4F3F0;border-right:2px solid #D4D1CA;width:62px">
         <div style="font-size:14px;font-weight:900;color:#1C3D2E;line-height:1.2">${dayLabel}</div>
         <div style="font-size:10px;color:#888;margin-top:3px">${day.title||''}</div>
       </td>` : '';
-      const mealCell = (ri === 0 && mealCellContent) ? `<td rowspan="${totalRows}" style="padding:8px 8px;vertical-align:middle;text-align:right;background:#FFFDF5;border-left:2px solid #E8E2D0;width:72px;min-width:72px;font-size:10px;font-weight:600;color:#6B5A30;line-height:1.9;white-space:nowrap">${mealCellContent}</td>` : (ri === 0 && !mealCellContent) ? `<td rowspan="${totalRows}" style="padding:8px;vertical-align:middle;text-align:center;background:#FAFAF8;border-left:2px solid #E8E6E0;width:72px;min-width:72px;font-size:10px;color:#bbb">—</td>` : '';
+      const mealCell = ri === 0 ? (mealCellContent ? `<td rowspan="${totalRows}" style="padding:8px 10px;vertical-align:middle;text-align:right;background:#FFFDF5;border-left:2px solid #E8E2D0;width:80px;font-size:11px;font-weight:600;color:#6B5A30;line-height:2;white-space:nowrap">${mealCellContent}</td>` : `<td rowspan="${totalRows}" style="padding:8px;vertical-align:middle;text-align:center;background:#FAFAF8;border-left:2px solid #E8E6E0;width:80px;font-size:10px;color:#bbb">—</td>`) : '';
       return `<tr style="background:${bg};border-bottom:1px solid #EFEFED">
         ${dayCell}
-        <td style="padding:7px 8px;font-size:11px;color:#333;white-space:nowrap;vertical-align:top;width:52px;border-right:1px solid #EFEFED;font-weight:500">${it.place||''}</td>
-        <td style="padding:7px 6px;font-size:10px;color:#666;white-space:nowrap;vertical-align:top;width:54px;border-right:1px solid #EFEFED">${it.transport||''}</td>
-        <td style="padding:7px 6px;font-size:11px;color:#8A6020;font-weight:700;white-space:nowrap;vertical-align:top;width:44px;border-right:1px solid #EFEFED">${it.time||''}</td>
-        <td style="padding:7px 10px;font-size:12px;${textStyle};line-height:1.6;word-break:keep-all">${golfIcon}${it.text||''}</td>
+        <td style="padding:8px 10px;font-size:12px;color:#333;white-space:nowrap;vertical-align:top;width:60px;border-right:1px solid #EFEFED;font-weight:600">${it.place||''}</td>
+        <td style="padding:8px 8px;font-size:11px;color:#666;white-space:nowrap;vertical-align:top;width:64px;border-right:1px solid #EFEFED">${it.transport||''}</td>
+        <td style="padding:8px 8px;font-size:12px;color:#8A6020;font-weight:700;white-space:nowrap;vertical-align:top;width:52px;border-right:1px solid #EFEFED">${it.time||''}</td>
+        <td style="padding:8px 12px;font-size:13px;${textStyle};line-height:1.6;word-break:keep-all">${golfIcon}${it.text||''}</td>
         ${mealCell}
       </tr>`;
     }).join('');
 
-    // 숙박 행
     const hotelRow = day.hotelStay ? `<tr style="background:#EDF4FF;border-bottom:${isLast?'none':'2px solid #C8C5BE'}">
-      <td colspan="4" style="padding:7px 10px;font-size:11px;font-weight:700;color:#1A4BAB"><span style="background:#1A4BAB;color:white;font-size:9px;padding:2px 7px;border-radius:10px;margin-right:6px;letter-spacing:.5px">HOTEL</span>${day.hotelStay}</td>
+      <td colspan="4" style="padding:8px 12px;font-size:12px;font-weight:700;color:#1A4BAB"><span style="background:#1A4BAB;color:white;font-size:9px;padding:2px 8px;border-radius:10px;margin-right:8px;letter-spacing:.5px">HOTEL</span>${day.hotelStay}</td>
     </tr>` : `<tr style="height:2px;background:#E0DED8;border-bottom:${isLast?'none':'2px solid #C8C5BE'}"><td colspan="6"></td></tr>`;
 
     return itemRows + hotelRow;
   }).join('');
 
   const colHeader = `<tr style="background:#1C3D2E">
-    <th style="padding:8px 8px;font-size:9px;font-weight:700;color:rgba(255,255,255,0.6);letter-spacing:1.5px;text-align:center;width:58px">날짜</th>
-    <th style="padding:8px 6px;font-size:9px;font-weight:700;color:rgba(255,255,255,0.6);letter-spacing:1.5px;width:52px">장소</th>
-    <th style="padding:8px 6px;font-size:9px;font-weight:700;color:rgba(255,255,255,0.6);letter-spacing:1.5px;width:54px">교통</th>
-    <th style="padding:8px 6px;font-size:9px;font-weight:700;color:rgba(255,255,255,0.6);letter-spacing:1.5px;width:44px">시간</th>
-    <th style="padding:8px 10px;font-size:9px;font-weight:700;color:rgba(255,255,255,0.6);letter-spacing:1.5px">일정</th>
-    <th style="padding:8px 8px;font-size:9px;font-weight:700;color:rgba(255,255,255,0.6);letter-spacing:1.5px;text-align:right;width:72px">식사</th>
+    <th style="padding:9px 8px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.65);letter-spacing:1px;text-align:center;width:62px">날짜</th>
+    <th style="padding:9px 8px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.65);letter-spacing:1px;width:60px">장소</th>
+    <th style="padding:9px 8px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.65);letter-spacing:1px;width:64px">교통</th>
+    <th style="padding:9px 8px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.65);letter-spacing:1px;width:52px">시간</th>
+    <th style="padding:9px 10px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.65);letter-spacing:1px">일정</th>
+    <th style="padding:9px 10px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.65);letter-spacing:1px;text-align:right;width:80px">식사</th>
   </tr>`;
 
-  const daysHTML = `<div style="border:1px solid #C8C5BE;border-radius:12px;overflow:hidden">
-    <table style="width:100%;border-collapse:collapse">${colHeader}${dayRowsAll}</table>
-  </div>`;
+  const daysHTML = `
+    <div class="itin-mobile">${dayCardsMobile}</div>
+    <div class="itin-desktop"><div style="border:1px solid #C8C5BE;border-radius:12px;overflow:hidden">
+      <table style="width:100%;border-collapse:collapse">${colHeader}${dayRowsAll}</table>
+    </div></div>`;
 
   // ── 요금 (새 형식: 성인 1인 + 선택 추가)
   const extraPrices = [];
