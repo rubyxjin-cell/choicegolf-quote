@@ -381,7 +381,7 @@ select option{background:white;color:var(--ink)}
     <div class="tab-panel" id="panel-settings">
       <div class="form-card">
         <div class="form-card-title"><span class="form-card-title-icon">⚙️</span> 카테고리 설정</div>
-        <div style="font-size:14px;color:var(--ink3);margin-bottom:20px">국가 및 지역을 추가, 수정, 삭제할 수 있습니다.</div>
+        
         <div id="settingsWrap"></div>
       </div>
     </div>
@@ -446,13 +446,13 @@ select option{background:white;color:var(--ink)}
       <!-- 통합 상단 바 -->
       <div class="form-card" id="currentProductBanner" style="background:linear-gradient(135deg,#2C2C2C,#3D3D3D);border:none;margin-bottom:16px;padding:14px 20px 12px">
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px">
-          <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5)" id="bannerLabel">새 상품 등록</div>
+          <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5)" id="bannerLabel">새 상품</div>
           <div style="flex:1"></div>
           <div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap">
             <button id="btnSaveNew" onclick="saveProduct()" style="background:var(--gold);color:white;border:none;padding:7px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">💾 상품저장</button>
-            <button id="btnUpdate" onclick="updateProduct()" style="display:none;background:#2563EB;color:white;border:none;padding:7px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">🔄 상품업데이트</button>
-            <button id="btnSaveQuote" onclick="saveQuote()" style="display:none;background:var(--gold);color:white;border:none;padding:7px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">📋 견적서 저장</button>
-            <button id="btnUpdateQuote" onclick="updateQuote()" style="display:none;background:#059669;color:white;border:none;padding:7px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">🔄 수정저장</button>
+            <button id="btnUpdate" onclick="updateProduct()" style="display:none;background:#2563EB;color:white;border:none;padding:7px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">💾 저장</button>
+            <button id="btnSaveQuote" onclick="saveQuote()" style="display:none;background:var(--gold);color:white;border:none;padding:7px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">📋 견적 저장</button>
+            <button id="btnUpdateQuote" onclick="updateQuote()" style="display:none;background:#059669;color:white;border:none;padding:7px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">🔄 견적 수정</button>
             <button id="btnExitQuote" onclick="exitQuoteMode()" style="display:none;background:#F5F5F5;color:var(--ink2);border:1.5px solid var(--line);padding:7px 12px;border-radius:7px;font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">✕ 종료</button>
           </div>
         </div>
@@ -580,7 +580,7 @@ select option{background:white;color:var(--ink)}
             <button onclick="setPickerDep('부산')" class="cat-btn" data-pdep="부산">🛫 부산출발</button>
             <button onclick="setPickerDep('청주')" class="cat-btn" data-pdep="청주">🛫 청주출발</button>
           </div>
-          <div id="flightPickerInfo" style="font-size:12px;color:var(--ink3);margin-bottom:10px">출발일을 입력하면 해당 요일에 운항하는 항공편이 표시됩니다.</div>
+          <div id="flightPickerInfo" style="font-size:12px;color:var(--ink3);margin-bottom:10px">출발일 선택 시 운항 항공편이 표시됩니다.</div>
           <div id="flightPickerList" style="display:flex;flex-direction:column;gap:6px"></div>
           <div id="flightPickerEmpty" style="display:none;text-align:center;padding:20px;color:var(--ink3);font-size:13px">해당 요일에 운항하는 항공편이 없습니다.</div>
           <div id="flightSelected" style="display:none;margin-top:10px;padding:12px;background:#F5F5F5;border:1.5px solid #E5E5E5;border-radius:10px">
@@ -744,7 +744,7 @@ select option{background:white;color:var(--ink)}
       <div style="display:flex;gap:10px;margin-top:12px;margin-bottom:32px">
         <button id="btnSaveNew2" onclick="saveProduct()" style="flex:1;background:var(--gold);color:white;border:none;padding:13px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">💾 새 상품으로 저장</button>
         <button id="btnUpdate2" onclick="updateProduct()" style="display:none;flex:1;background:#2563EB;color:white;border:none;padding:13px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">🔄 상품 업데이트</button>
-        <button id="btnSaveQuote2" onclick="saveQuote()" style="display:none;flex:1;background:var(--gold);color:white;border:none;padding:13px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">📋 견적서 저장</button>
+        <button id="btnSaveQuote2" onclick="saveQuote()" style="display:none;flex:1;background:var(--gold);color:white;border:none;padding:13px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">📋 견적 저장</button>
         <button id="btnUpdateQuote2" onclick="updateQuote()" style="display:none;flex:1;background:#059669;color:white;border:none;padding:13px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">🔄 견적서 수정저장</button>
       </div>
 
@@ -786,7 +786,7 @@ select option{background:white;color:var(--ink)}
 
     <div class="field" style="margin-bottom:14px">
       <label>소개글</label>
-      <textarea id="libDesc" placeholder="소개 내용을 입력하세요" style="background:var(--input-bg);border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;font-size:13px;width:100%;font-family:'Noto Sans KR',sans-serif;outline:none;min-height:90px;resize:vertical;line-height:1.6"></textarea>
+      <textarea id="libDesc" placeholder="소개 내용" style="background:var(--input-bg);border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;font-size:13px;width:100%;font-family:'Noto Sans KR',sans-serif;outline:none;min-height:90px;resize:vertical;line-height:1.6"></textarea>
     </div>
 
     <div class="field" style="margin-bottom:20px">
@@ -976,7 +976,7 @@ function newProduct() {
   clearForm();
   updateCurrentProductBanner();
   switchTab('product-new');
-  showToast('✏️ 새 상품 입력을 시작하세요!');
+  showToast('✏️ 새 상품');
 }
 
 function clearForm() {
@@ -1215,15 +1215,15 @@ function addDay(data={}, num=null, fromStr=null, dateObj=null) {
   div.innerHTML = `
     <div class="day-block-header">
       <span class="day-block-num">Day ${n}${dateLabel}</span>
-      <input class="day-block-title-input" type="text" placeholder="일정 제목 (예: 출발 → 미야자키 도착)" value="${data.title||''}">
+      <input class="day-block-title-input" type="text" placeholder="예: 인천 출발 → 미야자키 도착" value="${data.title||''}">
       <button class="day-block-del" onclick="document.getElementById('${id}').remove()">✕</button>
     </div>
     <div class="day-block-body">
       <!-- 식사 표기 (메뉴명 직접 입력) -->
       <div class="day-meals">
-        <div class="day-meal-field"><label>🍳 조식</label><input type="text" placeholder="미입력 시 미표기" value="${meals.bf||''}" data-meal="bf"></div>
-        <div class="day-meal-field"><label>🍜 중식</label><input type="text" placeholder="미입력 시 미표기" value="${meals.lunch||''}" data-meal="lunch"></div>
-        <div class="day-meal-field"><label>🍽 석식</label><input type="text" placeholder="미입력 시 미표기" value="${meals.dinner||''}" data-meal="dinner"></div>
+        <div class="day-meal-field"><label>🍳 조식</label><input type="text" placeholder="" value="${meals.bf||''}" data-meal="bf"></div>
+        <div class="day-meal-field"><label>🍜 중식</label><input type="text" placeholder="" value="${meals.lunch||''}" data-meal="lunch"></div>
+        <div class="day-meal-field"><label>🍽 석식</label><input type="text" placeholder="" value="${meals.dinner||''}" data-meal="dinner"></div>
       </div>
       <!-- 시간표 헤더 -->
       <div style="display:grid;grid-template-columns:60px 60px 60px 1fr 30px 28px;gap:6px;margin:8px 0 4px">
@@ -1239,7 +1239,7 @@ function addDay(data={}, num=null, fromStr=null, dateObj=null) {
       <!-- 호텔 숙박 -->
       <div class="day-hotel-row">
         <label>🏨 숙박</label>
-        <input type="text" placeholder="호텔명 입력 (비어있으면 표시 안 됨)" value="${hotelName}" data-hotel="true">
+        <input type="text" placeholder="숙박 호텔명" value="${hotelName}" data-hotel="true">
       </div>
     </div>
   `;
@@ -1338,7 +1338,7 @@ function addCourse(data={}) {
         <div class="field"><label>코스 등급/레이팅</label><input type="text" placeholder="PGA 공인 챔피언십" value="${data.rating||''}"></div>
       </div>
       <div class="form-row">
-        <div class="field"><label>코스 소개</label><textarea placeholder="코스 특징과 볼거리를 입력하세요">${data.desc||''}</textarea></div>
+        <div class="field"><label>코스 소개</label><textarea placeholder="코스 소개">${data.desc||''}</textarea></div>
       </div>
       <div class="form-row">
         <div class="field"><label>특징 태그 (쉼표로 구분)</label><input type="text" placeholder="🚗 카트 포함, 🏆 PGA 개최지, 🌊 오션뷰" value="${data.features||''}"></div>
@@ -1813,7 +1813,7 @@ async function publishQuote() {
       document.execCommand('copy'); document.body.removeChild(ta);
     }
 
-    showToast('✅ 링크 복사 완료! 카톡에 붙여넣기 하세요');
+    showToast('✅ 링크 복사 완료');
     btn.innerHTML = '<span>✅</span> 링크 복사됨';
     setTimeout(() => {
       btn.disabled = false;
@@ -1867,7 +1867,7 @@ function addCountry() {
   prodViewCountry = c;
   prodViewLevel = 'region';
   renderProductList();
-  showToast(`📁 "${c}" 국가가 추가됐어요. 지역을 추가하세요!`);
+  showToast(`✅ "${c}" 추가 완료`);
 }
 
 function addRegion() {
@@ -1880,7 +1880,7 @@ function addRegion() {
   prodViewRegion = r;
   prodViewLevel = 'product';
   renderProductList();
-  showToast(`📁 "${r}" 지역이 추가됐어요. 상품을 추가하세요!`);
+  showToast(`✅ "${r}" 추가 완료`);
 }
 
 function openCountry(country) {
@@ -1927,7 +1927,7 @@ async function duplicateProduct(id) {
       body: JSON.stringify({ name: newName, category: p.category || '', region: p.region || '', data: p.data || {} })
     });
     if (res.ok) {
-      showToast('✅ 상품이 복제되었어요!');
+      showToast('✅ 복제 완료');
       await fetchProducts();
     } else throw new Error('복제 실패');
   } catch(e) { showToast('❌ 오류: ' + e.message); }
@@ -2021,7 +2021,7 @@ async function quickQuote(productId) {
     if (!rows || !rows[0]) throw new Error('저장 실패');
     const link = `${VIEWER_BASE}?id=${rows[0].id}`;
     if (navigator.clipboard) await navigator.clipboard.writeText(link);
-    showToast('✅ 견적서 생성 + 링크 복사 완료! 카톡에 붙여넣기 하세요');
+    showToast('✅ 견적서 생성 완료');
     fetchQuotes();
   } catch(e) { showToast('❌ 오류: ' + e.message); }
 }
@@ -2051,7 +2051,7 @@ function newProductWithCategory(country, region) {
   }
   updateCurrentProductBanner();
   switchTab('product-new');
-  showToast('✏️ 새 상품을 입력하세요!');
+  showToast('✏️ 새 상품');
 }
 
 function previewHotelPhoto(url) {
@@ -2193,10 +2193,10 @@ function renderProductList() {
 
   // 국가가 선택되지 않은 상태 (전체)
   if (!prodViewCountry) {
-    locLabel.innerHTML = `📦 전체 상품 <span style="font-size:14px;color:var(--ink3);font-weight:500">${productsCache.length}개</span>`;
+    locLabel.innerHTML = `전체 상품 <span style="font-size:14px;color:var(--ink3);font-weight:500">${productsCache.length}개</span>`;
     regionBar.style.display = 'none';
     if (!productsCache.length) {
-      wrap.innerHTML = `<div style="text-align:center;padding:50px;color:var(--ink3);font-size:16px">아직 등록된 상품이 없어요.<br><br>상단 네비게이션의 <strong>"+ 국가"</strong> 버튼으로 시작하세요!</div>`;
+      wrap.innerHTML = `<div style="text-align:center;padding:50px;color:var(--ink3);font-size:16px">등록된 등록된 상품이 없습니다.</div>`;
       return;
     }
     wrap.innerHTML = productsCache.map(p => productCard(p)).join('');
@@ -2237,7 +2237,7 @@ function renderProductList() {
     `<div onclick="newProductWithCategory('${prodViewCountry}','${addTarget}')" style="${addBtnS}" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--line)'">
       <span style="font-size:24px">➕</span> 상품 추가
     </div>` +
-    (!products.length ? '<div style="text-align:center;padding:40px;color:var(--ink3);font-size:15px">상품이 없습니다</div>' :
+    (!products.length ? '<div style="text-align:center;padding:40px;color:var(--ink3);font-size:15px">등록된 상품이 없습니다</div>' :
     products.map(p => productCard(p)).join(''));
 }
 
@@ -2290,21 +2290,19 @@ function productCard(p) {
   const dateStr = new Date(p.created_at).toLocaleDateString('ko-KR');
   const btnS = 'border:none;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:Noto Sans KR,sans-serif;white-space:nowrap';
   return `<div style="display:flex;align-items:center;gap:12px;padding:16px 18px;border:2px solid var(--line);border-radius:14px;margin-bottom:10px;background:var(--white);transition:all .15s" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--line)'">
-    <span style="font-size:24px">📄</span>
-    <div style="flex:1;min-width:0">
+    <div style="flex:1;min-width:0;cursor:pointer" onclick="loadProductById('${p.id}')">
       <div style="font-size:16px;font-weight:700;color:var(--ink)">${p.name}</div>
-      <div style="font-size:12px;color:var(--ink3);margin-top:3px">${p.category||''} ${p.region?'> '+p.region:''} · ${dateStr}</div>
+      <div style="font-size:12px;color:var(--ink3);margin-top:3px">${p.category||''} ${p.region?'· '+p.region:''} · ${dateStr}</div>
     </div>
-    <button onclick="loadProductById('${p.id}')" style="${btnS};background:var(--accent);color:white">✏️ 수정</button>
-    <button onclick="duplicateProduct('${p.id}')" style="${btnS};background:white;color:var(--accent);border:1.5px solid var(--accent)">📋 복제</button>
-    <button onclick="quickQuote('${p.id}')" style="${btnS};background:#2563EB;color:white">⚡ 빠른견적</button>
-    <button onclick="deleteProduct('${p.id}')" style="${btnS};background:none;border:1px solid #DFCAC9;color:var(--red)">🗑</button>
+    <button onclick="duplicateProduct('${p.id}')" style="${btnS};background:white;color:var(--ink2);border:1.5px solid var(--line)" title="복제">📋</button>
+    <button onclick="quickQuote('${p.id}')" style="${btnS};background:#2563EB;color:white" title="빠른견적">⚡</button>
+    <button onclick="deleteProduct('${p.id}')" style="${btnS};background:none;border:1px solid #DFCAC9;color:var(--red)" title="삭제">🗑</button>
   </div>`;
 }
 
 async function saveProduct() {
   const name = document.getElementById('productName').value.trim();
-  if (!name) { showToast('❌ 상품명을 입력해주세요'); return; }
+  if (!name) { showToast('❌ 상품명을 입력하세요'); return; }
   const category = document.getElementById('productCategory')?.value || '';
   const region = document.getElementById('productRegion')?.value || '';
   const d = collectData();
@@ -2348,7 +2346,7 @@ async function loadProductById(id) {
       p = rows[0];
     } catch(e) { showToast('❌ 오류: ' + e.message); return; }
   }
-  if (!p) { showToast('❌ 상품을 찾을 수 없어요'); return; }
+  if (!p) { showToast('❌ 상품을 찾을 수 없습니다'); return; }
   if (!confirm(`"${p.name}" 상품을 불러올까요?\n현재 입력 내용이 초기화됩니다.`)) return;
 
   // data 필드가 문자열로 오는 경우 파싱
@@ -2356,7 +2354,7 @@ async function loadProductById(id) {
   if (typeof d === 'string') {
     try { d = JSON.parse(d); } catch(e) { showToast('❌ 데이터 파싱 오류: ' + e.message); return; }
   }
-  if (!d || typeof d !== 'object') { showToast('❌ 상품 데이터가 올바르지 않아요'); return; }
+  if (!d || typeof d !== 'object') { showToast('❌ 상품 데이터 오류'); return; }
 
   applyProductData(d);
 
@@ -2418,7 +2416,7 @@ function updateCurrentProductBanner() {
     if (bannerEl) bannerEl.classList.remove('quote-mode-banner');
     if (productNameEl) productNameEl.placeholder = '상품명 입력 (예: 일본 미야자키 3박4일)';
     if (state.currentProductId) {
-      if (bannerLabel) bannerLabel.textContent = '수정 중인 상품';
+      if (bannerLabel) bannerLabel.textContent = '상품 수정';
       if (productNameEl) productNameEl.value = state.currentProductName;
       if (btnUpdate) btnUpdate.style.display = 'inline-flex';
       if (btnUpdate2) { btnUpdate2.style.display = 'block'; btnUpdate2.style.flex = '1'; }
@@ -2699,7 +2697,7 @@ async function startQuoteFromProduct(productId) {
 
     updateCurrentProductBanner();
     switchTab('product-new');
-    showToast(`📋 "${product.name}" 기반 견적서 작성을 시작합니다!`);
+    showToast(`📋 견적서 작성 시작`);
     document.querySelector('.content').scrollTop = 0;
   } catch(e) { showToast('❌ 오류: ' + e.message); }
 }
@@ -2798,7 +2796,7 @@ async function generateQuoteLink(id) {
       ta.value = link; document.body.appendChild(ta); ta.select();
       document.execCommand('copy'); document.body.removeChild(ta);
     }
-    showToast('✅ 링크 복사 완료! 카톡에 붙여넣기 하세요');
+    showToast('✅ 링크 복사 완료');
   } catch(e) { showToast('링크: ' + link); }
 }
 
@@ -3497,7 +3495,7 @@ function loadFlightPicker() {
   if (!dateFrom) {
     listEl.innerHTML = '';
     if (emptyEl) emptyEl.style.display = 'none';
-    if (infoEl) infoEl.textContent = '출발일을 입력하면 해당 요일에 운항하는 항공편이 표시됩니다.';
+    if (infoEl) infoEl.textContent = '출발일 선택 시 운항 항공편이 표시됩니다.';
     return;
   }
 
