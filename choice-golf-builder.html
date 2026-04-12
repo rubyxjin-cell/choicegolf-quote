@@ -1513,13 +1513,19 @@ function generateHTML(d) {
   // 일정표 HTML — 여행사 양식 스타일
   const thS = 'padding:10px 12px;font-size:12px;font-weight:700;color:#FFFFFF;background:#2A6B3C;border:1px solid #1E5A2F;text-align:center;white-space:nowrap';
   const daysHTML = `
-  <table style="width:100%;border-collapse:collapse;border:2px solid #2A6B3C;font-family:'Noto Sans KR',sans-serif">
+  <table style="width:100%;border-collapse:collapse;border:2px solid #2A6B3C;font-family:'Noto Sans KR',sans-serif;table-layout:fixed">
+    <colgroup>
+      <col style="width:70px">
+      <col style="width:70px">
+      <col style="width:60px">
+      <col>
+    </colgroup>
     <thead>
       <tr>
-        <th style="${thS};min-width:60px">장소</th>
-        <th style="${thS};min-width:60px">교통</th>
-        <th style="${thS};min-width:55px">시간</th>
-        <th style="${thS}">일정</th>
+        <th style="${thS}">장소</th>
+        <th style="${thS}">교통</th>
+        <th style="${thS}">시간</th>
+        <th style="${thS};text-align:left;padding-left:14px">일정</th>
       </tr>
     </thead>
     <tbody>
