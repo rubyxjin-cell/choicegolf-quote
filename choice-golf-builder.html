@@ -88,7 +88,7 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
 .form-row:last-child{margin-bottom:0}
 
 .field{display:flex;flex-direction:column;gap:5px}
-.field label{font-size:13px;font-weight:600;color:#FFFFFF;letter-spacing:.3px;background:#3D4F5F;display:inline-block;padding:4px 12px;border-radius:5px;margin-bottom:2px}
+.field label{font-size:13px;font-weight:600;color:#FFFFFF;letter-spacing:.3px;background:#1B2838;display:inline-block;padding:5px 14px;border-radius:5px;margin-bottom:2px}
 .field input,.field select,.field textarea{background:#FFFFFF;border:1.5px solid #C8C8C8;border-radius:8px;padding:11px 14px;font-size:14px;color:#111;font-family:'Noto Sans KR',sans-serif;outline:none;transition:border-color .15s;width:100%}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);background:#FAFFFE}
 .field textarea{resize:vertical;min-height:80px;line-height:1.6}
@@ -524,12 +524,13 @@ select option{background:white;color:var(--ink)}
             </div>
           </div>
 
-          <!-- 상품명 -->
-          <div class="form-row" style="margin-bottom:10px">
+          <!-- 상품명 + 담당자 -->
+          <div class="form-row col2" style="margin-bottom:10px">
             <div class="field"><label>상품명</label><input type="text" id="destination" placeholder="[일본] 미야코지마 3색 골프 5박6일" oninput="updateSummary()" style="font-size:15px;font-weight:600"></div>
+            <div class="field"><label>담당자</label><input type="text" id="agent" placeholder="최진우"></div>
           </div>
 
-          <!-- 출발일 + 박수 + 담당자 -->
+          <!-- 출발일 + 여행일수 + 호텔명 -->
           <div class="form-row col3" style="margin-bottom:10px">
             <div class="field"><label>출발일</label><input type="date" id="dateFrom" min="2025-01-01" max="2028-12-31" onchange="validateDate(this);updateSummary();autoGenDays();loadFlightPicker()" oninput="updateSummary();autoGenDays();loadFlightPicker()"></div>
             <div class="field">
@@ -551,15 +552,14 @@ select option{background:white;color:var(--ink)}
                 <option value="custom">직접 입력</option>
               </select>
             </div>
-            <div class="field"><label>담당자</label><input type="text" id="agent" placeholder="최진우"></div>
+            <div class="field"><label>호텔명</label><input type="text" id="hotelQuickName" placeholder="브리즈베이 마리나" oninput="syncHotelToItinerary()"></div>
           </div>
           <div class="field" id="customNightField" style="display:none;margin-bottom:10px"><label>박수 직접입력</label><input type="number" id="customNights" placeholder="7" min="1" oninput="autoGenDays()" style="width:200px"></div>
 
-          <!-- 요금 + 호텔명 -->
+          <!-- 요금 + 요금옵션 -->
           <div style="border-top:1.5px solid var(--line);padding-top:12px;margin-top:4px">
-            <div class="form-row col2" style="margin-bottom:10px">
+            <div class="form-row" style="margin-bottom:10px;max-width:400px">
               <div class="field"><label>요금 (원/인)</label><input type="number" id="pricePerPerson" placeholder="2240000" oninput="calcTotal()"></div>
-              <div class="field"><label>호텔명</label><input type="text" id="hotelQuickName" placeholder="브리즈베이 마리나" oninput="syncHotelToItinerary()"></div>
             </div>
             <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px">
               <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" id="chkNoFlight" onchange="toggleExtraPrice()" style="width:15px;height:15px"> 항공권 미포함 견적</label>
@@ -571,7 +571,7 @@ select option{background:white;color:var(--ink)}
               <div class="field" id="childField" style="display:none"><label>아동 1인 요금</label><input type="number" id="priceChild" placeholder="800000"></div>
               <div class="field" id="infantField" style="display:none"><label>유아 1인 요금</label><input type="number" id="priceInfant" placeholder="300000"></div>
             </div>
-            <div class="field" style="margin-bottom:10px"><label>요금 안내 메모</label><textarea id="priceNote" placeholder="※ 환율·항공 시세에 따라 변동될 수 있습니다" style="min-height:50px"></textarea></div>
+            <input type="hidden" id="priceNote" value="">
           </div>
 
           <!-- REMARK -->
@@ -583,14 +583,14 @@ select option{background:white;color:var(--ink)}
           <div style="border-top:1.5px solid var(--line);padding-top:12px;margin-top:4px">
             <div class="form-row col2">
               <div class="field">
-                <label>포함 사항</label>
-                <div class="tags-wrap" id="includes-wrap" onclick="focusTagInput('includes-input')">
+                <label style="background:#1B5E20;color:#FFFFFF">포함 사항</label>
+                <div class="tags-wrap" id="includes-wrap" onclick="focusTagInput('includes-input')" style="border-color:#A5D6A7">
                   <input class="tag-input" id="includes-input" placeholder="항목 입력 후 Enter" onkeydown="addTag(event,'includes')">
                 </div>
               </div>
               <div class="field">
-                <label>불포함 사항</label>
-                <div class="tags-wrap" id="excludes-wrap" onclick="focusTagInput('excludes-input')">
+                <label style="background:#B71C1C;color:#FFFFFF">불포함 사항</label>
+                <div class="tags-wrap" id="excludes-wrap" onclick="focusTagInput('excludes-input')" style="border-color:#EF9A9A">
                   <input class="tag-input" id="excludes-input" placeholder="항목 입력 후 Enter" onkeydown="addTag(event,'excludes')">
                 </div>
               </div>
