@@ -387,8 +387,8 @@ select option{background:white;color:var(--ink)}
     </div>
 
     <!-- 항공편 등록/수정 모달 -->
-    <div class="modal-overlay" id="flightModal" style="display:none">
-      <div class="modal-box" style="max-width:600px">
+    <div class="modal-overlay" id="flightModal" style="display:none" onclick="if(event.target===this)closeFlightModal()">
+      <div class="modal-box" style="max-width:640px">
         <button class="modal-close" onclick="closeFlightModal()">✕</button>
         <div class="modal-title">✈️ 항공편 등록</div>
         <input type="hidden" id="fm_id">
@@ -405,7 +405,7 @@ select option{background:white;color:var(--ink)}
           </div>
         </div>
         <div class="form-row col2" style="margin-bottom:12px">
-          <div class="field"><label>항공사</label><input type="text" id="fm_airline" placeholder="아시아나항공"></div>
+          <div class="field"><label>항공사</label><input type="text" id="fm_airline" placeholder="진에어"></div>
           <div class="field"><label>출발 공항</label>
             <select id="fm_depAirport" style="width:100%;padding:8px;border:1.5px solid var(--line);border-radius:8px;font-size:13px;background:var(--input-bg)">
               <option value="인천">인천</option>
@@ -414,28 +414,48 @@ select option{background:white;color:var(--ink)}
             </select>
           </div>
         </div>
-        <div style="font-size:12px;font-weight:600;color:var(--ink2);margin:14px 0 8px;border-top:1px solid var(--line);padding-top:12px">🛫 가는편</div>
-        <div class="form-row col3" style="margin-bottom:12px">
-          <div class="field"><label>편명</label><input type="text" id="fm_flightOut" placeholder="OZ123"></div>
-          <div class="field"><label>출발 시간</label><input type="text" id="fm_depTimeOut" placeholder="09:30"></div>
-          <div class="field"><label>도착 시간</label><input type="text" id="fm_arrTimeOut" placeholder="12:00"></div>
-        </div>
-        <div style="font-size:12px;font-weight:600;color:var(--ink2);margin:14px 0 8px;border-top:1px solid var(--line);padding-top:12px">🛬 오는편</div>
-        <div class="form-row col3" style="margin-bottom:12px">
-          <div class="field"><label>편명</label><input type="text" id="fm_flightIn" placeholder="OZ124"></div>
-          <div class="field"><label>출발 시간</label><input type="text" id="fm_depTimeIn" placeholder="19:00"></div>
-          <div class="field"><label>도착 시간</label><input type="text" id="fm_arrTimeIn" placeholder="21:30"></div>
-        </div>
+
+        <!-- ① 운항 요일 (위로 이동) -->
         <div style="font-size:12px;font-weight:600;color:var(--ink2);margin:14px 0 8px;border-top:1px solid var(--line);padding-top:12px">📅 운항 요일</div>
-        <div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap" id="fm_days">
-          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:6px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--input-bg)"><input type="checkbox" value="월" style="width:14px;height:14px"> 월</label>
-          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:6px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--input-bg)"><input type="checkbox" value="화" style="width:14px;height:14px"> 화</label>
-          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:6px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--input-bg)"><input type="checkbox" value="수" style="width:14px;height:14px"> 수</label>
-          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:6px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--input-bg)"><input type="checkbox" value="목" style="width:14px;height:14px"> 목</label>
-          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:6px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--input-bg)"><input type="checkbox" value="금" style="width:14px;height:14px"> 금</label>
-          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:6px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--input-bg);color:var(--blue)"><input type="checkbox" value="토" style="width:14px;height:14px"> 토</label>
-          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:6px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--input-bg);color:var(--red)"><input type="checkbox" value="일" style="width:14px;height:14px"> 일</label>
+        <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap" id="fm_days">
+          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:6px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--input-bg)"><input type="checkbox" value="월" style="width:14px;height:14px" onchange="onFmDayChange()"> 월</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:6px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--input-bg)"><input type="checkbox" value="화" style="width:14px;height:14px" onchange="onFmDayChange()"> 화</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:6px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--input-bg)"><input type="checkbox" value="수" style="width:14px;height:14px" onchange="onFmDayChange()"> 수</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:6px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--input-bg)"><input type="checkbox" value="목" style="width:14px;height:14px" onchange="onFmDayChange()"> 목</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:6px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--input-bg)"><input type="checkbox" value="금" style="width:14px;height:14px" onchange="onFmDayChange()"> 금</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:6px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--input-bg);color:var(--blue)"><input type="checkbox" value="토" style="width:14px;height:14px" onchange="onFmDayChange()"> 토</label>
+          <label style="display:flex;align-items:center;gap:4px;font-size:13px;cursor:pointer;padding:6px 12px;border:1.5px solid var(--line);border-radius:8px;background:var(--input-bg);color:var(--red)"><input type="checkbox" value="일" style="width:14px;height:14px" onchange="onFmDayChange()"> 일</label>
         </div>
+
+        <!-- ② 요일별 시간 토글 -->
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink2);cursor:pointer;margin-bottom:14px;padding:8px 12px;background:#F8F7F5;border-radius:8px;border:1px solid var(--line)">
+          <input type="checkbox" id="fm_dayScheduleMode" onchange="toggleDayScheduleMode()" style="width:15px;height:15px">
+          <span>요일별 시간이 다른 경우</span>
+          <span style="font-size:11px;color:var(--ink3);margin-left:auto">예: 목요일·일요일 출발시간이 다를 때</span>
+        </label>
+
+        <!-- ③ 기본 시간 (모든 요일 동일) -->
+        <div id="fm_defaultTimes">
+          <div style="font-size:12px;font-weight:600;color:var(--ink2);margin:0 0 8px">🛫 가는편</div>
+          <div class="form-row col3" style="margin-bottom:12px">
+            <div class="field"><label>편명</label><input type="text" id="fm_flightOut" placeholder="LJ363"></div>
+            <div class="field"><label>출발 시간</label><input type="text" id="fm_depTimeOut" placeholder="14:45"></div>
+            <div class="field"><label>도착 시간</label><input type="text" id="fm_arrTimeOut" placeholder="17:00"></div>
+          </div>
+          <div style="font-size:12px;font-weight:600;color:var(--ink2);margin:4px 0 8px">🛬 오는편</div>
+          <div class="form-row col3" style="margin-bottom:12px">
+            <div class="field"><label>편명</label><input type="text" id="fm_flightIn" placeholder="LJ364"></div>
+            <div class="field"><label>출발 시간</label><input type="text" id="fm_depTimeIn" placeholder="18:00"></div>
+            <div class="field"><label>도착 시간</label><input type="text" id="fm_arrTimeIn" placeholder="20:20"></div>
+          </div>
+        </div>
+
+        <!-- ④ 요일별 개별 시간 -->
+        <div id="fm_dayTimes" style="display:none">
+          <div style="font-size:11px;color:var(--ink3);margin-bottom:10px">체크한 요일별로 시간을 각각 입력하세요</div>
+          <div id="fm_dayTimeRows"></div>
+        </div>
+
         <button onclick="saveFlight()" style="width:100%;background:var(--accent);color:white;border:none;padding:12px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">💾 저장</button>
       </div>
     </div>
@@ -3349,12 +3369,21 @@ function renderFlightList() {
       list.map(f => {
         const days = (f.operating_days||'').split(',').filter(Boolean);
         const dayBadges = dayNames.map(d => `<span style="font-size:10px;padding:2px 5px;border-radius:4px;${days.includes(d)?'background:#2C2C2C;color:white':'background:#EEEDEB;color:#aaa'}">${d}</span>`).join('');
+        const hasDaySch = f.day_schedules && typeof f.day_schedules === 'object' && Object.keys(f.day_schedules).length > 0;
+        let timeInfo = '';
+        if (hasDaySch) {
+          timeInfo = Object.entries(f.day_schedules).map(([d,s]) =>
+            `<div style="font-size:11px;color:var(--ink2);margin-top:2px"><strong style="color:var(--ink)">${d}</strong> 🛫${s.flight_out||''} ${s.dep_time_out||''}~${s.arr_time_out||''} | 🛬${s.flight_in||''} ${s.dep_time_in||''}~${s.arr_time_in||''}</div>`
+          ).join('');
+        } else {
+          timeInfo = `<div style="font-size:12px;color:var(--ink2);margin-bottom:4px">🛫 ${f.flight_out||''} ${f.dep_time_out||''}~${f.arr_time_out||''} | 🛬 ${f.flight_in||''} ${f.dep_time_in||''}~${f.arr_time_in||''}</div>`;
+        }
         return `<div style="padding:14px 16px;border:1.5px solid var(--line);border-radius:12px;margin-bottom:8px;background:var(--white)">
           <div style="display:flex;align-items:center;gap:8px">
             <div style="flex:1">
-              <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px">${f.airline||''} · ${f.dep_airport}→${f.arr_airport||f.destination}</div>
-              <div style="font-size:12px;color:var(--ink2);margin-bottom:4px">🛫 ${f.flight_out||''} ${f.dep_time_out||''}~${f.arr_time_out||''} | 🛬 ${f.flight_in||''} ${f.dep_time_in||''}~${f.arr_time_in||''}</div>
-              <div style="display:flex;gap:3px">${dayBadges}</div>
+              <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px">${f.airline||''} · ${f.dep_airport}→${f.arr_airport||f.destination}${hasDaySch?' <span style="font-size:10px;background:#FFF3E0;color:#E65100;padding:1px 6px;border-radius:10px;font-weight:500">요일별</span>':''}</div>
+              ${timeInfo}
+              <div style="display:flex;gap:3px;margin-top:4px">${dayBadges}</div>
             </div>
             <button onclick="openFlightModal('${f.id}')" style="background:none;border:1px solid var(--line);border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;color:var(--ink2);font-family:'Noto Sans KR',sans-serif">수정</button>
             <button onclick="deleteFlight('${f.id}')" style="background:none;border:1px solid #DFCAC9;border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;color:var(--red);font-family:'Noto Sans KR',sans-serif">삭제</button>
@@ -3393,6 +3422,12 @@ function openFlightModal(id, country, region) {
     const el = document.getElementById(fid); if(el) el.value = '';
   });
   document.querySelectorAll('#fm_days input[type=checkbox]').forEach(cb => cb.checked = false);
+  // 요일별 시간 모드 초기화
+  const modeChk = document.getElementById('fm_dayScheduleMode');
+  if (modeChk) modeChk.checked = false;
+  document.getElementById('fm_defaultTimes').style.display = 'block';
+  document.getElementById('fm_dayTimes').style.display = 'none';
+  document.getElementById('fm_dayTimeRows').innerHTML = '';
   // 국가/지역 프리셋
   if (country) document.getElementById('fm_category').value = country;
   if (region) document.getElementById('fm_destination').value = region;
@@ -3418,6 +3453,23 @@ function openFlightModal(id, country, region) {
       document.querySelectorAll('#fm_days input[type=checkbox]').forEach(cb => {
         cb.checked = days.includes(cb.value);
       });
+      // day_schedules 복원
+      if (f.day_schedules && typeof f.day_schedules === 'object' && Object.keys(f.day_schedules).length > 0) {
+        if (modeChk) modeChk.checked = true;
+        toggleDayScheduleMode();
+        // 각 요일 행에 값 채우기
+        Object.entries(f.day_schedules).forEach(([day, sch]) => {
+          const row = document.getElementById('fm_ds_' + day);
+          if (row) {
+            row.querySelector('[data-f="fo"]').value = sch.flight_out || '';
+            row.querySelector('[data-f="dto"]').value = sch.dep_time_out || '';
+            row.querySelector('[data-f="ato"]').value = sch.arr_time_out || '';
+            row.querySelector('[data-f="fi"]').value = sch.flight_in || '';
+            row.querySelector('[data-f="dti"]').value = sch.dep_time_in || '';
+            row.querySelector('[data-f="ati"]').value = sch.arr_time_in || '';
+          }
+        });
+      }
     }
   }
   m.style.display = 'flex';
@@ -3425,10 +3477,97 @@ function openFlightModal(id, country, region) {
 
 function closeFlightModal() { document.getElementById('flightModal').style.display = 'none'; }
 
+/* ─── 요일별 시간 다름 토글 ─── */
+function toggleDayScheduleMode() {
+  const isOn = document.getElementById('fm_dayScheduleMode')?.checked;
+  document.getElementById('fm_defaultTimes').style.display = isOn ? 'none' : 'block';
+  document.getElementById('fm_dayTimes').style.display = isOn ? 'block' : 'none';
+  if (isOn) renderDayTimeRows();
+}
+
+function onFmDayChange() {
+  const isOn = document.getElementById('fm_dayScheduleMode')?.checked;
+  if (isOn) renderDayTimeRows();
+}
+
+function renderDayTimeRows() {
+  const container = document.getElementById('fm_dayTimeRows');
+  if (!container) return;
+  const checkedDays = [];
+  document.querySelectorAll('#fm_days input[type=checkbox]:checked').forEach(cb => checkedDays.push(cb.value));
+
+  // 기본값 가져오기 (기본 시간 필드에서)
+  const defFo = document.getElementById('fm_flightOut')?.value || '';
+  const defDto = document.getElementById('fm_depTimeOut')?.value || '';
+  const defAto = document.getElementById('fm_arrTimeOut')?.value || '';
+  const defFi = document.getElementById('fm_flightIn')?.value || '';
+  const defDti = document.getElementById('fm_depTimeIn')?.value || '';
+  const defAti = document.getElementById('fm_arrTimeIn')?.value || '';
+
+  // 기존 입력값 보존
+  const existing = {};
+  container.querySelectorAll('[data-day]').forEach(row => {
+    const day = row.dataset.day;
+    existing[day] = {
+      fo: row.querySelector('[data-f="fo"]')?.value || defFo,
+      dto: row.querySelector('[data-f="dto"]')?.value || defDto,
+      ato: row.querySelector('[data-f="ato"]')?.value || defAto,
+      fi: row.querySelector('[data-f="fi"]')?.value || defFi,
+      dti: row.querySelector('[data-f="dti"]')?.value || defDti,
+      ati: row.querySelector('[data-f="ati"]')?.value || defAti
+    };
+  });
+
+  if (!checkedDays.length) {
+    container.innerHTML = '<div style="text-align:center;padding:16px;color:var(--ink3);font-size:12px">위에서 운항 요일을 먼저 선택하세요</div>';
+    return;
+  }
+
+  const dayColors = {월:'#333',화:'#333',수:'#333',목:'#333',금:'#333',토:'#2563EB',일:'#C0392B'};
+  const inputS = 'background:var(--input-bg);border:1.5px solid var(--line);border-radius:6px;padding:5px 8px;font-size:12px;color:var(--ink);font-family:Noto Sans KR,sans-serif;outline:none;width:100%';
+
+  container.innerHTML = checkedDays.map(day => {
+    const v = existing[day] || {fo:defFo, dto:defDto, ato:defAto, fi:defFi, dti:defDti, ati:defAti};
+    return `<div data-day="${day}" id="fm_ds_${day}" style="border:1.5px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px;background:#FAFAFA;border-left:3px solid ${dayColors[day]||'#333'}">
+      <div style="font-size:13px;font-weight:700;color:${dayColors[day]||'#333'};margin-bottom:8px">${day}요일</div>
+      <div style="display:grid;grid-template-columns:60px 1fr 1fr 1fr;gap:6px;align-items:center;margin-bottom:6px">
+        <span style="font-size:10px;color:var(--ink3);font-weight:600">🛫 가는편</span>
+        <input data-f="fo" style="${inputS}" placeholder="편명" value="${v.fo}">
+        <input data-f="dto" style="${inputS}" placeholder="출발" value="${v.dto}">
+        <input data-f="ato" style="${inputS}" placeholder="도착" value="${v.ato}">
+      </div>
+      <div style="display:grid;grid-template-columns:60px 1fr 1fr 1fr;gap:6px;align-items:center">
+        <span style="font-size:10px;color:var(--ink3);font-weight:600">🛬 오는편</span>
+        <input data-f="fi" style="${inputS}" placeholder="편명" value="${v.fi}">
+        <input data-f="dti" style="${inputS}" placeholder="출발" value="${v.dti}">
+        <input data-f="ati" style="${inputS}" placeholder="도착" value="${v.ati}">
+      </div>
+    </div>`;
+  }).join('');
+}
+
 async function saveFlight() {
   const v = id => document.getElementById(id)?.value || '';
   const days = [];
   document.querySelectorAll('#fm_days input[type=checkbox]:checked').forEach(cb => days.push(cb.value));
+
+  const isDayMode = document.getElementById('fm_dayScheduleMode')?.checked;
+  let daySchedules = null;
+
+  if (isDayMode) {
+    daySchedules = {};
+    document.querySelectorAll('#fm_dayTimeRows [data-day]').forEach(row => {
+      const day = row.dataset.day;
+      daySchedules[day] = {
+        flight_out: row.querySelector('[data-f="fo"]')?.value || '',
+        dep_time_out: row.querySelector('[data-f="dto"]')?.value || '',
+        arr_time_out: row.querySelector('[data-f="ato"]')?.value || '',
+        flight_in: row.querySelector('[data-f="fi"]')?.value || '',
+        dep_time_in: row.querySelector('[data-f="dti"]')?.value || '',
+        arr_time_in: row.querySelector('[data-f="ati"]')?.value || ''
+      };
+    });
+  }
 
   const payload = {
     category: v('fm_category'),
@@ -3442,10 +3581,14 @@ async function saveFlight() {
     flight_in: v('fm_flightIn'),
     dep_time_in: v('fm_depTimeIn'),
     arr_time_in: v('fm_arrTimeIn'),
-    operating_days: days.join(',')
+    operating_days: days.join(','),
+    day_schedules: daySchedules
   };
-  if (!payload.category || !payload.destination || !payload.flight_out) {
-    showToast('❌ 국가, 도착지, 편명은 필수입니다'); return;
+  if (!payload.category || !payload.destination) {
+    showToast('❌ 국가, 도착지는 필수입니다'); return;
+  }
+  if (!isDayMode && !payload.flight_out) {
+    showToast('❌ 가는편 편명은 필수입니다'); return;
   }
   try {
     const existingId = v('fm_id');
@@ -3469,6 +3612,29 @@ async function saveFlight() {
       fetchFlights();
     } else { throw new Error('저장 실패'); }
   } catch(e) { showToast('❌ 오류: ' + e.message); }
+}
+
+/* ── 요일별 시간 가져오기 헬퍼 ── */
+function getFlightTimesForDay(f, dayOfWeek) {
+  if (f.day_schedules && typeof f.day_schedules === 'object' && f.day_schedules[dayOfWeek]) {
+    const ds = f.day_schedules[dayOfWeek];
+    return {
+      flight_out: ds.flight_out || f.flight_out || '',
+      dep_time_out: ds.dep_time_out || f.dep_time_out || '',
+      arr_time_out: ds.arr_time_out || f.arr_time_out || '',
+      flight_in: ds.flight_in || f.flight_in || '',
+      dep_time_in: ds.dep_time_in || f.dep_time_in || '',
+      arr_time_in: ds.arr_time_in || f.arr_time_in || ''
+    };
+  }
+  return {
+    flight_out: f.flight_out || '',
+    dep_time_out: f.dep_time_out || '',
+    arr_time_out: f.arr_time_out || '',
+    flight_in: f.flight_in || '',
+    dep_time_in: f.dep_time_in || '',
+    arr_time_in: f.arr_time_in || ''
+  };
 }
 
 async function deleteFlight(id) {
@@ -3535,7 +3701,9 @@ function loadFlightPicker() {
   const valS = 'font-size:14px;font-weight:700;color:#111';
   const valS2 = 'font-size:13px;font-weight:600;color:#333';
 
-  listEl.innerHTML = depFiltered.map(f => `
+  listEl.innerHTML = depFiltered.map(f => {
+    const t = getFlightTimesForDay(f, dayOfWeek);
+    return `
     <div onclick="selectFlight('${f.id}')" style="border:1.5px solid var(--line);border-radius:10px;cursor:pointer;transition:all .15s;background:var(--white);overflow:hidden" onmouseover="this.style.borderColor='var(--accent)';this.style.boxShadow='0 2px 12px rgba(28,61,46,.12)'" onmouseout="this.style.borderColor='var(--line)';this.style.boxShadow='none'">
       <div style="display:flex;align-items:stretch">
         <div style="${cellS};min-width:100px;background:#F8F7F5;display:flex;flex-direction:column;justify-content:center">
@@ -3546,16 +3714,16 @@ function loadFlightPicker() {
           <div style="${labelS}">🛫 가는편</div>
           <div style="display:flex;gap:14px;align-items:baseline">
             <span style="${valS2}">${f.dep_airport} → ${f.arr_airport||f.destination}</span>
-            <span style="font-size:12px;color:#A07840;font-weight:700">${f.flight_out||''}</span>
-            <span style="font-size:13px;color:#555">${f.dep_time_out||''} ~ ${f.arr_time_out||''}</span>
+            <span style="font-size:12px;color:#A07840;font-weight:700">${t.flight_out}</span>
+            <span style="font-size:13px;color:#555">${t.dep_time_out} ~ ${t.arr_time_out}</span>
           </div>
         </div>
         <div style="${cellS};flex:1">
           <div style="${labelS}">🛬 오는편</div>
           <div style="display:flex;gap:14px;align-items:baseline">
             <span style="${valS2}">${f.arr_airport||f.destination} → ${f.dep_airport}</span>
-            <span style="font-size:12px;color:#A07840;font-weight:700">${f.flight_in||''}</span>
-            <span style="font-size:13px;color:#555">${f.dep_time_in||''} ~ ${f.arr_time_in||''}</span>
+            <span style="font-size:12px;color:#A07840;font-weight:700">${t.flight_in}</span>
+            <span style="font-size:13px;color:#555">${t.dep_time_in} ~ ${t.arr_time_in}</span>
           </div>
         </div>
         <div style="padding:8px 16px;display:flex;align-items:center;background:#F5F5F5">
@@ -3563,18 +3731,25 @@ function loadFlightPicker() {
         </div>
       </div>
     </div>
-  `).join('');
+  `}).join('');
 }
 
 function selectFlight(id) {
   const f = flightsCache.find(x => x.id === id);
   if (!f) return;
 
+  // 선택한 출발일의 요일 확인
+  const dateFrom = document.getElementById('dateFrom')?.value;
+  const dayNames = ['일','월','화','수','목','금','토'];
+  const dayOfWeek = dateFrom ? dayNames[new Date(dateFrom).getDay()] : '';
+  const t = getFlightTimesForDay(f, dayOfWeek);
+
   // 이전 항공편이 선택되어 있으면 먼저 해제 (중복 방지)
   if (selectedFlightData) {
     removeFlightFromItinerary();
   }
-  selectedFlightData = f;
+  // 요일별 시간이 반영된 데이터를 selectedFlightData에 저장
+  selectedFlightData = { ...f, flight_out: t.flight_out, dep_time_out: t.dep_time_out, arr_time_out: t.arr_time_out, flight_in: t.flight_in, dep_time_in: t.dep_time_in, arr_time_in: t.arr_time_in };
 
   // 선택 표시
   const selEl = document.getElementById('flightSelected');
@@ -3584,13 +3759,13 @@ function selectFlight(id) {
     const cellS = 'padding:6px 10px;border-right:1px solid #E5E5E5';
     selInfo.innerHTML = `<div style="display:flex;align-items:stretch;gap:0;margin:-4px -4px 4px;background:white;border-radius:8px;overflow:hidden;border:1px solid #E5E5E5">
       <div style="${cellS};font-weight:700;color:#2C2C2C">${f.airline}</div>
-      <div style="${cellS};color:#333">🛫 ${f.dep_airport}→${f.arr_airport||f.destination} <strong>${f.flight_out}</strong> ${f.dep_time_out}~${f.arr_time_out}</div>
-      <div style="padding:6px 10px;color:#333">🛬 ${f.arr_airport||f.destination}→${f.dep_airport} <strong>${f.flight_in}</strong> ${f.dep_time_in}~${f.arr_time_in}</div>
+      <div style="${cellS};color:#333">🛫 ${f.dep_airport}→${f.arr_airport||f.destination} <strong>${t.flight_out}</strong> ${t.dep_time_out}~${t.arr_time_out}</div>
+      <div style="padding:6px 10px;color:#333">🛬 ${f.arr_airport||f.destination}→${f.dep_airport} <strong>${t.flight_in}</strong> ${t.dep_time_in}~${t.arr_time_in}</div>
     </div>`;
   }
 
   // 일정표에 자동 반영
-  applyFlightToItinerary(f);
+  applyFlightToItinerary(selectedFlightData);
   showToast('✅ 항공편이 일정표에 반영되었습니다');
 }
 
