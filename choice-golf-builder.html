@@ -517,12 +517,12 @@ select option{background:white;color:var(--ink)}
           <!-- 견적서 모드 전용: 고객 정보 -->
           <div id="quoteOnlyFields" style="display:none;margin-bottom:14px;padding:14px 16px;background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:10px">
             <div style="font-size:11px;font-weight:700;color:#1D4ED8;letter-spacing:1px;margin-bottom:10px">👤 고객 정보</div>
-            <div class="form-row col3">
+            <div class="form-row col2">
               <div class="field"><label>고객명</label><input type="text" id="customerName" placeholder="홍길동" oninput="updateSummary()"></div>
               <div class="field"><label>인원</label><input type="text" id="pax" placeholder="4인 기준" oninput="updateSummary();calcTotal()"></div>
-              <div class="field"><label>견적 발송일</label><input type="date" id="quoteDate" min="2025-01-01" max="2028-12-31" onchange="validateDate(this)"></div>
             </div>
           </div>
+          <input type="hidden" id="quoteDate" value="">
 
           <!-- 상품명 + 담당자 -->
           <div class="form-row col2" style="margin-bottom:10px">
@@ -556,10 +556,11 @@ select option{background:white;color:var(--ink)}
           </div>
           <div class="field" id="customNightField" style="display:none;margin-bottom:10px"><label>박수 직접입력</label><input type="number" id="customNights" placeholder="7" min="1" oninput="autoGenDays()" style="width:200px"></div>
 
-          <!-- 요금 + 요금옵션 -->
+          <!-- 요금 + 항공사 -->
           <div style="border-top:1.5px solid var(--line);padding-top:12px;margin-top:4px">
-            <div class="form-row" style="margin-bottom:10px;max-width:400px">
+            <div class="form-row col2" style="margin-bottom:10px">
               <div class="field"><label>요금 (원/인)</label><input type="number" id="pricePerPerson" placeholder="2240000" oninput="calcTotal()"></div>
+              <div class="field"><label>항공사</label><input type="text" id="airlineName" placeholder="진에어 (항공편 선택 시 자동입력)"></div>
             </div>
             <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px">
               <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" id="chkNoFlight" onchange="toggleExtraPrice()" style="width:15px;height:15px"> 항공권 미포함 견적</label>
@@ -1033,7 +1034,7 @@ function newProduct() {
 
 function clearForm() {
   const ids = ['destination','airport','dateFrom','dateTo','rounds','quoteDate','agent','agentTeam',
-    'pricePerPerson','priceNote','priceNoFlight','priceChild','priceInfant','remark','hotelQuickName',
+    'pricePerPerson','priceNote','priceNoFlight','priceChild','priceInfant','remark','hotelQuickName','airlineName',
     'hotelName','hotelNameKr','hotelRoom','hotelNights','hotelDesc',
     'contactPhone','contactKakao','companyName','companyNameEn','logoUrl','deposit','bankAccount','cancelPolicy','productName','pax','customerName','customerPhone'];
   ids.forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
@@ -1481,6 +1482,7 @@ function collectData() {
     priceNoFlight: document.getElementById('chkNoFlight')?.checked ? (parseInt(v('priceNoFlight'))||0) : null,
     priceChild: document.getElementById('chkChild')?.checked ? (parseInt(v('priceChild'))||0) : null,
     priceInfant: document.getElementById('chkInfant')?.checked ? (parseInt(v('priceInfant'))||0) : null,
+    airlineName: v('airlineName'),
     priceNote: v('priceNote'),
     remark: v('remark'),
     hotelQuickName: v('hotelQuickName'),
@@ -1640,35 +1642,29 @@ body{padding-bottom:76px}
   <section class="reveal" style="padding:36px 20px;border-bottom:1px solid #E8E6E1">
     <div class="sec-title">01 &nbsp;상품 요약</div>
 
-    <table style="width:100%;border-collapse:collapse;border:2px solid #2A4A5E;border-radius:8px;overflow:hidden;font-family:'Noto Sans KR',sans-serif">
+    <table style="width:100%;border-collapse:collapse;border:2px solid #2A4A5E;overflow:hidden;font-family:'Noto Sans KR',sans-serif">
       ${d.customerName?`<tr>
-        <td style="padding:10px 14px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;width:90px;border-bottom:1px solid #3A5A6E;white-space:nowrap">고객명</td>
+        <td style="padding:10px 14px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;width:80px;border-bottom:1px solid #3A5A6E">고객명</td>
         <td style="padding:10px 14px;font-size:14px;font-weight:600;color:#111;border-bottom:1px solid #D5D5D5">${d.customerName}</td>
-      </tr>`:''}
-      ${d.pax?`<tr>
-        <td style="padding:10px 14px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;border-bottom:1px solid #3A5A6E">인원</td>
-        <td style="padding:10px 14px;font-size:14px;color:#111;border-bottom:1px solid #D5D5D5">${d.pax}</td>
+        <td style="padding:10px 14px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;width:80px;border-bottom:1px solid #3A5A6E">인원</td>
+        <td style="padding:10px 14px;font-size:14px;color:#111;border-bottom:1px solid #D5D5D5">${d.pax||'-'}</td>
       </tr>`:''}
       <tr>
         <td style="padding:10px 14px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;border-bottom:1px solid #3A5A6E">출발일정</td>
         <td style="padding:10px 14px;font-size:14px;color:#111;border-bottom:1px solid #D5D5D5">${d.period||'-'}${d.nights ? ' (' + d.nights + '박 ' + (d.nights+1) + '일)' : ''}</td>
+        <td style="padding:10px 14px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;border-bottom:1px solid #3A5A6E">항공</td>
+        <td style="padding:10px 14px;font-size:14px;color:#111;border-bottom:1px solid #D5D5D5">${d.airlineName||'-'}</td>
       </tr>
-      ${d.hotelQuickName||d.hotelName?`<tr>
+      <tr>
         <td style="padding:10px 14px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;border-bottom:1px solid #3A5A6E">호텔</td>
         <td style="padding:10px 14px;font-size:14px;color:#111;border-bottom:1px solid #D5D5D5">${d.hotelQuickName||d.hotelName||'-'}</td>
-      </tr>`:''}
-      <tr>
-        <td style="padding:10px 14px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;border-bottom:1px solid #3A5A6E">요금</td>
-        <td style="padding:10px 14px;font-size:18px;font-weight:800;color:#C0392B;border-bottom:1px solid #D5D5D5">₩${perPerson} / 인</td>
-      </tr>
-      ${d.agent?`<tr>
         <td style="padding:10px 14px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;border-bottom:1px solid #3A5A6E">담당자</td>
-        <td style="padding:10px 14px;font-size:14px;color:#111;border-bottom:1px solid #D5D5D5">${d.agent}</td>
-      </tr>`:''}
-      ${d.quoteDate?`<tr>
-        <td style="padding:10px 14px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">견적일</td>
-        <td style="padding:10px 14px;font-size:13px;color:#666">${d.quoteDate}</td>
-      </tr>`:''}
+        <td style="padding:10px 14px;font-size:14px;color:#111;border-bottom:1px solid #D5D5D5">${d.agent||'-'}</td>
+      </tr>
+      <tr>
+        <td style="padding:12px 14px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">요금</td>
+        <td colspan="3" style="padding:12px 14px;font-size:20px;font-weight:800;color:#C0392B">₩${perPerson} / 인</td>
+      </tr>
     </table>
 
     <!-- 포함 / 불포함 -->
@@ -2531,6 +2527,7 @@ function applyProductData(d) {
   set('rounds', d.rounds);
   set('agent', d.agent);
   set('pricePerPerson', d.pricePerPerson);
+  set('airlineName', d.airlineName);
   set('priceNote', d.priceNote);
   set('remark', d.remark);
   set('hotelQuickName', d.hotelQuickName);
@@ -3795,6 +3792,10 @@ function selectFlight(id) {
       <div style="padding:6px 10px;color:#333">🛬 ${f.arr_airport||f.destination}→${f.dep_airport} <strong>${t.flight_in}</strong> ${t.dep_time_in}~${t.arr_time_in}</div>
     </div>`;
   }
+
+  // 항공사 자동 입력
+  const airEl = document.getElementById('airlineName');
+  if (airEl && f.airline) airEl.value = f.airline;
 
   // 일정표에 자동 반영
   applyFlightToItinerary(selectedFlightData);
