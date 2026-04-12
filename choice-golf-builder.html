@@ -2398,7 +2398,10 @@ async function loadProductById(id) {
   const regionEl = document.getElementById('productRegion');
   if (regionEl && p.region) regionEl.value = p.region;
 
-  // 현재 작업 중인 상품 기억
+  // 현재 작업 중인 상품 기억 + 견적서 모드 해제
+  state.quoteMode = false;
+  state.currentQuoteId = null;
+  state.baseProductId = null;
   state.currentProductId = p.id;
   state.currentProductName = p.name;
   updateCurrentProductBanner();
@@ -2681,56 +2684,41 @@ function renderQuoteList() {
   }).join('');
 }
 
-/* 상품 → 견적서 작성 모드 진입 */
+/* 상품 → 견적서 작성 (자동 임시저장 후 편집) */
 async function startQuoteFromProduct(productId) {
   if (!productId) { showToast('❌ 상품을 먼저 선택하세요'); return; }
 
-  // 상품 데이터 로드
   try {
+    // 1. 상품 데이터 로드
     const res = await fetch(`${SUPABASE_URL}/rest/v1/products?id=eq.${productId}&select=*`, {
       headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
     });
     const rows = await res.json();
     if (!rows || !rows[0]) { showToast('❌ 상품 불러오기 실패'); return; }
     const product = rows[0];
+    const productData = product.data || {};
+    const today = new Date().toISOString().split('T')[0];
+    const quoteName = `${product.name || '새 견적서'}`;
 
-    // 폼에 상품 데이터 적용
-    applyProductData(product.data || {});
-
-    // 카테고리 세팅
-    const catEl = document.getElementById('productCategory');
-    if (catEl && product.category) catEl.value = product.category;
-    // 지역 세팅
-    onCountryChange();
-    const regionEl = document.getElementById('productRegion');
-    if (regionEl && product.region) regionEl.value = product.region;
-
-    // 견적서 모드로 전환
-    state.quoteMode = true;
-    state.currentQuoteId = null;
-    state.baseProductId = productId;
-    state.currentProductId = null;
-
-    // 고객 정보 필드 초기화 (새 고객용)
-    ['customerName','customerPhone','pax'].forEach(id => {
-      const el = document.getElementById(id); if(el) el.value = '';
+    // 2. Supabase에 임시저장으로 바로 저장
+    const saveRes = await fetch(`${SUPABASE_URL}/rest/v1/quotes`, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`,'Prefer':'return=representation' },
+      body: JSON.stringify({
+        data: { ...productData, quoteDate: today },
+        quote_name: quoteName,
+        customer_name: productData.customerName || '',
+        status: 'draft',
+        product_id: productId
+      })
     });
-    ['dateFrom','dateTo','quoteDate'].forEach(id => {
-      const el = document.getElementById(id); if(el) el.value = '';
-    });
-    // 오늘 날짜 자동 세팅
-    const qd = document.getElementById('quoteDate');
-    if(qd) qd.value = new Date().toISOString().split('T')[0];
+    const savedRows = await saveRes.json();
+    if (!savedRows || !savedRows[0]) throw new Error('저장 실패');
 
-    // 견적서 이름 필드 초기화
-    const pnEl = document.getElementById('productName');
-    if (pnEl) pnEl.value = '';
-    pnEl.placeholder = '견적서 이름 (예: 홍길동 - 일본 미야자키)';
-
-    updateCurrentProductBanner();
-    switchTab('product-new');
-    showSaveConfirm('견적서 작성', '상품이 고객견적서로 복사되었습니다.\n고객 정보를 입력 후 저장하세요.', '📋');
-    document.querySelector('.content').scrollTop = 0;
+    // 3. 저장된 견적서를 편집 모드로 열기
+    fetchQuotes();
+    loadQuoteById(savedRows[0].id);
+    showSaveConfirm('임시저장 완료', '고객견적서가 임시저장되었습니다.\n고객 정보를 수정 후 저장하세요.', '📋');
   } catch(e) { showToast('❌ 오류: ' + e.message); }
 }
 
