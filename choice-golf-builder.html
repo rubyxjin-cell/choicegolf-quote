@@ -513,16 +513,27 @@ select option{background:white;color:var(--ink)}
       </div>
       <div class="sec-body" id="body-basic">
         <div class="form-card" style="margin-bottom:10px">
-          <!-- 고객 + 여행지 -->
-          <div class="form-row col2" style="margin-bottom:10px">
-            <div class="field"><label>수신 (고객명)</label><input type="text" id="customerName" placeholder="홍길동" oninput="updateSummary()"></div>
-            <div class="field"><label>여행지</label><input type="text" id="destination" placeholder="일본 미야자키" oninput="updateSummary()"></div>
+
+          <!-- 견적서 모드 전용: 고객 정보 -->
+          <div id="quoteOnlyFields" style="display:none;margin-bottom:14px;padding:14px 16px;background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:10px">
+            <div style="font-size:11px;font-weight:700;color:#1D4ED8;letter-spacing:1px;margin-bottom:10px">👤 고객 정보</div>
+            <div class="form-row col3">
+              <div class="field"><label>고객명</label><input type="text" id="customerName" placeholder="홍길동" oninput="updateSummary()"></div>
+              <div class="field"><label>인원</label><input type="text" id="pax" placeholder="4인 기준" oninput="updateSummary();calcTotal()"></div>
+              <div class="field"><label>견적 발송일</label><input type="date" id="quoteDate"></div>
+            </div>
           </div>
-          <!-- 날짜 + 인원 -->
-          <div class="form-row col4" style="margin-bottom:10px">
+
+          <!-- 상품명 -->
+          <div class="form-row" style="margin-bottom:10px">
+            <div class="field"><label>상품명</label><input type="text" id="destination" placeholder="[일본] 미야코지마 3색 골프 5박6일" oninput="updateSummary()" style="font-size:15px;font-weight:600"></div>
+          </div>
+
+          <!-- 출발일 + 박수 + 담당자 -->
+          <div class="form-row col3" style="margin-bottom:10px">
             <div class="field"><label>출발일</label><input type="date" id="dateFrom" oninput="updateSummary();autoGenDays();loadFlightPicker()"></div>
             <div class="field">
-              <label>박수 선택</label>
+              <label>여행 일수</label>
               <select id="tripNights" onchange="autoGenDays()" style="width:100%;padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;font-family:'Noto Sans KR',sans-serif;font-size:13px;background:var(--input-bg);color:var(--ink)">
                 <option value="">선택...</option>
                 <option value="1,2">1박 2일</option>
@@ -540,15 +551,15 @@ select option{background:white;color:var(--ink)}
                 <option value="custom">직접 입력</option>
               </select>
             </div>
-            <div class="field"><label>인원</label><input type="text" id="pax" placeholder="예: 4명" oninput="updateSummary();calcTotal()"></div>
-            <div class="field"><label>견적 발송일</label><input type="date" id="quoteDate"></div>
+            <div class="field"><label>담당자</label><input type="text" id="agent" placeholder="최진우"></div>
           </div>
           <div class="field" id="customNightField" style="display:none;margin-bottom:10px"><label>박수 직접입력</label><input type="number" id="customNights" placeholder="7" min="1" oninput="autoGenDays()" style="width:200px"></div>
-          <!-- 요금 -->
+
+          <!-- 요금 + 호텔명 -->
           <div style="border-top:1.5px solid var(--line);padding-top:12px;margin-top:4px">
             <div class="form-row col2" style="margin-bottom:10px">
-              <div class="field"><label>성인 1인 요금 (원)</label><input type="number" id="pricePerPerson" placeholder="1020000" oninput="calcTotal()"></div>
-              <div class="field"><label>담당자</label><input type="text" id="agent" placeholder="김담당"></div>
+              <div class="field"><label>요금 (원/인)</label><input type="number" id="pricePerPerson" placeholder="2240000" oninput="calcTotal()"></div>
+              <div class="field"><label>호텔명</label><input type="text" id="hotelQuickName" placeholder="브리즈베이 마리나" oninput="syncHotelToItinerary()"></div>
             </div>
             <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px">
               <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" id="chkNoFlight" onchange="toggleExtraPrice()" style="width:15px;height:15px"> 항공권 미포함 견적</label>
@@ -560,10 +571,16 @@ select option{background:white;color:var(--ink)}
               <div class="field" id="childField" style="display:none"><label>아동 1인 요금</label><input type="number" id="priceChild" placeholder="800000"></div>
               <div class="field" id="infantField" style="display:none"><label>유아 1인 요금</label><input type="number" id="priceInfant" placeholder="300000"></div>
             </div>
-            <div class="field"><label>요금 안내 메모</label><textarea id="priceNote" placeholder="※ 환율·항공 시세에 따라 변동될 수 있습니다" style="min-height:50px"></textarea></div>
+            <div class="field" style="margin-bottom:10px"><label>요금 안내 메모</label><textarea id="priceNote" placeholder="※ 환율·항공 시세에 따라 변동될 수 있습니다" style="min-height:50px"></textarea></div>
           </div>
+
+          <!-- REMARK -->
+          <div style="border-top:1.5px solid var(--line);padding-top:12px;margin-top:4px">
+            <div class="field" style="margin-bottom:10px"><label>REMARK (비고)</label><textarea id="remark" placeholder="특이사항, 요청사항 등" style="min-height:60px"></textarea></div>
+          </div>
+
           <!-- 포함/불포함 -->
-          <div style="border-top:1.5px solid var(--line);padding-top:12px;margin-top:12px">
+          <div style="border-top:1.5px solid var(--line);padding-top:12px;margin-top:4px">
             <div class="form-row col2">
               <div class="field">
                 <label>포함 사항</label>
@@ -971,6 +988,10 @@ function setQuoteSections(quoteMode) {
   const quickCard = document.getElementById('quoteQuickCard');
   if (quickCard) quickCard.classList.toggle('show', quoteMode);
 
+  // 견적서 전용 필드 (고객명, 인원, 견적발송일)
+  const quoteOnly = document.getElementById('quoteOnlyFields');
+  if (quoteOnly) quoteOnly.style.display = quoteMode ? 'block' : 'none';
+
   if (quoteMode) {
     // 견적서 모드: 기본정보·요금만 펼침, 나머지 접기
     ['body-basic','body-price'].forEach(id => {
@@ -1012,7 +1033,7 @@ function newProduct() {
 
 function clearForm() {
   const ids = ['destination','airport','dateFrom','dateTo','rounds','quoteDate','agent','agentTeam',
-    'pricePerPerson','priceNote','priceNoFlight','priceChild','priceInfant',
+    'pricePerPerson','priceNote','priceNoFlight','priceChild','priceInfant','remark','hotelQuickName',
     'hotelName','hotelNameKr','hotelRoom','hotelNights','hotelDesc',
     'contactPhone','contactKakao','companyName','companyNameEn','logoUrl','deposit','bankAccount','cancelPolicy','productName','pax','customerName','customerPhone'];
   ids.forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
@@ -1461,6 +1482,8 @@ function collectData() {
     priceChild: document.getElementById('chkChild')?.checked ? (parseInt(v('priceChild'))||0) : null,
     priceInfant: document.getElementById('chkInfant')?.checked ? (parseInt(v('priceInfant'))||0) : null,
     priceNote: v('priceNote'),
+    remark: v('remark'),
+    hotelQuickName: v('hotelQuickName'),
     includes: getTagValues('includes'),
     excludes: getTagValues('excludes'),
     days,
@@ -2502,6 +2525,8 @@ function applyProductData(d) {
   set('agent', d.agent);
   set('pricePerPerson', d.pricePerPerson);
   set('priceNote', d.priceNote);
+  set('remark', d.remark);
+  set('hotelQuickName', d.hotelQuickName);
   set('hotelName', d.hotelName);
   set('hotelNameKr', d.hotelNameKr);
   set('hotelRoom', d.hotelRoom);
@@ -3811,6 +3836,22 @@ function applyFlightToItinerary(f) {
     lastSched.insertAdjacentHTML('beforeend', depMarked);
     lastSched.insertAdjacentHTML('beforeend', arrMarked);
   }
+}
+
+/* ════════════════════════════
+   HOTEL → ITINERARY SYNC
+════════════════════════════ */
+function syncHotelToItinerary() {
+  const hotelName = document.getElementById('hotelQuickName')?.value || '';
+  const dayBlocks = document.querySelectorAll('.day-block');
+  if (!dayBlocks.length || !hotelName) return;
+  // 마지막 날(귀국일) 제외하고 호텔명 채우기
+  dayBlocks.forEach((block, i) => {
+    const hotelInput = block.querySelector('[data-hotel="true"]');
+    if (hotelInput && i < dayBlocks.length - 1) {
+      hotelInput.value = hotelName;
+    }
+  });
 }
 
 /* ════════════════════════════
