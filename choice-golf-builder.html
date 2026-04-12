@@ -1642,30 +1642,34 @@ body{padding-bottom:76px}
   <section class="reveal" style="padding:36px 20px;border-bottom:1px solid #E8E6E1">
     <div class="sec-title">01 &nbsp;상품 요약</div>
 
-    <table style="width:100%;border-collapse:collapse;border:2px solid #2A4A5E;overflow:hidden;font-family:'Noto Sans KR',sans-serif">
-      ${d.customerName?`<tr>
-        <td style="padding:10px 14px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;width:80px;border-bottom:1px solid #3A5A6E">고객명</td>
-        <td style="padding:10px 14px;font-size:14px;font-weight:600;color:#111;border-bottom:1px solid #D5D5D5">${d.customerName}</td>
-        <td style="padding:10px 14px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;width:80px;border-bottom:1px solid #3A5A6E">인원</td>
-        <td style="padding:10px 14px;font-size:14px;color:#111;border-bottom:1px solid #D5D5D5">${d.pax||'-'}</td>
-      </tr>`:''}
-      <tr>
-        <td style="padding:10px 14px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;border-bottom:1px solid #3A5A6E">출발일정</td>
-        <td style="padding:10px 14px;font-size:14px;color:#111;border-bottom:1px solid #D5D5D5">${d.period||'-'}${d.nights ? ' (' + d.nights + '박 ' + (d.nights+1) + '일)' : ''}</td>
-        <td style="padding:10px 14px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;border-bottom:1px solid #3A5A6E">항공</td>
-        <td style="padding:10px 14px;font-size:14px;color:#111;border-bottom:1px solid #D5D5D5">${d.airlineName||'-'}</td>
-      </tr>
-      <tr>
-        <td style="padding:10px 14px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;border-bottom:1px solid #3A5A6E">호텔</td>
-        <td style="padding:10px 14px;font-size:14px;color:#111;border-bottom:1px solid #D5D5D5">${d.hotelQuickName||d.hotelName||'-'}</td>
-        <td style="padding:10px 14px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;border-bottom:1px solid #3A5A6E">담당자</td>
-        <td style="padding:10px 14px;font-size:14px;color:#111;border-bottom:1px solid #D5D5D5">${d.agent||'-'}</td>
-      </tr>
-      <tr>
-        <td style="padding:12px 14px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">요금</td>
-        <td colspan="3" style="padding:12px 14px;font-size:20px;font-weight:800;color:#C0392B">₩${perPerson} / 인</td>
-      </tr>
-    </table>
+    <div style="border:2px solid #2A4A5E;border-radius:10px;overflow:hidden;font-family:'Noto Sans KR',sans-serif">
+      ${d.customerName?`<div style="display:flex;border-bottom:1px solid #D5D5D5">
+        <div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">고객명</div>
+        <div style="flex:1;padding:10px 14px;font-size:14px;font-weight:600;color:#111">${d.customerName}</div>
+        <div style="min-width:56px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">인원</div>
+        <div style="min-width:70px;padding:10px 12px;font-size:14px;color:#111">${d.pax||'-'}</div>
+      </div>`:''}
+      <div style="display:flex;border-bottom:1px solid #D5D5D5">
+        <div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">일정</div>
+        <div style="flex:1;padding:10px 14px;font-size:13px;color:#111">${d.period||'-'}${d.nights ? ' ('+d.nights+'박'+(d.nights+1)+'일)' : ''}</div>
+      </div>
+      <div style="display:flex;border-bottom:1px solid #D5D5D5">
+        <div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">항공</div>
+        <div style="flex:1;padding:10px 14px;font-size:13px;color:#111">${d.airlineName||'-'}</div>
+      </div>
+      ${(d.hotelQuickName||d.hotelName)?`<div style="display:flex;border-bottom:1px solid #D5D5D5">
+        <div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">호텔</div>
+        <div style="flex:1;padding:10px 14px;font-size:13px;color:#111">${d.hotelQuickName||d.hotelName}</div>
+      </div>`:''}
+      ${d.agent?`<div style="display:flex;border-bottom:1px solid #D5D5D5">
+        <div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">담당자</div>
+        <div style="flex:1;padding:10px 14px;font-size:13px;color:#111">${d.agent}</div>
+      </div>`:''}
+      <div style="display:flex">
+        <div style="min-width:76px;padding:12px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">요금</div>
+        <div style="flex:1;padding:12px 14px;font-size:20px;font-weight:800;color:#C0392B">₩${perPerson} / 인</div>
+      </div>
+    </div>
 
     <!-- 포함 / 불포함 -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px">
