@@ -1511,52 +1511,43 @@ function generateHTML(d) {
   const dayLabels = ['1일차','2일차','3일차','4일차','5일차','6일차','7일차','8일차','9일차','10일차'];
 
   // 일정표 HTML
-  const thS = 'padding:10px 12px;font-size:12px;font-weight:700;color:#FFFFFF;background:#2A6B3C;border:1px solid #1E5A2F;white-space:nowrap';
-  const daysHTML = `
-  <table style="width:100%;border-collapse:collapse;border:2px solid #2A6B3C;font-family:'Noto Sans KR',sans-serif;table-layout:fixed">
-    <colgroup>
-      <col style="width:58px">
-      <col>
-    </colgroup>
-    <thead>
-      <tr>
-        <th style="${thS};text-align:center">시간</th>
-        <th style="${thS};text-align:left;padding-left:14px">일정</th>
-      </tr>
-    </thead>
-    <tbody>
-    ${d.days.map((day, i) => {
-      const dayLabel = dayLabels[i] || (i+1)+'일차';
-      const items = day.items || [];
-      const dayBorder = 'border-bottom:1px solid #D5D5D5';
+  const thS = 'padding:8px 12px;font-size:11px;font-weight:700;color:#FFFFFF;background:#4A7A5A;border:1px solid #3A6A4A;white-space:nowrap';
+  const daysHTML = d.days.map((day, i) => {
+    const dayLabel = dayLabels[i] || (i+1)+'일차';
+    const items = day.items || [];
+    const dayBorder = 'border-bottom:1px solid #D5D5D5';
 
-      let dateStr = '';
-      if (d.dateFrom) {
-        const dt = new Date(d.dateFrom);
-        dt.setDate(dt.getDate() + i);
-        const dayNames = ['일','월','화','수','목','금','토'];
-        dateStr = ' (' + (dt.getMonth()+1) + '/' + dt.getDate() + ' ' + dayNames[dt.getDay()] + ')';
-      }
+    let dateStr = '';
+    if (d.dateFrom) {
+      const dt = new Date(d.dateFrom);
+      dt.setDate(dt.getDate() + i);
+      const dayNames = ['일','월','화','수','목','금','토'];
+      dateStr = ' (' + (dt.getMonth()+1) + '/' + dt.getDate() + ' ' + dayNames[dt.getDay()] + ')';
+    }
 
-      const dayHeaderRow = '<tr style="background:#2A4A5E"><td colspan="2" style="padding:10px 16px;font-size:14px;font-weight:800;color:white;border:1px solid #1E3A4E">' + dayLabel + dateStr + (day.title ? '&nbsp;&nbsp;' + day.title : '') + '</td></tr>';
+    const itemRows = items.map((it, ri) => {
+      const textStyle = it.color ? 'color:' + it.color + ';font-weight:700' : 'color:#222';
+      const bgStyle = it.color ? 'background:' + it.color + '10' : (ri%2===0 ? '' : 'background:#FAFAF8');
+      return '<tr style="' + bgStyle + '">' +
+        '<td style="' + dayBorder + ';padding:8px 8px;font-size:12px;color:#A07840;font-weight:700;text-align:center;vertical-align:top">' + (it.time||'') + '</td>' +
+        '<td style="' + dayBorder + ';padding:8px 14px;font-size:13px;' + textStyle + ';line-height:1.6;word-break:keep-all">' + (it.text||'') + '</td>' +
+      '</tr>';
+    }).join('');
 
-      const itemRows = items.map((it, ri) => {
-        const textStyle = it.color ? 'color:' + it.color + ';font-weight:700' : 'color:#222';
-        const bgStyle = it.color ? 'background:' + it.color + '10' : (ri%2===0 ? '' : 'background:#FAFAF8');
-        return '<tr style="' + bgStyle + '">' +
-          '<td style="' + dayBorder + ';padding:8px 8px;font-size:12px;color:#A07840;font-weight:700;text-align:center;vertical-align:top">' + (it.time||'') + '</td>' +
-          '<td style="' + dayBorder + ';padding:8px 14px;font-size:13px;' + textStyle + ';line-height:1.6;word-break:keep-all">' + (it.text||'') + '</td>' +
-        '</tr>';
-      }).join('');
+    const hotelRow = day.hotelStay ? '<tr style="background:#F0F6FF"><td colspan="2" style="' + dayBorder + ';padding:8px 12px"><span style=\\"display:inline-block;background:#1D4ED8;color:white;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;margin-right:8px\\">HOTEL</span><span style=\\"font-size:13px;font-weight:600;color:#1D4ED8\\">' + day.hotelStay + '</span></td></tr>' : '';
 
-      const hotelRow = day.hotelStay ? '<tr style="background:#F0F6FF"><td colspan="2" style="' + dayBorder + ';padding:8px 12px"><span style=\\"display:inline-block;background:#1D4ED8;color:white;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;margin-right:8px\\">HOTEL</span><span style=\\"font-size:13px;font-weight:600;color:#1D4ED8\\">' + day.hotelStay + '</span></td></tr>' : '';
+    return `<div style="border:1.5px solid #2A6B3C;border-radius:10px;overflow:hidden;margin-bottom:12px">
+      <div style="background:#2A4A5E;padding:10px 16px;font-size:14px;font-weight:800;color:white">${dayLabel}${dateStr}${day.title ? '&nbsp;&nbsp;' + day.title : ''}</div>
+      <table style="width:100%;border-collapse:collapse;table-layout:fixed">
+        <colgroup><col style="width:58px"><col></colgroup>
+        <tr><th style="${thS};text-align:center">시간</th><th style="${thS};text-align:left;padding-left:14px">일정</th></tr>
+        ${itemRows}
+        ${hotelRow}
+      </table>
+    </div>`;
+  }).join('');
 
-      return dayHeaderRow + itemRows + hotelRow;
-    }).join('')}
-    </tbody>
-  </table>`;
-
-  // 이전 daysHTML 변수 대체 끝
+  // daysHTML 끝
 
   // 포함/불포함
   const incHTML = d.includes.map(t=>`<li style="font-size:13px;color:#333;padding:5px 0;border-bottom:1px solid #F0EFE9;display:flex;gap:8px;align-items:flex-start"><span style="color:#2C2C2C;font-weight:700;flex-shrink:0">✓</span>${t}</li>`).join('');
