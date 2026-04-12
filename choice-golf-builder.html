@@ -1513,17 +1513,25 @@ function generateHTML(d) {
   // 일정표 HTML — 여행사 양식 스타일
   const thS = 'padding:10px 12px;font-size:12px;font-weight:700;color:#FFFFFF;background:#2A6B3C;border:1px solid #1E5A2F;text-align:center;white-space:nowrap';
   const daysHTML = `
-  <table style="width:100%;border-collapse:collapse;border:2px solid #2A6B3C;font-family:'Noto Sans KR',sans-serif;table-layout:fixed">
+  <style>
+    .sch-pc{display:table-cell}
+    @media(max-width:640px){
+      .sch-pc{display:none!important}
+      .sch-time{width:52px!important}
+      .sch-table col.col-place,.sch-table col.col-transport{width:0!important}
+    }
+  </style>
+  <table class="sch-table" style="width:100%;border-collapse:collapse;border:2px solid #2A6B3C;font-family:'Noto Sans KR',sans-serif;table-layout:fixed">
     <colgroup>
-      <col style="width:70px">
-      <col style="width:70px">
-      <col style="width:60px">
+      <col class="col-place" style="width:70px">
+      <col class="col-transport" style="width:70px">
+      <col class="sch-time" style="width:60px">
       <col>
     </colgroup>
     <thead>
       <tr>
-        <th style="${thS}">장소</th>
-        <th style="${thS}">교통</th>
+        <th class="sch-pc" style="${thS}">장소</th>
+        <th class="sch-pc" style="${thS}">교통</th>
         <th style="${thS}">시간</th>
         <th style="${thS};text-align:left;padding-left:14px">일정</th>
       </tr>
@@ -1551,8 +1559,8 @@ function generateHTML(d) {
         const textStyle = it.color ? 'color:' + it.color + ';font-weight:700' : 'color:#222';
         const bgStyle = it.color ? 'background:' + it.color + '10' : (ri%2===0 ? '' : 'background:#FAFAF8');
         return '<tr style="' + bgStyle + '">' +
-          '<td style="' + dayBorder + ';padding:8px 10px;font-size:12px;font-weight:700;color:#1B5E20;white-space:nowrap;vertical-align:top">' + (it.place||'') + '</td>' +
-          '<td style="' + dayBorder + ';padding:8px 8px;font-size:11px;color:#666;white-space:nowrap;vertical-align:top">' + (it.transport||'') + '</td>' +
+          '<td class="sch-pc" style="' + dayBorder + ';padding:8px 10px;font-size:12px;font-weight:700;color:#1B5E20;white-space:nowrap;vertical-align:top">' + (it.place||'') + '</td>' +
+          '<td class="sch-pc" style="' + dayBorder + ';padding:8px 8px;font-size:11px;color:#666;white-space:nowrap;vertical-align:top">' + (it.transport||'') + '</td>' +
           '<td style="' + dayBorder + ';padding:8px 8px;font-size:12px;color:#A07840;font-weight:700;white-space:nowrap;vertical-align:top">' + (it.time||'') + '</td>' +
           '<td style="' + dayBorder + ';padding:8px 12px;font-size:13px;' + textStyle + ';line-height:1.6;word-break:keep-all">' + (it.text||'') + '</td>' +
         '</tr>';
