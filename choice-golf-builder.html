@@ -1636,20 +1636,43 @@ body{padding-bottom:76px}
     </div>
   </div>
 
-  <!-- 01 요금 안내 -->
+  <!-- 01 상품 요약 -->
   <section class="reveal" style="padding:36px 20px;border-bottom:1px solid #E8E6E1">
-    <div class="sec-title">01 &nbsp;여행 요금 안내</div>
+    <div class="sec-title">01 &nbsp;상품 요약</div>
 
-    <!-- 패키지 금액 카드 -->
-    <div style="border:1px solid #E8E6E1;border-radius:16px;padding:20px;margin-bottom:20px;background:#FAFAF8;text-align:center">
-      <div style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#888;margin-bottom:10px">패키지 요금</div>
-      <div style="font-size:24px;font-weight:700;color:#C0392B">₩${perPerson} / 인</div>
-    </div>
-
-    ${d.priceNote?`<div style="margin-bottom:20px;padding:12px 16px;background:#FFFBF2;border-left:3px solid #C9A268;border-radius:0 8px 8px 0;font-size:12px;color:#666;line-height:2">${noteLines}</div>`:''}
+    <table style="width:100%;border-collapse:collapse;border:2px solid #2A4A5E;border-radius:8px;overflow:hidden;font-family:'Noto Sans KR',sans-serif">
+      ${d.customerName?`<tr>
+        <td style="padding:10px 14px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;width:90px;border-bottom:1px solid #3A5A6E;white-space:nowrap">고객명</td>
+        <td style="padding:10px 14px;font-size:14px;font-weight:600;color:#111;border-bottom:1px solid #D5D5D5">${d.customerName}</td>
+      </tr>`:''}
+      ${d.pax?`<tr>
+        <td style="padding:10px 14px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;border-bottom:1px solid #3A5A6E">인원</td>
+        <td style="padding:10px 14px;font-size:14px;color:#111;border-bottom:1px solid #D5D5D5">${d.pax}</td>
+      </tr>`:''}
+      <tr>
+        <td style="padding:10px 14px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;border-bottom:1px solid #3A5A6E">출발일정</td>
+        <td style="padding:10px 14px;font-size:14px;color:#111;border-bottom:1px solid #D5D5D5">${d.period||'-'}${d.nights ? ' (' + d.nights + '박 ' + (d.nights+1) + '일)' : ''}</td>
+      </tr>
+      ${d.hotelQuickName||d.hotelName?`<tr>
+        <td style="padding:10px 14px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;border-bottom:1px solid #3A5A6E">호텔</td>
+        <td style="padding:10px 14px;font-size:14px;color:#111;border-bottom:1px solid #D5D5D5">${d.hotelQuickName||d.hotelName||'-'}</td>
+      </tr>`:''}
+      <tr>
+        <td style="padding:10px 14px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;border-bottom:1px solid #3A5A6E">요금</td>
+        <td style="padding:10px 14px;font-size:18px;font-weight:800;color:#C0392B;border-bottom:1px solid #D5D5D5">₩${perPerson} / 인</td>
+      </tr>
+      ${d.agent?`<tr>
+        <td style="padding:10px 14px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;border-bottom:1px solid #3A5A6E">담당자</td>
+        <td style="padding:10px 14px;font-size:14px;color:#111;border-bottom:1px solid #D5D5D5">${d.agent}</td>
+      </tr>`:''}
+      ${d.quoteDate?`<tr>
+        <td style="padding:10px 14px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">견적일</td>
+        <td style="padding:10px 14px;font-size:13px;color:#666">${d.quoteDate}</td>
+      </tr>`:''}
+    </table>
 
     <!-- 포함 / 불포함 -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px">
       <div style="border-radius:12px;padding:16px;border:1px solid #E5E5E5;background:#F3FAF6">
         <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#2C2C2C;margin-bottom:12px">✓ 포함</div>
         <ul style="list-style:none">${incHTML}</ul>
