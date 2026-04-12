@@ -1510,29 +1510,17 @@ function generateHTML(d) {
   const starsStr = '★'.repeat(parseInt(d.hotelStars)||5);
   const dayLabels = ['1일차','2일차','3일차','4일차','5일차','6일차','7일차','8일차','9일차','10일차'];
 
-  // 일정표 HTML — 여행사 양식 스타일
-  const thS = 'padding:10px 12px;font-size:12px;font-weight:700;color:#FFFFFF;background:#2A6B3C;border:1px solid #1E5A2F;text-align:center;white-space:nowrap';
+  // 일정표 HTML
+  const thS = 'padding:10px 12px;font-size:12px;font-weight:700;color:#FFFFFF;background:#2A6B3C;border:1px solid #1E5A2F;white-space:nowrap';
   const daysHTML = `
-  <style>
-    .sch-pc{display:table-cell}
-    @media(max-width:640px){
-      .sch-pc{display:none!important}
-      .sch-time{width:52px!important}
-      .sch-table col.col-place,.sch-table col.col-transport{width:0!important}
-    }
-  </style>
-  <table class="sch-table" style="width:100%;border-collapse:collapse;border:2px solid #2A6B3C;font-family:'Noto Sans KR',sans-serif;table-layout:fixed">
+  <table style="width:100%;border-collapse:collapse;border:2px solid #2A6B3C;font-family:'Noto Sans KR',sans-serif;table-layout:fixed">
     <colgroup>
-      <col class="col-place" style="width:70px">
-      <col class="col-transport" style="width:70px">
-      <col class="sch-time" style="width:60px">
+      <col style="width:58px">
       <col>
     </colgroup>
     <thead>
       <tr>
-        <th class="sch-pc" style="${thS}">장소</th>
-        <th class="sch-pc" style="${thS}">교통</th>
-        <th style="${thS}">시간</th>
+        <th style="${thS};text-align:center">시간</th>
         <th style="${thS};text-align:left;padding-left:14px">일정</th>
       </tr>
     </thead>
@@ -1540,9 +1528,8 @@ function generateHTML(d) {
     ${d.days.map((day, i) => {
       const dayLabel = dayLabels[i] || (i+1)+'일차';
       const items = day.items || [];
-      const dayBorder = 'border-bottom:1px solid #D5D5D5;border-right:1px solid #E0E0E0';
+      const dayBorder = 'border-bottom:1px solid #D5D5D5';
 
-      // 날짜 표시
       let dateStr = '';
       if (d.dateFrom) {
         const dt = new Date(d.dateFrom);
@@ -1551,23 +1538,18 @@ function generateHTML(d) {
         dateStr = ' (' + (dt.getMonth()+1) + '/' + dt.getDate() + ' ' + dayNames[dt.getDay()] + ')';
       }
 
-      // 일차 헤더 행
-      const dayHeaderRow = '<tr style="background:#2A4A5E"><td colspan="4" style="padding:10px 16px;font-size:14px;font-weight:800;color:white;border:1px solid #1E3A4E">' + dayLabel + dateStr + (day.title ? '&nbsp;&nbsp;' + day.title : '') + '</td></tr>';
+      const dayHeaderRow = '<tr style="background:#2A4A5E"><td colspan="2" style="padding:10px 16px;font-size:14px;font-weight:800;color:white;border:1px solid #1E3A4E">' + dayLabel + dateStr + (day.title ? '&nbsp;&nbsp;' + day.title : '') + '</td></tr>';
 
-      // 일정 항목
       const itemRows = items.map((it, ri) => {
         const textStyle = it.color ? 'color:' + it.color + ';font-weight:700' : 'color:#222';
         const bgStyle = it.color ? 'background:' + it.color + '10' : (ri%2===0 ? '' : 'background:#FAFAF8');
         return '<tr style="' + bgStyle + '">' +
-          '<td class="sch-pc" style="' + dayBorder + ';padding:8px 10px;font-size:12px;font-weight:700;color:#1B5E20;white-space:nowrap;vertical-align:top">' + (it.place||'') + '</td>' +
-          '<td class="sch-pc" style="' + dayBorder + ';padding:8px 8px;font-size:11px;color:#666;white-space:nowrap;vertical-align:top">' + (it.transport||'') + '</td>' +
-          '<td style="' + dayBorder + ';padding:8px 8px;font-size:12px;color:#A07840;font-weight:700;white-space:nowrap;vertical-align:top">' + (it.time||'') + '</td>' +
-          '<td style="' + dayBorder + ';padding:8px 12px;font-size:13px;' + textStyle + ';line-height:1.6;word-break:keep-all">' + (it.text||'') + '</td>' +
+          '<td style="' + dayBorder + ';padding:8px 8px;font-size:12px;color:#A07840;font-weight:700;text-align:center;vertical-align:top">' + (it.time||'') + '</td>' +
+          '<td style="' + dayBorder + ';padding:8px 14px;font-size:13px;' + textStyle + ';line-height:1.6;word-break:keep-all">' + (it.text||'') + '</td>' +
         '</tr>';
       }).join('');
 
-      // 호텔 숙박 행
-      const hotelRow = day.hotelStay ? '<tr style="background:#F0F6FF"><td colspan="4" style="' + dayBorder + ';padding:8px 12px"><span style=\\"display:inline-block;background:#1D4ED8;color:white;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;margin-right:8px\\">HOTEL</span><span style=\\"font-size:13px;font-weight:600;color:#1D4ED8\\">' + day.hotelStay + '</span></td></tr>' : '';
+      const hotelRow = day.hotelStay ? '<tr style="background:#F0F6FF"><td colspan="2" style="' + dayBorder + ';padding:8px 12px"><span style=\\"display:inline-block;background:#1D4ED8;color:white;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;margin-right:8px\\">HOTEL</span><span style=\\"font-size:13px;font-weight:600;color:#1D4ED8\\">' + day.hotelStay + '</span></td></tr>' : '';
 
       return dayHeaderRow + itemRows + hotelRow;
     }).join('')}
