@@ -1523,8 +1523,9 @@ function generateHTML(d) {
       const textStyle = it.color ? `color:${it.color};font-weight:700` : 'color:#222';
       return `
       <tr style="border-bottom:1px solid #EDEBE6;${itemBg};${borderLeft}">
-        <td style="padding:9px 12px;font-size:12px;color:#A07840;font-weight:700;white-space:nowrap;vertical-align:top;min-width:52px">${it.time||''}</td>
-        <td style="padding:9px 10px;font-size:11px;color:#6B7280;white-space:nowrap;vertical-align:top;min-width:60px">${it.transport||''}</td>
+        <td style="padding:9px 10px;font-size:12px;color:#A07840;font-weight:700;white-space:nowrap;vertical-align:top;min-width:48px">${it.time||''}</td>
+        <td style="padding:9px 8px;font-size:11px;color:#6B7280;white-space:nowrap;vertical-align:top;min-width:50px">${it.transport||''}</td>
+        ${it.place ? `<td style="padding:9px 8px;font-size:12px;color:#374151;font-weight:600;white-space:nowrap;vertical-align:top">${it.place}</td>` : '<td></td>'}
         <td style="padding:9px 12px;font-size:13px;${textStyle};line-height:1.55;word-break:keep-all">${it.text||''}</td>
       </tr>`;
     }).join('');
@@ -1538,7 +1539,7 @@ function generateHTML(d) {
     }
     const mealsRow = mealParts.length ? `
       <tr style="background:#FFFDF0;border-bottom:1px solid #F5E8A0">
-        <td colspan="3" style="padding:8px 12px">
+        <td colspan="4" style="padding:8px 12px">
           <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
             <span style="font-size:10px;font-weight:700;color:#8A7030;letter-spacing:.5px;margin-right:2px">식사</span>
             ${mealParts.join('')}
@@ -1549,7 +1550,7 @@ function generateHTML(d) {
     // 호텔 숙박
     const hotelRow = day.hotelStay ? `
       <tr style="background:#F0F6FF;border-top:1px solid #C7DEFF">
-        <td colspan="3" style="padding:8px 12px">
+        <td colspan="4" style="padding:8px 12px">
           <div style="display:flex;align-items:center;gap:6px">
             <span style="font-size:14px">🏨</span>
             <span style="font-size:12px;font-weight:700;color:#1D4ED8">숙박</span>
