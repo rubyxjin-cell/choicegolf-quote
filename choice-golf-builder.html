@@ -2803,7 +2803,9 @@ async function fetchQuotes() {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/quotes?order=created_at.desc&select=*`, {
       headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
     });
-    quotesCache = await res.json();
+    const allRows = await res.json();
+    // 확정서(docType=confirmation) 제외, 일반 견적서만
+    quotesCache = (allRows||[]).filter(q => !q.data || q.data.docType !== 'confirmation');
     // 뱃지 업데이트
     const badge = document.getElementById('quoteBadge');
     if (badge) { badge.textContent = quotesCache.length; badge.style.display = quotesCache.length ? 'inline-block' : 'none'; }
@@ -2828,8 +2830,10 @@ const STATUS_NEXT_LABEL = { draft:'→ 발송완료로', sent:'→ 계약완료�
 function renderQuoteList() {
   const wrap = document.getElementById('quoteListWrap');
   if (!wrap) return;
+  // status: 컬럼 우선, 없으면 data.status 참조
+  const getStatus = q => q.status || (q.data && q.data.status) || 'draft';
   const filtered = currentQuoteFilter
-    ? quotesCache.filter(q => q.status === currentQuoteFilter)
+    ? quotesCache.filter(q => getStatus(q) === currentQuoteFilter)
     : quotesCache;
 
   if (!filtered.length) {
@@ -2841,12 +2845,12 @@ function renderQuoteList() {
 
   wrap.innerHTML = filtered.map(q => {
     const d = q.data || {};
-    const name = q.quote_name || q.customer_name || '(이름 없음)';
+    const name = q.quote_name || q.customer_name || d.customerName || '(이름 없음)';
     const dest = d.destination || '-';
-    const dates = (d.dateFrom && d.dateTo) ? `${d.dateFrom} ~ ${d.dateTo}` : '-';
-    const pax = d.pax ? `${d.pax}인` : '';
+    const dates = (d.dateFrom && d.dateTo) ? `${d.dateFrom} ~ ${d.dateTo}` : (d.dateFrom || '-');
+    const pax = d.pax ? `${d.pax}` : '';
     const price = d.pricePerPerson ? `₩${Number(d.pricePerPerson).toLocaleString()}/인` : '';
-    const status = q.status || 'draft';
+    const status = getStatus(q);
     const created = new Date(q.created_at).toLocaleDateString('ko-KR');
 
     return `
@@ -3012,12 +3016,22 @@ async function generateQuoteLink(id) {
 /* 견적서 상태 변경 */
 async function changeQuoteStatus(id, newStatus) {
   try {
-    await fetch(`${SUPABASE_URL}/rest/v1/quotes?id=eq.${id}`, {
+    // 1) status 컬럼 업데이트
+    const res1 = await fetch(`${SUPABASE_URL}/rest/v1/quotes?id=eq.${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}` },
       body: JSON.stringify({ status: newStatus })
     });
+    // 2) data JSON 안의 status도 업데이트 (호환성)
     const q = quotesCache.find(x => x.id === id);
+    if (q && q.data) {
+      const updatedData = { ...q.data, status: newStatus };
+      await fetch(`${SUPABASE_URL}/rest/v1/quotes?id=eq.${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}` },
+        body: JSON.stringify({ data: updatedData })
+      });
+    }
     showToast(`✅ "${q?.quote_name||'견적서'}" → ${STATUS_LABEL[newStatus]} 변경`);
     fetchQuotes();
   } catch(e) { showToast('❌ 오류: ' + e.message); }
