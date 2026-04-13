@@ -896,7 +896,7 @@ const state = {
 };
 
 /* ═══ 국가 플래그 매핑 (Windows에서 국기 이모지 미지원으로 제거) ═══ */
-const COUNTRY_FLAGS = {};
+const COUNTRY_FLAGS = {'일본':'🇯🇵','중국':'🇨🇳','대만':'🇹🇼','태국':'🇹🇭','베트남':'🇻🇳','필리핀':'🇵🇭','인도네시아':'🇮🇩','말레이시아':'🇲🇾','캄보디아':'🇰🇭','괌/사이판':'🌺','미국':'🇺🇸','호주':'🇦🇺','뉴질랜드':'🇳🇿','싱가포르':'🇸🇬','라오스':'🇱🇦','미얀마':'🇲🇲','몽골':'🇲🇳','하와이':'🌺'};
 
 let currentRegion = '';
 
@@ -1603,6 +1603,7 @@ function generateHTML(d) {
   const perPerson = d.pricePerPerson ? d.pricePerPerson.toLocaleString() : '—';
   const perPersonMan = d.pricePerPerson ? Math.round(d.pricePerPerson/10000) + '만' : '—';
   const starsStr = d.hotelStars ? '★'.repeat(parseInt(d.hotelStars)) : '';
+  const countryFlag = COUNTRY_FLAGS[d.category] || '';
   const dayLabels = ['1일차','2일차','3일차','4일차','5일차','6일차','7일차','8일차','9일차','10일차'];
 
   // 일정표 HTML
@@ -1679,7 +1680,7 @@ function generateHTML(d) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${d.companyName} — ${d.destination} 골프투어</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;900&family=Noto+Serif+KR:wght@400;600;700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;900&family=Noto+Serif+KR:wght@400;600;700&family=Gaegu:wght@400;700&family=Cormorant+Garamond:wght@400;600&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#DDDBD5;font-family:'Noto Sans KR',sans-serif;font-weight:400;-webkit-font-smoothing:antialiased;color:#222}
@@ -1713,10 +1714,10 @@ body{padding-bottom:76px}
   </header>
 
   <!-- HERO -->
-  <div class="hero reveal" style="padding:36px 24px 28px;border-bottom:1px solid #E8E6E1;background:#2C2C2C;text-align:center">
-    ${d.travelDest ? `<div style="font-size:15px;font-weight:500;letter-spacing:3px;color:rgba(255,255,255,0.6);margin-bottom:12px">${d.travelDest}</div>` : ''}
+  <div class="hero reveal" style="padding:40px 24px 30px;border-bottom:1px solid #E8E6E1;background:linear-gradient(135deg,#1B2838,#2A4A5E);text-align:center">
+    ${d.travelDest ? `<div style="font-family:'Gaegu',cursive;font-size:18px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,0.85);margin-bottom:14px">${countryFlag ? countryFlag + ' ' : ''}${d.travelDest}</div>` : ''}
     <div style="font-family:'Noto Serif KR',serif;font-size:clamp(20px,5.5vw,28px);font-weight:700;color:white;line-height:1.35;word-break:keep-all">${d.destination||''}</div>
-    <div style="width:60%;max-width:200px;height:1.5px;background:rgba(255,255,255,0.2);margin:20px auto 18px;border-radius:2px"></div>
+    <div style="width:60%;max-width:200px;height:1.5px;background:rgba(255,255,255,0.25);margin:20px auto 18px;border-radius:2px"></div>
     <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center">
       ${d.period?`<span style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;background:rgba(255,255,255,0.12);border-radius:20px;font-size:12px;color:white;font-weight:500">📅 ${d.period}</span>`:''}
       ${d.nights?`<span style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;background:rgba(255,255,255,0.12);border-radius:20px;font-size:12px;color:white;font-weight:500">🌙 ${d.nights}박 ${parseInt(d.nights)+1}일</span>`:''}
@@ -1765,9 +1766,9 @@ body{padding-bottom:76px}
 
     ${d.remark ? `
     <!-- REMARK -->
-    <div style="margin-top:20px;border:1.5px solid #2A4A5E;border-radius:10px;padding:18px 20px;background:#F7FAFA">
-      <div style="font-size:12px;font-weight:700;letter-spacing:2px;color:#2A4A5E;margin-bottom:10px;text-align:center">REMARK</div>
-      <div style="font-size:13px;color:#111;line-height:1.9">${(d.remark||'').replace(/\n/g,'<br>')}</div>
+    <div style="margin-top:20px;border:1.5px solid #C9A268;border-radius:10px;padding:18px 20px;background:#FFFBF2">
+      <div style="font-size:12px;font-weight:700;letter-spacing:2px;color:#A07840;margin-bottom:10px;text-align:center">REMARK</div>
+      <div style="font-size:13px;color:#111;line-height:1.9;font-weight:600">${(d.remark||'').replace(/\n/g,'<br>')}</div>
     </div>` : ''}
   </section>
 
@@ -1779,13 +1780,13 @@ body{padding-bottom:76px}
 
   <!-- 03 골프장 -->
   <section class="reveal" style="padding:36px 20px;border-bottom:1px solid #E8E6E1;background:#F8F7F5">
-    <div class="sec-title">03 &nbsp;라운드 코스</div>
+    <div class="sec-title">03 &nbsp;골프장 정보</div>
     ${coursesHTML}
   </section>
 
   <!-- 04 호텔 -->
   <section class="reveal" style="padding:36px 20px;border-bottom:1px solid #E8E6E1">
-    <div class="sec-title">04 &nbsp;숙박 호텔</div>
+    <div class="sec-title">04 &nbsp;숙박 정보</div>
     <div style="border:1px solid #E8E6E1;border-radius:14px;overflow:hidden;background:white">
       <div style="border-radius:14px 14px 0 0;overflow:hidden">${hotelPhotoEl}</div>
       <div style="padding:20px 18px 22px;text-align:center">
