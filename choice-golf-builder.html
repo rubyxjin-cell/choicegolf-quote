@@ -999,7 +999,114 @@ select option{background:white;color:var(--ink)}
   </div>
 </div>
 
+
+<!-- ─── 로그인 오버레이 ─── -->
+<div id="loginOverlay" style="position:fixed;inset:0;background:linear-gradient(135deg,#1B2838,#2A4A5E);z-index:9999;display:flex;align-items:center;justify-content:center">
+  <div style="background:white;border-radius:20px;padding:40px 36px;max-width:380px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3);text-align:center">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:#111;letter-spacing:1px;margin-bottom:4px">Choice Golf</div>
+    <div style="font-size:12px;color:#888;letter-spacing:2px;margin-bottom:32px">BUILDER LOGIN</div>
+    <div style="text-align:left;margin-bottom:14px">
+      <label style="font-size:12px;font-weight:700;color:#333;margin-bottom:5px;display:block">이메일</label>
+      <input type="email" id="loginEmail" style="width:100%;padding:12px 14px;border:1.5px solid #D5D5D5;border-radius:10px;font-size:14px;font-family:'Noto Sans KR',sans-serif;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='#2A4A5E'" onblur="this.style.borderColor='#D5D5D5'">
+    </div>
+    <div style="text-align:left;margin-bottom:8px">
+      <label style="font-size:12px;font-weight:700;color:#333;margin-bottom:5px;display:block">비밀번호</label>
+      <input type="password" id="loginPassword" style="width:100%;padding:12px 14px;border:1.5px solid #D5D5D5;border-radius:10px;font-size:14px;font-family:'Noto Sans KR',sans-serif;outline:none;box-sizing:border-box" onfocus="this.style.borderColor='#2A4A5E'" onblur="this.style.borderColor='#D5D5D5'" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div id="loginError" style="font-size:12px;color:#C0392B;min-height:20px;margin-bottom:8px"></div>
+    <button onclick="doLogin()" id="loginBtn" style="width:100%;padding:14px;background:#2A4A5E;color:white;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:background .15s">로그인</button>
+    <div style="margin-top:16px;font-size:11px;color:#aaa">© 초이스골프</div>
+  </div>
+</div>
+
 <script>
+/* ════════════════════════════
+   AUTH (로그인)
+════════════════════════════ */
+const SUPABASE_AUTH_URL = 'https://qmzrpyyadoajwziqachm.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFtenJweXlhZG9hand6aXFhY2htIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMDI0NDcsImV4cCI6MjA4OTc3ODQ0N30.CI6ZFvNa2TRa0XqwnrXKL9x3ZHXfKg6GaNwJhqYvCmc';
+let AUTH_TOKEN = '';
+
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pw = document.getElementById('loginPassword').value;
+  const errEl = document.getElementById('loginError');
+  const btn = document.getElementById('loginBtn');
+  if (!email || !pw) { errEl.textContent = '이메일과 비밀번호를 입력하세요'; return; }
+  btn.textContent = '로그인 중...'; btn.disabled = true;
+  try {
+    const res = await fetch(`${SUPABASE_AUTH_URL}/auth/v1/token?grant_type=password`, {
+      method: 'POST',
+      headers: { 'apikey': SUPABASE_ANON, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: pw })
+    });
+    const data = await res.json();
+    if (!res.ok || !data.access_token) {
+      errEl.textContent = '이메일 또는 비밀번호가 틀렸습니다';
+      btn.textContent = '로그인'; btn.disabled = false;
+      return;
+    }
+    AUTH_TOKEN = data.access_token;
+    localStorage.setItem('cg_token', data.access_token);
+    localStorage.setItem('cg_refresh', data.refresh_token);
+    localStorage.setItem('cg_expiry', Date.now() + (data.expires_in * 1000));
+    document.getElementById('loginOverlay').style.display = 'none';
+    initApp();
+  } catch(e) {
+    errEl.textContent = '네트워크 오류. 다시 시도해주세요';
+    btn.textContent = '로그인'; btn.disabled = false;
+  }
+}
+
+async function refreshSession() {
+  const rt = localStorage.getItem('cg_refresh');
+  if (!rt) return false;
+  try {
+    const res = await fetch(`${SUPABASE_AUTH_URL}/auth/v1/token?grant_type=refresh_token`, {
+      method: 'POST',
+      headers: { 'apikey': SUPABASE_ANON, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh_token: rt })
+    });
+    const data = await res.json();
+    if (!res.ok || !data.access_token) return false;
+    AUTH_TOKEN = data.access_token;
+    localStorage.setItem('cg_token', data.access_token);
+    localStorage.setItem('cg_refresh', data.refresh_token);
+    localStorage.setItem('cg_expiry', Date.now() + (data.expires_in * 1000));
+    return true;
+  } catch(e) { return false; }
+}
+
+async function checkAuth() {
+  const token = localStorage.getItem('cg_token');
+  const expiry = parseInt(localStorage.getItem('cg_expiry') || '0');
+  if (token && expiry > Date.now()) {
+    AUTH_TOKEN = token;
+    document.getElementById('loginOverlay').style.display = 'none';
+    initApp();
+    return;
+  }
+  if (localStorage.getItem('cg_refresh')) {
+    const ok = await refreshSession();
+    if (ok) {
+      document.getElementById('loginOverlay').style.display = 'none';
+      initApp();
+      return;
+    }
+  }
+  document.getElementById('loginOverlay').style.display = 'flex';
+}
+
+function doLogout() {
+  localStorage.removeItem('cg_token');
+  localStorage.removeItem('cg_refresh');
+  localStorage.removeItem('cg_expiry');
+  AUTH_TOKEN = '';
+  location.reload();
+}
+
+window.addEventListener('DOMContentLoaded', checkAuth);
+
 /* ════════════════════════════
    STATE
 ════════════════════════════ */
@@ -1051,7 +1158,7 @@ let currentRegion = '';
 /* ════════════════════════════
    INIT
 ════════════════════════════ */
-window.onload = () => {
+function initApp() {
   // 오늘 날짜 자동 설정
   const today = new Date().toISOString().split('T')[0];
   const qd = document.getElementById('quoteDate'); if(qd) qd.value = today;
@@ -2115,7 +2222,7 @@ async function uploadImageToStorage(file, prefix) {
       method: 'POST',
       headers: {
         'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Authorization': `Bearer ${AUTH_TOKEN}`,
         'Content-Type': file.type,
         'x-upsert': 'true'
       },
@@ -2149,7 +2256,7 @@ async function publishQuote() {
       headers: {
         'Content-Type': 'application/json',
         'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Authorization': `Bearer ${AUTH_TOKEN}`,
         'Prefer': 'return=representation'
       },
       body: JSON.stringify({ data: d })
@@ -2259,7 +2366,7 @@ async function duplicateProduct(id) {
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/products`, {
       method: 'POST',
-      headers: { 'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`,'Prefer':'return=representation' },
+      headers: { 'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${AUTH_TOKEN}`,'Prefer':'return=representation' },
       body: JSON.stringify({ name: newName, category: p.category || '', region: p.region || '', data: p.data || {} })
     });
     if (res.ok) {
@@ -2281,7 +2388,7 @@ async function renameFolder(type, oldName) {
     for (const item of items) {
       await fetch(`${SUPABASE_URL}/rest/v1/products?id=eq.${item.id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}` },
+        headers: { 'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${AUTH_TOKEN}` },
         body: JSON.stringify({ [field]: n })
       });
     }
@@ -2316,7 +2423,7 @@ async function deleteFolder(type, name) {
     for (const item of items) {
       await fetch(`${SUPABASE_URL}/rest/v1/products?id=eq.${item.id}`, {
         method: 'DELETE',
-        headers: { 'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}` }
+        headers: { 'apikey':SUPABASE_KEY,'Authorization':`Bearer ${AUTH_TOKEN}` }
       });
     }
   } else {
@@ -2350,7 +2457,7 @@ async function quickQuote(productId) {
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/quotes`, {
       method: 'POST',
-      headers: { 'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`,'Prefer':'return=representation' },
+      headers: { 'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${AUTH_TOKEN}`,'Prefer':'return=representation' },
       body: JSON.stringify({ data, quote_name: quoteName, customer_name: customerName.trim(), status: 'sent', product_id: productId })
     });
     const rows = await res.json();
@@ -2397,7 +2504,7 @@ async function fetchProducts() {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/products?order=created_at.desc&select=*`, {
       headers: {
         'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Authorization': `Bearer ${AUTH_TOKEN}`,
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       }
@@ -2629,7 +2736,7 @@ async function saveProduct() {
       headers: {
         'Content-Type': 'application/json',
         'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Authorization': `Bearer ${AUTH_TOKEN}`,
         'Prefer': 'return=representation'
       },
       body: JSON.stringify({ name, category, region, data: d })
@@ -2658,7 +2765,7 @@ async function loadProductById(id) {
   if (!p) {
     try {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/products?id=eq.${id}&select=*`, {
-        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${AUTH_TOKEN}` }
       });
       const rows = await res.json();
       p = rows[0];
@@ -2776,7 +2883,7 @@ async function updateProduct() {
       headers: {
         'Content-Type': 'application/json',
         'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${SUPABASE_KEY}`
+        'Authorization': `Bearer ${AUTH_TOKEN}`
       },
       body: JSON.stringify({ data: d, category: document.getElementById('productCategory')?.value || '', region: document.getElementById('productRegion')?.value || '' })
     });
@@ -2877,7 +2984,7 @@ async function deleteProduct(id) {
   try {
     await fetch(`${SUPABASE_URL}/rest/v1/products?id=eq.${id}`, {
       method: 'DELETE',
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${AUTH_TOKEN}` }
     });
     showToast('🗑 상품이 삭제됐어요');
     await fetchProducts();
@@ -2918,7 +3025,7 @@ async function fetchQuotes() {
   if (wrap) wrap.innerHTML = '<div style="text-align:center;padding:30px;color:var(--ink3)">로딩 중...</div>';
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/quotes?order=created_at.desc&select=*`, {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${AUTH_TOKEN}` }
     });
     const allRows = await res.json();
     // 확정서(docType=confirmation) 제외, 일반 견적서만
@@ -3001,7 +3108,7 @@ async function startQuoteFromProduct(productId) {
   try {
     // 1. 상품 데이터 로드
     const res = await fetch(`${SUPABASE_URL}/rest/v1/products?id=eq.${productId}&select=*`, {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${AUTH_TOKEN}` }
     });
     const rows = await res.json();
     if (!rows || !rows[0]) { showToast('❌ 상품 불러오기 실패'); return; }
@@ -3013,7 +3120,7 @@ async function startQuoteFromProduct(productId) {
     // 2. Supabase에 임시저장으로 바로 저장
     const saveRes = await fetch(`${SUPABASE_URL}/rest/v1/quotes`, {
       method: 'POST',
-      headers: { 'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`,'Prefer':'return=representation' },
+      headers: { 'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${AUTH_TOKEN}`,'Prefer':'return=representation' },
       body: JSON.stringify({
         data: { ...productData, quoteDate: today },
         quote_name: quoteName,
@@ -3050,7 +3157,7 @@ async function saveQuote() {
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/quotes`, {
       method: 'POST',
-      headers: { 'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`,'Prefer':'return=representation' },
+      headers: { 'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${AUTH_TOKEN}`,'Prefer':'return=representation' },
       body: JSON.stringify(payload)
     });
     const rows = await res.json();
@@ -3076,7 +3183,7 @@ async function updateQuote() {
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/quotes?id=eq.${state.currentQuoteId}`, {
       method: 'PATCH',
-      headers: { 'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}` },
+      headers: { 'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${AUTH_TOKEN}` },
       body: JSON.stringify(payload)
     });
     if (res.ok) {
@@ -3090,7 +3197,7 @@ async function updateQuote() {
 async function loadQuoteById(id) {
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/quotes?id=eq.${id}&select=*`, {
-      headers: { 'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}` }
+      headers: { 'apikey':SUPABASE_KEY,'Authorization':`Bearer ${AUTH_TOKEN}` }
     });
     const rows = await res.json();
     if (!rows || !rows[0]) { showToast('❌ 견적서 불러오기 실패'); return; }
@@ -3136,7 +3243,7 @@ async function changeQuoteStatus(id, newStatus) {
     // 1) status 컬럼 업데이트
     const res1 = await fetch(`${SUPABASE_URL}/rest/v1/quotes?id=eq.${id}`, {
       method: 'PATCH',
-      headers: { 'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}` },
+      headers: { 'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${AUTH_TOKEN}` },
       body: JSON.stringify({ status: newStatus })
     });
     // 2) data JSON 안의 status도 업데이트 (호환성)
@@ -3145,7 +3252,7 @@ async function changeQuoteStatus(id, newStatus) {
       const updatedData = { ...q.data, status: newStatus };
       await fetch(`${SUPABASE_URL}/rest/v1/quotes?id=eq.${id}`, {
         method: 'PATCH',
-        headers: { 'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}` },
+        headers: { 'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${AUTH_TOKEN}` },
         body: JSON.stringify({ data: updatedData })
       });
     }
@@ -3161,7 +3268,7 @@ async function deleteQuote(id) {
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/quotes?id=eq.${id}`, {
       method: 'DELETE',
-      headers: { 'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`,'Prefer':'return=minimal' }
+      headers: { 'apikey':SUPABASE_KEY,'Authorization':`Bearer ${AUTH_TOKEN}`,'Prefer':'return=minimal' }
     });
     if (!res.ok) { const t = await res.text(); throw new Error(t||res.status); }
     showToast('🗑 견적서가 삭제됐어요');
@@ -3242,7 +3349,7 @@ async function fetchLibrary(cat) {
   try {
     let url = `${SUPABASE_URL}/rest/v1/library?category=eq.${c}&order=country,region,created_at.desc`;
     const res = await fetch(url, {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${AUTH_TOKEN}` }
     });
     const items = await res.json();
     renderLibGrid(items, grid);
@@ -3408,7 +3515,7 @@ async function openLibItemModal(id) {
     document.getElementById('libModalTitle').textContent = '✏️ 항목 수정';
     try {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/library?id=eq.${id}`, {
-        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${AUTH_TOKEN}` }
       });
       const [item] = await res.json();
       if (item) {
@@ -3494,7 +3601,7 @@ async function uploadLibPhoto(file) {
     method: 'POST',
     headers: {
       'apikey': SUPABASE_KEY,
-      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Authorization': `Bearer ${AUTH_TOKEN}`,
       'Content-Type': file.type,
       'x-upsert': 'true'
     },
@@ -3524,13 +3631,13 @@ async function saveLibItem() {
     if (libState.editingId) {
       res = await fetch(`${SUPABASE_URL}/rest/v1/library?id=eq.${libState.editingId}`, {
         method: 'PATCH',
-        headers: { 'Content-Type':'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` },
+        headers: { 'Content-Type':'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${AUTH_TOKEN}` },
         body: JSON.stringify(payload)
       });
     } else {
       res = await fetch(`${SUPABASE_URL}/rest/v1/library`, {
         method: 'POST',
-        headers: { 'Content-Type':'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Prefer':'return=minimal' },
+        headers: { 'Content-Type':'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${AUTH_TOKEN}`, 'Prefer':'return=minimal' },
         body: JSON.stringify(payload)
       });
     }
@@ -3548,7 +3655,7 @@ async function deleteLibItem(id, name) {
   try {
     await fetch(`${SUPABASE_URL}/rest/v1/library?id=eq.${id}`, {
       method: 'DELETE',
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${AUTH_TOKEN}` }
     });
     showToast('🗑 삭제됐어요');
     fetchLibrary();
@@ -3571,7 +3678,7 @@ async function openPickerModal(cat, mode) {
   if (filterWrap) filterWrap.innerHTML = '';
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/library?category=eq.${cat}&order=created_at.desc`, {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${AUTH_TOKEN}` }
     });
     const items = await res.json();
     libState._pickerItems = items;
@@ -3694,7 +3801,7 @@ let selectedFlightData = null;
 async function fetchFlights() {
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/flights?order=dep_airport,category,destination,airline`, {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${AUTH_TOKEN}` }
     });
     flightsCache = await res.json();
     renderFlightList();
@@ -3992,13 +4099,13 @@ async function saveFlight() {
     if (existingId) {
       res = await fetch(`${SUPABASE_URL}/rest/v1/flights?id=eq.${existingId}`, {
         method: 'PATCH',
-        headers: { 'Content-Type':'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Prefer':'return=minimal' },
+        headers: { 'Content-Type':'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${AUTH_TOKEN}`, 'Prefer':'return=minimal' },
         body: JSON.stringify(payload)
       });
     } else {
       res = await fetch(`${SUPABASE_URL}/rest/v1/flights`, {
         method: 'POST',
-        headers: { 'Content-Type':'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Prefer':'return=minimal' },
+        headers: { 'Content-Type':'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${AUTH_TOKEN}`, 'Prefer':'return=minimal' },
         body: JSON.stringify(payload)
       });
     }
@@ -4038,7 +4145,7 @@ async function deleteFlight(id) {
   try {
     await fetch(`${SUPABASE_URL}/rest/v1/flights?id=eq.${id}`, {
       method: 'DELETE',
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${AUTH_TOKEN}` }
     });
     showToast('🗑 삭제 완료');
     fetchFlights();
@@ -4273,7 +4380,7 @@ async function fetchConfirmations() {
   const wrap = document.getElementById('confListWrap');
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/quotes?select=id,data,created_at&order=created_at.desc`, {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${AUTH_TOKEN}` }
     });
     const rows = await res.json();
     const confs = (rows||[]).filter(r => r.data && r.data.docType === 'confirmation');
@@ -4309,7 +4416,7 @@ async function loadConfirmedQuoteOptions() {
   sel.innerHTML = '<option value="">선택...</option>';
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/quotes?select=id,data,created_at&order=created_at.desc`, {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${AUTH_TOKEN}` }
     });
     const rows = await res.json();
     (rows||[]).filter(r => r.data && r.data.status === 'confirmed' && r.data.docType !== 'confirmation').forEach(r => {
@@ -4327,7 +4434,7 @@ async function loadConfFromQuote() {
   if (!qid) { showToast('견적서를 선택해주세요'); return; }
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/quotes?id=eq.${qid}&select=data`, {
-      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${AUTH_TOKEN}` }
     });
     const rows = await res.json();
     if (!rows||!rows[0]) { showToast('❌ 불러오기 실패'); return; }
@@ -4457,12 +4564,12 @@ async function saveConfirmation() {
   try {
     if (confState.currentId) {
       await fetch(`${SUPABASE_URL}/rest/v1/quotes?id=eq.${confState.currentId}`, {
-        method: 'PATCH', headers: { 'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}` },
+        method: 'PATCH', headers: { 'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${AUTH_TOKEN}` },
         body: JSON.stringify({ data: d })
       });
     } else {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/quotes`, {
-        method: 'POST', headers: { 'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`,'Prefer':'return=representation' },
+        method: 'POST', headers: { 'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${AUTH_TOKEN}`,'Prefer':'return=representation' },
         body: JSON.stringify({ data: d })
       });
       const rows = await res.json();
@@ -4588,7 +4695,7 @@ function generateConfHTML(d) {
 async function editConfirmation(id) {
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/quotes?id=eq.${id}&select=data`, {
-      headers: { 'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}` }
+      headers: { 'apikey':SUPABASE_KEY,'Authorization':`Bearer ${AUTH_TOKEN}` }
     });
     const rows = await res.json();
     if (!rows||!rows[0]) { showToast('❌ 불러오기 실패'); return; }
@@ -4651,7 +4758,7 @@ async function deleteConfirmation(id) {
   if (!confirm('이 확정서를 삭제할까요?')) return;
   try {
     await fetch(`${SUPABASE_URL}/rest/v1/quotes?id=eq.${id}`, {
-      method: 'DELETE', headers: { 'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}` }
+      method: 'DELETE', headers: { 'apikey':SUPABASE_KEY,'Authorization':`Bearer ${AUTH_TOKEN}` }
     });
     showToast('🗑 삭제 완료');
     fetchConfirmations();
