@@ -412,9 +412,8 @@ select option{background:white;color:var(--ink)}
       <!-- ① 기본 정보 -->
       <div class="form-card" style="margin-bottom:12px">
         <div style="font-size:14px;font-weight:700;color:#1B5E20;margin-bottom:12px;border-bottom:2px solid #1B5E20;padding-bottom:4px">① 기본 정보</div>
-        <div class="form-row col2" style="margin-bottom:8px">
+        <div class="form-row" style="margin-bottom:8px">
           <div class="field"><label>고객명</label><input type="text" id="cf_customer" placeholder=""></div>
-          <div class="field"><label>인원</label><input type="text" id="cf_pax" placeholder=""></div>
         </div>
         <div class="field" style="margin-bottom:8px"><label>상품명</label><input type="text" id="cf_destination" placeholder=""></div>
         <div class="form-row col2" style="margin-bottom:8px">
@@ -605,8 +604,6 @@ select option{background:white;color:var(--ink)}
           <div><div style="font-size:9px;color:rgba(255,255,255,0.4);letter-spacing:1px;margin-bottom:2px">여행지</div><div style="font-size:13px;color:white;font-weight:500" id="s-dest">—</div></div>
           <div style="width:1px;background:rgba(255,255,255,0.1)"></div>
           <div><div style="font-size:9px;color:rgba(255,255,255,0.4);letter-spacing:1px;margin-bottom:2px">기간</div><div style="font-size:13px;color:white;font-weight:500" id="s-period">—</div></div>
-          <div style="width:1px;background:rgba(255,255,255,0.1)"></div>
-          <div><div style="font-size:9px;color:rgba(255,255,255,0.4);letter-spacing:1px;margin-bottom:2px">인원</div><div style="font-size:13px;color:white;font-weight:500" id="s-pax">—</div></div>
         </div>
       </div>
 
@@ -621,9 +618,8 @@ select option{background:white;color:var(--ink)}
           <!-- 견적서 모드 전용: 고객 정보 -->
           <div id="quoteOnlyFields" style="display:none;margin-bottom:14px;padding:14px 16px;border:1.5px solid #BFDBFE;border-radius:10px">
             <div style="font-size:11px;font-weight:700;color:#1D4ED8;letter-spacing:1px;margin-bottom:10px">👤 고객 정보</div>
-            <div class="form-row col3">
+            <div class="form-row col2">
               <div class="field"><label style="color:#1D4ED8;border-bottom-color:#1D4ED8">고객명</label><input type="text" id="customerName" placeholder="" oninput="updateSummary()"></div>
-              <div class="field"><label style="color:#1D4ED8;border-bottom-color:#1D4ED8">인원</label><input type="text" id="pax" placeholder="" oninput="updateSummary();calcTotal()"></div>
               <div class="field"><label style="color:#1D4ED8;border-bottom-color:#1D4ED8">담당자</label><input type="text" id="agent" placeholder=""></div>
             </div>
           </div>
@@ -670,7 +666,26 @@ select option{background:white;color:var(--ink)}
           <div style="border-top:1.5px solid var(--line);padding-top:12px;margin-top:4px">
             <div class="form-row col2" style="margin-bottom:8px">
               <div class="field"><label>요금 (원/인)</label><input type="number" id="pricePerPerson" placeholder="" oninput="calcTotal()"></div>
-              <div class="field"><label>항공사</label><input type="text" id="airlineName" placeholder=""></div>
+              <div class="field"><label>항공사</label>
+                <div style="display:flex;gap:6px;align-items:center">
+                  <img id="airlineLogo" src="" style="width:24px;height:24px;border-radius:4px;object-fit:contain;display:none;border:1px solid #E8E6E1">
+                  <select id="airlineSelect" onchange="onAirlineSelect()" style="flex:1;background:#FFF;border:1.5px solid #C8C8C8;border-radius:8px;padding:11px 14px;font-size:14px;color:#111;font-family:'Noto Sans KR',sans-serif;outline:none">
+                    <option value="">선택</option>
+                    <option value="대한항공">대한항공</option>
+                    <option value="아시아나항공">아시아나항공</option>
+                    <option value="진에어">진에어</option>
+                    <option value="제주항공">제주항공</option>
+                    <option value="티웨이항공">티웨이항공</option>
+                    <option value="에어부산">에어부산</option>
+                    <option value="에어서울">에어서울</option>
+                    <option value="이스타항공">이스타항공</option>
+                    <option value="피치항공">피치항공</option>
+                    <option value="custom">직접입력</option>
+                  </select>
+                  <input type="text" id="airlineCustom" placeholder="항공사명" style="display:none;flex:1" oninput="syncAirlineName()">
+                  <input type="hidden" id="airlineName">
+                </div>
+              </div>
             </div>
             <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px">
               <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" id="chkNoFlight" onchange="toggleExtraPrice()" style="width:15px;height:15px"> 항공권 미포함</label>
@@ -1251,6 +1266,59 @@ function syncDays() {
 /* ════════════════════════════
    PRICE
 ════════════════════════════ */
+/* ── 항공사 로고 매핑 ── */
+const AIRLINE_LOGOS = {
+  '대한항공':'https://pics.avs.io/60/60/KE.png',
+  '아시아나항공':'https://pics.avs.io/60/60/OZ.png',
+  '진에어':'https://pics.avs.io/60/60/LJ.png',
+  '제주항공':'https://pics.avs.io/60/60/7C.png',
+  '티웨이항공':'https://pics.avs.io/60/60/TW.png',
+  '에어부산':'https://pics.avs.io/60/60/BX.png',
+  '에어서울':'https://pics.avs.io/60/60/RS.png',
+  '이스타항공':'https://pics.avs.io/60/60/ZE.png',
+  '피치항공':'https://pics.avs.io/60/60/MM.png',
+};
+function onAirlineSelect() {
+  const sel = document.getElementById('airlineSelect');
+  const custom = document.getElementById('airlineCustom');
+  const hidden = document.getElementById('airlineName');
+  const logo = document.getElementById('airlineLogo');
+  if (sel.value === 'custom') {
+    custom.style.display = 'block';
+    hidden.value = custom.value;
+    logo.style.display = 'none';
+  } else {
+    custom.style.display = 'none';
+    hidden.value = sel.value;
+    const url = AIRLINE_LOGOS[sel.value];
+    if (url) { logo.src = url; logo.style.display = 'block'; }
+    else { logo.style.display = 'none'; }
+  }
+}
+function syncAirlineName() {
+  document.getElementById('airlineName').value = document.getElementById('airlineCustom').value;
+}
+function setAirlineFromData(name) {
+  const sel = document.getElementById('airlineSelect');
+  const hidden = document.getElementById('airlineName');
+  const custom = document.getElementById('airlineCustom');
+  const logo = document.getElementById('airlineLogo');
+  if (!name) return;
+  hidden.value = name;
+  const opts = [...sel.options].map(o => o.value);
+  if (opts.includes(name)) {
+    sel.value = name;
+    custom.style.display = 'none';
+    const url = AIRLINE_LOGOS[name];
+    if (url) { logo.src = url; logo.style.display = 'block'; } else { logo.style.display = 'none'; }
+  } else {
+    sel.value = 'custom';
+    custom.style.display = 'block';
+    custom.value = name;
+    logo.style.display = 'none';
+  }
+}
+
 function calcTotal() {
   const ppEl = document.getElementById("pricePerPerson");
   const paxEl = document.getElementById("pax");
@@ -1760,6 +1828,7 @@ function generateHTML(d) {
   const perPersonMan = d.pricePerPerson ? Math.round(d.pricePerPerson/10000) + '만' : '—';
   const starsStr = d.hotelStars ? '★'.repeat(parseInt(d.hotelStars)) : '';
   const countryFlag = flagImg(d.category, 20);
+  const airlineLogoUrl = AIRLINE_LOGOS[d.airlineName] || '';
   const dayLabels = ['1일차','2일차','3일차','4일차','5일차','6일차','7일차','8일차','9일차','10일차'];
 
   // 일정표 HTML
@@ -1892,27 +1961,27 @@ body{padding-bottom:76px}
     <div style="border:2px solid #2A4A5E;border-radius:10px;overflow:hidden;font-family:'Noto Sans KR',sans-serif">
       ${d.customerName?`<div style="display:flex;border-bottom:1px solid #D5D5D5">
         <div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;text-align:center;letter-spacing:3px">수 신</div>
-        <div style="flex:1;padding:10px 14px;font-size:14px;font-weight:700;color:#000;text-align:center">${d.customerName}</div>
+        <div style="flex:1;padding:10px 14px;font-size:14px;font-weight:700;color:#000">${d.customerName}</div>
       </div>`:''}
       ${d.agent?`<div style="display:flex;border-bottom:1px solid #D5D5D5">
-        <div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;text-align:center;letter-spacing:3px">담 당 자</div>
-        <div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000;text-align:center">${d.agent}</div>
+        <div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;text-align:center;letter-spacing:3px">담 당</div>
+        <div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000">${d.agent}</div>
       </div>`:''}
       <div style="display:flex;border-bottom:1px solid #D5D5D5">
         <div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;text-align:center;letter-spacing:3px">항 공</div>
-        <div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000;text-align:center">${d.airlineName||'-'}</div>
+        <div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000">${airlineLogoUrl ? '<img src="'+airlineLogoUrl+'" style="width:20px;height:20px;border-radius:3px;object-fit:contain;vertical-align:middle;margin-right:6px">' : ''}${d.airlineName||'-'}</div>
       </div>
       ${(d.hotelQuickName||d.hotelName)?`<div style="display:flex;border-bottom:1px solid #D5D5D5">
         <div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;text-align:center;letter-spacing:3px">호 텔</div>
-        <div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000;text-align:center">${d.hotelQuickName||d.hotelName}</div>
+        <div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000">${d.hotelQuickName||d.hotelName}</div>
       </div>`:''}
       ${d.period?`<div style="display:flex;border-bottom:1px solid #D5D5D5">
         <div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;text-align:center;letter-spacing:3px">일 정</div>
-        <div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000;text-align:center">${d.period}${d.nights ? ' (' + d.nights + '박' + (parseInt(d.nights)+1) + '일)' : ''}</div>
+        <div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000">${d.period}${d.nights ? ' (' + d.nights + '박' + (parseInt(d.nights)+1) + '일)' : ''}</div>
       </div>`:''}
       <div style="display:flex">
         <div style="min-width:76px;padding:12px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;text-align:center;letter-spacing:3px">요 금</div>
-        <div style="flex:1;padding:12px 14px;font-size:20px;font-weight:800;color:#C0392B;text-align:center">₩${perPerson} / 인</div>
+        <div style="flex:1;padding:12px 14px;font-size:20px;font-weight:800;color:#C0392B">₩${perPerson} / 인</div>
       </div>
     </div>
 
@@ -2733,7 +2802,7 @@ function applyProductData(d) {
   set('rounds', d.rounds);
   set('agent', d.agent);
   set('pricePerPerson', d.pricePerPerson);
-  set('airlineName', d.airlineName);
+  setAirlineFromData(d.airlineName);
   set('priceNote', d.priceNote);
   set('remark', d.remark);
   set('hotelQuickName', d.hotelQuickName);
