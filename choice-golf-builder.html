@@ -1645,8 +1645,8 @@ function generateHTML(d) {
   // daysHTML 끝
 
   // 포함/불포함
-  const incHTML = d.includes.map(t=>`<li style="font-size:13px;color:#333;padding:5px 0;border-bottom:1px solid #F0EFE9;display:flex;gap:8px;align-items:flex-start"><span style="color:#2C2C2C;font-weight:700;flex-shrink:0">✓</span>${t}</li>`).join('');
-  const excHTML = d.excludes.map(t=>`<li style="font-size:13px;color:#333;padding:5px 0;border-bottom:1px solid #F0EFE9;display:flex;gap:8px;align-items:flex-start"><span style="color:#C0392B;font-weight:700;flex-shrink:0">✕</span>${t}</li>`).join('');
+  const incHTML = d.includes.map(t=>`<li style="font-size:12px;color:#333;padding:4px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">· ${t}</li>`).join('');
+  const excHTML = d.excludes.map(t=>`<li style="font-size:12px;color:#333;padding:4px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">· ${t}</li>`).join('');
 
   // 호텔 편의시설
   const hotelFacHTML = d.hotelFacilities.map(f=>`<span style="font-size:12px;padding:5px 12px;background:#F0F4F2;border:1px solid #C8DDD4;border-radius:20px;color:#2C2C2C;font-weight:500">${f}</span>`).join('');
@@ -1721,8 +1721,6 @@ body{padding-bottom:76px}
       ${d.period?`<span style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;background:rgba(255,255,255,0.12);border-radius:20px;font-size:12px;color:white;font-weight:500">📅 ${d.period}</span>`:''}
       ${d.nights?`<span style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;background:rgba(255,255,255,0.12);border-radius:20px;font-size:12px;color:white;font-weight:500">🌙 ${d.nights}박 ${parseInt(d.nights)+1}일</span>`:''}
       ${d.pax?`<span style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;background:rgba(255,255,255,0.12);border-radius:20px;font-size:12px;color:white;font-weight:500">👥 ${d.pax}</span>`:''}
-      ${d.customerName?`<span style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;background:rgba(255,255,255,0.12);border-radius:20px;font-size:12px;color:white;font-weight:500">👤 ${d.customerName}님</span>`:''}
-      ${d.agent?`<span style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;background:rgba(255,255,255,0.12);border-radius:20px;font-size:12px;color:white;font-weight:500">📋 담당: ${d.agent}</span>`:''}
     </div>
   </div>
 
@@ -1734,8 +1732,10 @@ body{padding-bottom:76px}
       ${d.customerName?`<div style="display:flex;border-bottom:1px solid #D5D5D5">
         <div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">고객명</div>
         <div style="flex:1;padding:10px 14px;font-size:14px;font-weight:600;color:#111">${d.customerName}</div>
-        <div style="min-width:56px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">인원</div>
-        <div style="min-width:70px;padding:10px 12px;font-size:14px;color:#111">${d.pax||'-'}</div>
+      </div>`:''}
+      ${d.agent?`<div style="display:flex;border-bottom:1px solid #D5D5D5">
+        <div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">담당자</div>
+        <div style="flex:1;padding:10px 14px;font-size:13px;color:#111">${d.agent}</div>
       </div>`:''}
       <div style="display:flex;border-bottom:1px solid #D5D5D5">
         <div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">항공</div>
@@ -1745,10 +1745,6 @@ body{padding-bottom:76px}
         <div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">호텔</div>
         <div style="flex:1;padding:10px 14px;font-size:13px;color:#111">${d.hotelQuickName||d.hotelName}</div>
       </div>`:''}
-      ${d.agent?`<div style="display:flex;border-bottom:1px solid #D5D5D5">
-        <div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">담당자</div>
-        <div style="flex:1;padding:10px 14px;font-size:13px;color:#111">${d.agent}</div>
-      </div>`:''}
       <div style="display:flex">
         <div style="min-width:76px;padding:12px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">요금</div>
         <div style="flex:1;padding:12px 14px;font-size:20px;font-weight:800;color:#C0392B">₩${perPerson} / 인</div>
@@ -1757,15 +1753,22 @@ body{padding-bottom:76px}
 
     <!-- 포함 / 불포함 -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px">
-      <div style="border-radius:12px;padding:16px;border:1px solid #E5E5E5;background:#F3FAF6">
-        <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#2C2C2C;margin-bottom:12px">✓ 포함</div>
-        <ul style="list-style:none">${incHTML}</ul>
+      <div style="border-radius:12px;padding:14px 16px;border:1px solid #E5E5E5;background:#F3FAF6">
+        <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#2C2C2C;margin-bottom:10px;text-align:center">포 함</div>
+        <ul style="list-style:none;margin:0;padding:0">${incHTML}</ul>
       </div>
-      <div style="border-radius:12px;padding:16px;border:1px solid #DFCAC9;background:#FDF4F4">
-        <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#C0392B;margin-bottom:12px">✕ 불포함</div>
-        <ul style="list-style:none">${excHTML}</ul>
+      <div style="border-radius:12px;padding:14px 16px;border:1px solid #DFCAC9;background:#FDF4F4">
+        <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#C0392B;margin-bottom:10px;text-align:center">불포함</div>
+        <ul style="list-style:none;margin:0;padding:0">${excHTML}</ul>
       </div>
     </div>
+
+    ${d.remark ? `
+    <!-- 참고 사항 -->
+    <div style="margin-top:20px;border:1px solid #E8E6E1;border-radius:12px;padding:18px 20px;background:#FFFBF2;border-left:3px solid #C9A268">
+      <div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#A07840;margin-bottom:10px;text-align:center">참고 사항</div>
+      <div style="font-size:12px;color:#444;line-height:1.9">${(d.remark||'').replace(/\n/g,'<br>')}</div>
+    </div>` : ''}
   </section>
 
   <!-- 02 일정표 -->
@@ -1774,9 +1777,15 @@ body{padding-bottom:76px}
     ${daysHTML}
   </section>
 
-  <!-- 03 호텔 -->
+  <!-- 03 골프장 -->
+  <section class="reveal" style="padding:36px 20px;border-bottom:1px solid #E8E6E1;background:#F8F7F5">
+    <div class="sec-title">03 &nbsp;라운드 코스</div>
+    ${coursesHTML}
+  </section>
+
+  <!-- 04 호텔 -->
   <section class="reveal" style="padding:36px 20px;border-bottom:1px solid #E8E6E1">
-    <div class="sec-title">03 &nbsp;숙박 호텔</div>
+    <div class="sec-title">04 &nbsp;숙박 호텔</div>
     <div style="border:1px solid #E8E6E1;border-radius:14px;overflow:hidden;background:white">
       <div style="border-radius:14px 14px 0 0;overflow:hidden">${hotelPhotoEl}</div>
       <div style="padding:20px 18px 22px;text-align:center">
@@ -1789,19 +1798,6 @@ body{padding-bottom:76px}
       </div>
     </div>
   </section>
-
-  <!-- 04 골프장 -->
-  <section class="reveal" style="padding:36px 20px;border-bottom:1px solid #E8E6E1;background:#F8F7F5">
-    <div class="sec-title">04 &nbsp;라운드 코스</div>
-    ${coursesHTML}
-  </section>
-
-  ${d.remark ? `
-  <!-- REMARK -->
-  <section class="reveal" style="padding:36px 20px;border-bottom:1px solid #E8E6E1">
-    <div class="sec-title">📌 &nbsp;참고 사항</div>
-    <div style="border:1px solid #E8E6E1;border-radius:12px;padding:18px 20px;background:#FFFBF2;border-left:3px solid #C9A268;font-size:13px;color:#444;line-height:2">${(d.remark||'').replace(/\n/g,'<br>')}</div>
-  </section>` : ''}
 
   <!-- 05 예약 안내 -->
   ${(d.deposit || d.bankAccount || d.cancelPolicy) ? `
