@@ -811,14 +811,30 @@ select option{background:white;color:var(--ink)}
       <input type="text" id="libName" placeholder="예: Phoenix Seagaia CC" style="background:var(--input-bg);border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;font-size:13px;width:100%;font-family:'Noto Sans KR',sans-serif;outline:none">
     </div>
 
-    <div class="field" style="margin-bottom:14px" id="libCountryFieldWrap">
-      <label>나라</label>
-      <input type="text" id="libCountry" placeholder="예: 일본, 태국" style="background:var(--input-bg);border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;font-size:13px;width:100%;font-family:'Noto Sans KR',sans-serif;outline:none;color:var(--ink)">
-    </div>
-
-    <div class="field" style="margin-bottom:14px" id="libRegionFieldWrap">
-      <label>지역</label>
-      <input type="text" id="libRegion" placeholder="예: 나고야, 방콕" style="background:var(--input-bg);border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;font-size:13px;width:100%;font-family:'Noto Sans KR',sans-serif;outline:none;color:var(--ink)">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px" id="libCountryRegionGrid">
+      <div class="field" id="libCountryFieldWrap">
+        <label>나라</label>
+        <select id="libCountry" onchange="onLibCountryChange()" style="background:var(--input-bg);border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;font-size:13px;width:100%;font-family:'Noto Sans KR',sans-serif;outline:none;color:var(--ink)">
+          <option value="">선택...</option>
+          <option value="일본">🇯🇵 일본</option>
+          <option value="중국">🇨🇳 중국</option>
+          <option value="대만">🇹🇼 대만</option>
+          <option value="태국">🇹🇭 태국</option>
+          <option value="베트남">🇻🇳 베트남</option>
+          <option value="필리핀">🇵🇭 필리핀</option>
+          <option value="인도네시아">🇮🇩 인도네시아</option>
+          <option value="말레이시아">🇲🇾 말레이시아</option>
+          <option value="캄보디아">🇰🇭 캄보디아</option>
+          <option value="괌/사이판">🌺 괌/사이판</option>
+          <option value="기타">🌐 기타</option>
+        </select>
+      </div>
+      <div class="field" id="libRegionFieldWrap">
+        <label>지역</label>
+        <select id="libRegion" style="background:var(--input-bg);border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;font-size:13px;width:100%;font-family:'Noto Sans KR',sans-serif;outline:none;color:var(--ink)">
+          <option value="">선택...</option>
+        </select>
+      </div>
     </div>
 
     <div class="field" style="margin-bottom:14px">
@@ -3079,6 +3095,40 @@ function libItemCard(item) {
 }
 
 /* ─── Library Item Modal ─── */
+function onLibCountryChange() {
+  const country = document.getElementById('libCountry')?.value || '';
+  const regionSel = document.getElementById('libRegion');
+  if (!regionSel) return;
+  regionSel.innerHTML = '<option value="">선택...</option>';
+  if (!country) return;
+  // 기존 라이브러리 데이터에서 해당 국가의 지역 목록 추출
+  const libRegions = libItemsCache.filter(i => i.country === country).map(i => i.region).filter(Boolean);
+  // 상품 데이터에서도 추출
+  const prodRegions = productsCache.filter(p => p.category === country).map(p => p.region).filter(Boolean);
+  const customR = customFolders[country] || [];
+  const allRegions = [...new Set([...libRegions, ...prodRegions, ...customR])].sort();
+  allRegions.forEach(r => {
+    const opt = document.createElement('option');
+    opt.value = r; opt.textContent = r;
+    regionSel.appendChild(opt);
+  });
+  // 직접입력 옵션
+  const customOpt = document.createElement('option');
+  customOpt.value = '__custom__'; customOpt.textContent = '✏️ 직접 입력...';
+  regionSel.appendChild(customOpt);
+  regionSel.onchange = function() {
+    if (this.value === '__custom__') {
+      const newR = prompt('새 지역명을 입력하세요:');
+      if (newR && newR.trim()) {
+        const opt = document.createElement('option');
+        opt.value = newR.trim(); opt.textContent = newR.trim();
+        regionSel.insertBefore(opt, customOpt);
+        regionSel.value = newR.trim();
+      } else { regionSel.value = ''; }
+    }
+  };
+}
+
 async function openLibItemModal(id) {
   libState.editingId = id;
   libState.photos = ['','','',''];
@@ -3090,10 +3140,8 @@ async function openLibItemModal(id) {
   if (libCountryEl) libCountryEl.value = '';
   if (libRegionEl) libRegionEl.value = '';
   // option 탭이면 나라/지역 필드 숨기기
-  const cfw = document.getElementById('libCountryFieldWrap');
-  const rfw = document.getElementById('libRegionFieldWrap');
-  if (cfw) cfw.style.display = (libState.currentCat === 'option') ? 'none' : 'block';
-  if (rfw) rfw.style.display = (libState.currentCat === 'option') ? 'none' : 'block';
+  const crGrid = document.getElementById('libCountryRegionGrid');
+  if (crGrid) crGrid.style.display = (libState.currentCat === 'option') ? 'none' : 'grid';
   if (id) {
     document.getElementById('libModalTitle').textContent = '✏️ 항목 수정';
     try {
@@ -3105,8 +3153,28 @@ async function openLibItemModal(id) {
         document.getElementById('libName').value = item.name || '';
         document.getElementById('libDesc').value = item.description || '';
         document.getElementById('libTags').value = (item.tags || []).join(', ');
-        if (libCountryEl) libCountryEl.value = item.country || '';
-        if (libRegionEl) libRegionEl.value = item.region || '';
+        if (libCountryEl) {
+          // 드롭다운에 없는 나라면 동적 추가
+          const cv = item.country || '';
+          if (cv && ![...libCountryEl.options].find(o=>o.value===cv)) {
+            const opt = document.createElement('option');
+            opt.value = cv; opt.textContent = cv;
+            libCountryEl.appendChild(opt);
+          }
+          libCountryEl.value = cv;
+          onLibCountryChange();
+        }
+        if (libRegionEl) {
+          const rv = item.region || '';
+          if (rv && ![...libRegionEl.options].find(o=>o.value===rv)) {
+            const opt = document.createElement('option');
+            opt.value = rv; opt.textContent = rv;
+            const customOpt = [...libRegionEl.options].find(o=>o.value==='__custom__');
+            if (customOpt) libRegionEl.insertBefore(opt, customOpt);
+            else libRegionEl.appendChild(opt);
+          }
+          libRegionEl.value = rv;
+        }
         libState.photos = [...(item.photos || []),'','','',''].slice(0,4);
       }
     } catch(e) {}
