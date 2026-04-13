@@ -88,7 +88,7 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
 .form-row:last-child{margin-bottom:0}
 
 .field{display:flex;flex-direction:column;gap:5px}
-.field label{font-size:13px;font-weight:600;color:#FFFFFF;letter-spacing:.3px;background:#1B2838;display:inline-block;padding:5px 14px;border-radius:5px;margin-bottom:2px}
+.field label{font-size:14px;font-weight:700;color:#2A4A5E;letter-spacing:.3px;display:inline-block;padding:4px 0;border-bottom:2px solid #2A4A5E;margin-bottom:4px}
 .field input,.field select,.field textarea{background:#FFFFFF;border:1.5px solid #C8C8C8;border-radius:8px;padding:11px 14px;font-size:14px;color:#111;font-family:'Noto Sans KR',sans-serif;outline:none;transition:border-color .15s;width:100%}
 .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);background:#FAFFFE}
 .field textarea{resize:vertical;min-height:80px;line-height:1.6}
@@ -517,11 +517,12 @@ select option{background:white;color:var(--ink)}
         <div class="form-card" style="margin-bottom:10px">
 
           <!-- 견적서 모드 전용: 고객 정보 -->
-          <div id="quoteOnlyFields" style="display:none;margin-bottom:14px;padding:14px 16px;background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:10px">
+          <div id="quoteOnlyFields" style="display:none;margin-bottom:14px;padding:14px 16px;border:1.5px solid #BFDBFE;border-radius:10px">
             <div style="font-size:11px;font-weight:700;color:#1D4ED8;letter-spacing:1px;margin-bottom:10px">👤 고객 정보</div>
-            <div class="form-row col2">
-              <div class="field"><label>고객명</label><input type="text" id="customerName" placeholder="홍길동" oninput="updateSummary()"></div>
-              <div class="field"><label>인원</label><input type="text" id="pax" placeholder="4인 기준" oninput="updateSummary();calcTotal()"></div>
+            <div class="form-row col3">
+              <div class="field"><label style="color:#1D4ED8;border-bottom-color:#1D4ED8">고객명</label><input type="text" id="customerName" placeholder="홍길동" oninput="updateSummary()"></div>
+              <div class="field"><label style="color:#1D4ED8;border-bottom-color:#1D4ED8">인원</label><input type="text" id="pax" placeholder="4인 기준" oninput="updateSummary();calcTotal()"></div>
+              <div class="field"><label style="color:#1D4ED8;border-bottom-color:#1D4ED8">담당자</label><input type="text" id="agent" placeholder="최진우"></div>
             </div>
           </div>
           <input type="hidden" id="quoteDate" value="">
@@ -532,10 +533,10 @@ select option{background:white;color:var(--ink)}
             <input type="text" id="destination" placeholder="[일본] 구마모토 아소그랑비리오 골프&리조트" oninput="updateSummary()" style="font-size:15px;font-weight:600">
           </div>
 
-          <!-- 여행지 + 담당자 -->
+          <!-- 여행지 + 호텔명 -->
           <div class="form-row col2" style="margin-bottom:10px">
             <div class="field"><label>여행지</label><input type="text" id="travelDest" placeholder="일본 · 구마모토"></div>
-            <div class="field"><label>담당자</label><input type="text" id="agent" placeholder="최진우"></div>
+            <div class="field"><label>호텔명</label><input type="text" id="hotelQuickName" placeholder="아소그랑비리오 리조트(2인1실)" oninput="syncHotelToItinerary()"></div>
           </div>
 
           <!-- 출발일 + 여행일수 -->
@@ -562,11 +563,6 @@ select option{background:white;color:var(--ink)}
             </div>
           </div>
           <div class="field" id="customNightField" style="display:none;margin-bottom:10px"><label>박수 직접입력</label><input type="number" id="customNights" placeholder="7" min="1" oninput="autoGenDays()" style="width:200px"></div>
-
-          <!-- 호텔명 -->
-          <div class="field" style="margin-bottom:10px">
-            <label>호텔명</label><input type="text" id="hotelQuickName" placeholder="아소그랑비리오 리조트(2인1실 기준)" oninput="syncHotelToItinerary()">
-          </div>
 
           <!-- 요금 + 항공사 -->
           <div style="border-top:1.5px solid var(--line);padding-top:12px;margin-top:4px">
@@ -607,13 +603,13 @@ select option{background:white;color:var(--ink)}
           <div style="border-top:1.5px solid var(--line);padding-top:12px;margin-top:4px">
             <div class="form-row col2">
               <div class="field">
-                <label style="background:#1B5E20;color:#FFFFFF">포함 사항</label>
+                <label style="color:#1B5E20;border-bottom:2px solid #1B5E20">포함 사항</label>
                 <div class="tags-wrap" id="includes-wrap" onclick="focusTagInput('includes-input')" style="border-color:#A5D6A7">
                   <input class="tag-input" id="includes-input" placeholder="항목 입력 후 Enter" onkeydown="addTag(event,'includes')">
                 </div>
               </div>
               <div class="field">
-                <label style="background:#B71C1C;color:#FFFFFF">불포함 사항</label>
+                <label style="color:#B71C1C;border-bottom:2px solid #B71C1C">불포함 사항</label>
                 <div class="tags-wrap" id="excludes-wrap" onclick="focusTagInput('excludes-input')" style="border-color:#EF9A9A">
                   <input class="tag-input" id="excludes-input" placeholder="항목 입력 후 Enter" onkeydown="addTag(event,'excludes')">
                 </div>
