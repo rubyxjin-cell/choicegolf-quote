@@ -168,7 +168,7 @@ function renderPage(d) {
 
   // ── 국기
   const CFI = {'일본':'jp','중국':'cn','대만':'tw','태국':'th','베트남':'vn','필리핀':'ph','인도네시아':'id','말레이시아':'my','캄보디아':'kh','미국':'us','호주':'au','싱가포르':'sg'};
-  const AIRLINE_LOGOS = {'대한항공':'https://pics.avs.io/60/60/KE.png','아시아나항공':'https://pics.avs.io/60/60/OZ.png','진에어':'https://pics.avs.io/60/60/LJ.png','제주항공':'https://pics.avs.io/60/60/7C.png','티웨이항공':'https://pics.avs.io/60/60/TW.png','에어부산':'https://pics.avs.io/60/60/BX.png','에어서울':'https://pics.avs.io/60/60/RS.png','이스타항공':'https://pics.avs.io/60/60/ZE.png','피치항공':'https://pics.avs.io/60/60/MM.png'};
+  const AIRLINE_LOGOS = {'대한항공':'https://pics.avs.io/200/200/KE.png','아시아나항공':'https://pics.avs.io/200/200/OZ.png','진에어':'https://pics.avs.io/200/200/LJ.png','제주항공':'https://pics.avs.io/200/200/7C.png','티웨이항공':'https://pics.avs.io/200/200/TW.png','에어부산':'https://pics.avs.io/200/200/BX.png','에어서울':'https://pics.avs.io/200/200/RS.png','이스타항공':'https://pics.avs.io/200/200/ZE.png','피치항공':'https://pics.avs.io/200/200/MM.png'};
   const airlineLogoUrl = AIRLINE_LOGOS[d.airlineName] || '';
   const cfCode = CFI[d.category] || '';
   const countryFlag = cfCode ? '<img src="https://flagcdn.com/w40/' + cfCode + '.png" style="height:20px;vertical-align:middle;border-radius:2px;margin-right:4px" alt="">' : '';
