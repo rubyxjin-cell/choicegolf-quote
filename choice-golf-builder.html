@@ -668,7 +668,7 @@ select option{background:white;color:var(--ink)}
               <div class="field"><label>요금 (원/인)</label><input type="number" id="pricePerPerson" placeholder="" oninput="calcTotal()"></div>
               <div class="field"><label>항공사</label>
                 <div style="display:flex;gap:6px;align-items:center">
-                  <img id="airlineLogo" src="" style="width:32px;height:32px;border-radius:6px;object-fit:contain;display:none;border:1px solid #E8E6E1">
+                  <img id="airlineLogo" src="" style="width:36px;height:36px;border-radius:6px;object-fit:contain;display:none;border:1px solid #E8E6E1">
                   <select id="airlineSelect" onchange="onAirlineSelect()" style="flex:1;background:#FFF;border:1.5px solid #C8C8C8;border-radius:8px;padding:11px 14px;font-size:14px;color:#111;font-family:'Noto Sans KR',sans-serif;outline:none">
                     <option value="">선택</option>
                     <option value="대한항공">대한항공</option>
@@ -1969,7 +1969,7 @@ body{padding-bottom:76px}
       </div>`:''}
       <div style="display:flex;border-bottom:1px solid #D5D5D5">
         <div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;text-align:center;letter-spacing:3px">항 공</div>
-        <div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000">${airlineLogoUrl ? '<img src="'+airlineLogoUrl+'" style="width:28px;height:28px;border-radius:4px;object-fit:contain;vertical-align:middle;margin-right:8px">' : ''}${d.airlineName||'-'}</div>
+        <div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000">${airlineLogoUrl ? '<img src="'+airlineLogoUrl+'" style="width:34px;height:34px;border-radius:5px;object-fit:contain;vertical-align:middle;margin-right:8px">' : ''}${d.airlineName||'-'}</div>
       </div>
       ${(d.hotelQuickName||d.hotelName)?`<div style="display:flex;border-bottom:1px solid #D5D5D5">
         <div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;text-align:center;letter-spacing:3px">호 텔</div>
