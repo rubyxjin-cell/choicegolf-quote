@@ -196,18 +196,26 @@ function renderPage(d) {
     '<span style="font-size:12px;padding:5px 12px;background:#F0F4F2;border:1px solid #C8DDD4;border-radius:20px;color:#2C2C2C;font-weight:500">' + f + '</span>'
   ).join('');
 
+  // ── 사진 그리드 HTML 헬퍼 (1~4장 반응형)
+  function pgHTML(photos, h, emoji) {
+    const p = (photos||[]).filter(u=>u);
+    if (!p.length) return '<div style="width:100%;height:'+h+'px;background:linear-gradient(135deg,#A8C8A8,#4A7860);display:flex;align-items:center;justify-content:center;font-size:48px;position:relative"><div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(0,0,0,0.4))"></div><span style="position:relative">'+(emoji||'⛳')+'</span></div>';
+    if (p.length===1) return '<img src="'+p[0]+'" style="width:100%;height:'+h+'px;object-fit:cover">';
+    if (p.length===2) return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;height:'+h+'px">'+p.map(u=>'<img src="'+u+'" style="width:100%;height:100%;object-fit:cover">').join('')+'</div>';
+    if (p.length===3) return '<div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:2px;height:'+h+'px"><img src="'+p[0]+'" style="width:100%;height:100%;object-fit:cover;grid-row:1/3"><img src="'+p[1]+'" style="width:100%;height:100%;object-fit:cover"><img src="'+p[2]+'" style="width:100%;height:100%;object-fit:cover"></div>';
+    return '<div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:2px;height:'+h+'px">'+p.slice(0,4).map(u=>'<img src="'+u+'" style="width:100%;height:100%;object-fit:cover">').join('')+'</div>';
+  }
+
   // ── 골프장
   const coursesHTML = (d.courses || []).map((c, i) => {
-    const bg = i%2===0 ? 'linear-gradient(135deg,#A8C8A8,#4A7860)' : 'linear-gradient(135deg,#90B4A0,#3A6050)';
-    const photoEl = c.photoUrl
-      ? '<img src="' + c.photoUrl + '" style="width:100%;height:200px;object-fit:cover">'
-      : '<div style="width:100%;height:200px;background:' + bg + ';display:flex;align-items:center;justify-content:center;font-size:48px;position:relative"><div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(0,0,0,0.4))"></div><span style="position:relative">⛳</span></div>';
+    const cPhotos = c.photos || (c.photoUrl ? [c.photoUrl] : []);
+    const coursePhotoEl = pgHTML(cPhotos, 200, '⛳');
     const featArr = Array.isArray(c.features) ? c.features : (c.features||'').split(',').filter(Boolean);
     const featHTML = featArr.map(f =>
       '<span style="font-size:12px;padding:5px 12px;background:#F0F4F2;border:1px solid #C8DDD4;border-radius:20px;color:#2C2C2C;font-weight:500">' + f.trim() + '</span>'
     ).join('');
     return '<div style="border:1px solid #E8E6E1;border-radius:14px;overflow:hidden;background:white;margin-bottom:20px">' +
-      '<div style="position:relative">' + photoEl +
+      '<div style="position:relative">' + coursePhotoEl +
         '<div style="position:absolute;bottom:10px;left:12px;background:rgba(0,0,0,0.55);color:white;font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px">Day ' + (c.day||'') + ' · ' + (c.round||'') + '라운드</div>' +
       '</div>' +
       '<div style="padding:18px 18px 20px">' +
@@ -229,10 +237,8 @@ function renderPage(d) {
   if (d.priceChild != null) extraPrices.push({label:'아동 1인', amount: d.priceChild});
   if (d.priceInfant != null) extraPrices.push({label:'유아 1인', amount: d.priceInfant});
 
-  // ── 호텔 사진
-  const hotelPhotoEl = d.hotelPhotoUrl
-    ? '<img src="' + d.hotelPhotoUrl + '" style="width:100%;height:200px;object-fit:cover">'
-    : '<div style="width:100%;height:200px;background:linear-gradient(135deg,#BFD4C8,#7A9A8A);display:flex;align-items:center;justify-content:center;font-size:48px;position:relative"><div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(0,0,0,0.3))"></div><span style="position:relative">🏨</span></div>';
+  // ── 호텔 사진 (멀티)
+  const hotelPhotoEl = pgHTML(d.hotelPhotos || (d.hotelPhotoUrl ? [d.hotelPhotoUrl] : []), 200, '🏨');
 
   // ── 뱃지 스타일
   const badgeS = 'display:inline-flex;align-items:center;gap:5px;padding:7px 13px;background:rgba(255,255,255,0.12);border-radius:20px;font-size:12px;color:white;font-weight:500';
