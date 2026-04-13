@@ -1645,8 +1645,8 @@ function generateHTML(d) {
   // daysHTML 끝
 
   // 포함/불포함
-  const incHTML = d.includes.map(t=>`<li style="font-size:13px;color:#111;padding:5px 0">✓ ${t}</li>`).join('');
-  const excHTML = d.excludes.map(t=>`<li style="font-size:13px;color:#111;padding:5px 0">✕ ${t}</li>`).join('');
+  const incHTML = d.includes.map(t=>`<li style="font-size:13px;color:#111;padding:5px 0">· ${t}</li>`).join('');
+  const excHTML = d.excludes.map(t=>`<li style="font-size:13px;color:#111;padding:5px 0">· ${t}</li>`).join('');
 
   // 호텔 편의시설
   const hotelFacHTML = d.hotelFacilities.map(f=>`<span style="font-size:12px;padding:5px 12px;background:#F0F4F2;border:1px solid #C8DDD4;border-radius:20px;color:#2C2C2C;font-weight:500">${f}</span>`).join('');
@@ -1754,11 +1754,11 @@ body{padding-bottom:76px}
     <!-- 포함 / 불포함 -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px">
       <div style="border-radius:10px;padding:16px;border:1.5px solid #2A4A5E;background:#F7FAFA">
-        <div style="font-size:12px;font-weight:700;letter-spacing:2px;color:#2A4A5E;margin-bottom:10px;text-align:center">포 함</div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:2px;color:#2A4A5E;margin-bottom:10px;text-align:center">✓ 포 함</div>
         <ul style="list-style:none;margin:0;padding:0">${incHTML}</ul>
       </div>
       <div style="border-radius:10px;padding:16px;border:1.5px solid #C0392B;background:#FDF6F6">
-        <div style="font-size:12px;font-weight:700;letter-spacing:2px;color:#C0392B;margin-bottom:10px;text-align:center">불포함</div>
+        <div style="font-size:12px;font-weight:700;letter-spacing:2px;color:#C0392B;margin-bottom:10px;text-align:center">✕ 불포함</div>
         <ul style="list-style:none;margin:0;padding:0">${excHTML}</ul>
       </div>
     </div>
