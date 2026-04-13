@@ -1883,12 +1883,6 @@ body{padding-bottom:76px}
   <div class="hero reveal" style="padding:40px 24px 30px;border-bottom:1px solid #E8E6E1;background:linear-gradient(135deg,#1B2838,#2A4A5E);text-align:center">
     ${d.travelDest ? `<div style="font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:500;letter-spacing:3px;color:rgba(255,255,255,0.75);margin-bottom:14px">${countryFlag ? countryFlag + ' ' : ''}${d.travelDest}</div>` : ''}
     <div style="font-family:'Noto Serif KR',serif;font-size:clamp(20px,5.5vw,28px);font-weight:700;color:white;line-height:1.35;word-break:keep-all">${parseColorTags(d.destination||'')}</div>
-    <div style="width:60%;max-width:200px;height:1.5px;background:rgba(255,255,255,0.25);margin:20px auto 18px;border-radius:2px"></div>
-    <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center">
-      ${d.period?`<span style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;background:rgba(255,255,255,0.12);border-radius:20px;font-size:12px;color:white;font-weight:500">📅 ${d.period}</span>`:''}
-      ${d.nights?`<span style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;background:rgba(255,255,255,0.12);border-radius:20px;font-size:12px;color:white;font-weight:500">🌙 ${d.nights}박 ${parseInt(d.nights)+1}일</span>`:''}
-      ${d.pax?`<span style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;background:rgba(255,255,255,0.12);border-radius:20px;font-size:12px;color:white;font-weight:500">👥 ${d.pax}</span>`:''}
-    </div>
   </div>
 
   <!-- 01 상품 요약 -->
@@ -1911,6 +1905,18 @@ body{padding-bottom:76px}
       ${(d.hotelQuickName||d.hotelName)?`<div style="display:flex;border-bottom:1px solid #D5D5D5">
         <div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">호텔</div>
         <div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000">${d.hotelQuickName||d.hotelName}</div>
+      </div>`:''}
+      ${d.period?`<div style="display:flex;border-bottom:1px solid #D5D5D5">
+        <div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">일정</div>
+        <div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000">${d.period}</div>
+      </div>`:''}
+      ${d.nights?`<div style="display:flex;border-bottom:1px solid #D5D5D5">
+        <div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">기간</div>
+        <div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000">${d.nights}박 ${parseInt(d.nights)+1}일</div>
+      </div>`:''}
+      ${d.pax?`<div style="display:flex;border-bottom:1px solid #D5D5D5">
+        <div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">인원</div>
+        <div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000">${d.pax}</div>
       </div>`:''}
       <div style="display:flex">
         <div style="min-width:76px;padding:12px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">요금</div>
