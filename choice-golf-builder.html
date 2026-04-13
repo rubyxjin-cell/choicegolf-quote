@@ -413,17 +413,17 @@ select option{background:white;color:var(--ink)}
       <div class="form-card" style="margin-bottom:12px">
         <div style="font-size:14px;font-weight:700;color:#1B5E20;margin-bottom:12px;border-bottom:2px solid #1B5E20;padding-bottom:4px">① 기본 정보</div>
         <div class="form-row col2" style="margin-bottom:8px">
-          <div class="field"><label>고객명</label><input type="text" id="cf_customer" placeholder="홍길동"></div>
-          <div class="field"><label>인원</label><input type="text" id="cf_pax" placeholder="4인"></div>
+          <div class="field"><label>고객명</label><input type="text" id="cf_customer" placeholder=""></div>
+          <div class="field"><label>인원</label><input type="text" id="cf_pax" placeholder=""></div>
         </div>
-        <div class="field" style="margin-bottom:8px"><label>상품명</label><input type="text" id="cf_destination" placeholder="[일본] 구마모토 골프투어"></div>
+        <div class="field" style="margin-bottom:8px"><label>상품명</label><input type="text" id="cf_destination" placeholder=""></div>
         <div class="form-row col2" style="margin-bottom:8px">
           <div class="field"><label>출발일</label><input type="date" id="cf_dateFrom" onchange="generateConfDays()"></div>
           <div class="field"><label>여행일수</label><select id="cf_nights" onchange="generateConfDays()" style="width:100%;padding:8px;border:1.5px solid var(--line);border-radius:8px;font-size:13px;font-family:'Noto Sans KR',sans-serif"><option value="">선택</option><option value="2,3">2박3일</option><option value="3,4">3박4일</option><option value="3,5">3박5일(항공박)</option><option value="4,5">4박5일</option><option value="4,6">4박6일(항공박)</option><option value="5,6">5박6일</option></select></div>
         </div>
         <div class="form-row col2">
-          <div class="field"><label>호텔</label><input type="text" id="cf_hotel" placeholder="호텔명"></div>
-          <div class="field"><label>항공편</label><input type="text" id="cf_airline" placeholder="진에어 LJ201"></div>
+          <div class="field"><label>호텔</label><input type="text" id="cf_hotel" placeholder=""></div>
+          <div class="field"><label>항공편</label><input type="text" id="cf_airline" placeholder=""></div>
         </div>
       </div>
 
@@ -438,10 +438,10 @@ select option{background:white;color:var(--ink)}
       <!-- ③ 현지 안내문 -->
       <div class="form-card" style="margin-bottom:12px">
         <div style="font-size:14px;font-weight:700;color:#1B5E20;margin-bottom:12px;border-bottom:2px solid #1B5E20;padding-bottom:4px">③ 현지 안내문</div>
-        <div class="field" style="margin-bottom:10px"><label>✈️ 공항 안내</label><textarea id="cf_airportGuide" placeholder="출국 절차, 미팅 장소, 수하물 안내 등..." style="min-height:80px"></textarea></div>
-        <div class="field" style="margin-bottom:10px"><label>🚌 교통 안내</label><textarea id="cf_transportGuide" placeholder="현지 이동 수단, 픽업 정보, 차량 안내 등..." style="min-height:80px"></textarea></div>
-        <div class="field" style="margin-bottom:10px"><label>⚠️ 주의사항</label><textarea id="cf_cautions" placeholder="현지 주의사항, 복장 안내, 팁 문화, 매너 등..." style="min-height:80px"></textarea></div>
-        <div class="field"><label>📝 기타 안내</label><textarea id="cf_extraGuide" placeholder="환전, 면세, 쇼핑, 추천 맛집 등..." style="min-height:80px"></textarea></div>
+        <div class="field" style="margin-bottom:10px"><label>✈️ 공항 안내</label><textarea id="cf_airportGuide" placeholder="" style="min-height:80px"></textarea></div>
+        <div class="field" style="margin-bottom:10px"><label>🚌 교통 안내</label><textarea id="cf_transportGuide" placeholder="" style="min-height:80px"></textarea></div>
+        <div class="field" style="margin-bottom:10px"><label>⚠️ 주의사항</label><textarea id="cf_cautions" placeholder="" style="min-height:80px"></textarea></div>
+        <div class="field"><label>📝 기타 안내</label><textarea id="cf_extraGuide" placeholder="" style="min-height:80px"></textarea></div>
       </div>
 
       <!-- ④ 날씨 정보 -->
@@ -456,14 +456,14 @@ select option{background:white;color:var(--ink)}
       <div class="form-card" style="margin-bottom:12px">
         <div style="font-size:14px;font-weight:700;color:#1B5E20;margin-bottom:12px;border-bottom:2px solid #1B5E20;padding-bottom:4px">⑤ 긴급 연락처</div>
         <div class="form-row col2" style="margin-bottom:8px">
-          <div class="field"><label>현지 가이드 이름</label><input type="text" id="cf_guideName" placeholder="김가이드"></div>
-          <div class="field"><label>현지 가이드 연락처</label><input type="text" id="cf_guidePhone" placeholder="+81-90-1234-5678"></div>
+          <div class="field"><label>현지 가이드 이름</label><input type="text" id="cf_guideName" placeholder=""></div>
+          <div class="field"><label>현지 가이드 연락처</label><input type="text" id="cf_guidePhone" placeholder=""></div>
         </div>
         <div class="form-row col2" style="margin-bottom:8px">
-          <div class="field"><label>현지 긴급 연락처</label><input type="text" id="cf_localEmergency" placeholder="경찰 110 / 앰뷸런스 119"></div>
-          <div class="field"><label>한국 비상 연락처</label><input type="text" id="cf_krEmergency" placeholder="02-545-5055"></div>
+          <div class="field"><label>현지 긴급 연락처</label><input type="text" id="cf_localEmergency" placeholder=""></div>
+          <div class="field"><label>한국 비상 연락처</label><input type="text" id="cf_krEmergency" placeholder=""></div>
         </div>
-        <div class="field"><label>대사관/영사관</label><input type="text" id="cf_embassy" placeholder="주일본대한민국대사관 03-3452-7611"></div>
+        <div class="field"><label>대사관/영사관</label><input type="text" id="cf_embassy" placeholder=""></div>
       </div>
 
       <!-- 하단 버튼 -->
@@ -510,7 +510,7 @@ select option{background:white;color:var(--ink)}
           </div>
         </div>
         <div class="form-row col2" style="margin-bottom:12px">
-          <div class="field"><label>항공사</label><input type="text" id="fm_airline" placeholder="진에어"></div>
+          <div class="field"><label>항공사</label><input type="text" id="fm_airline" placeholder=""></div>
           <div class="field"><label>출발 공항</label>
             <select id="fm_depAirport" style="width:100%;padding:8px;border:1.5px solid var(--line);border-radius:8px;font-size:13px;background:var(--input-bg)">
               <option value="인천">인천</option>
@@ -543,15 +543,15 @@ select option{background:white;color:var(--ink)}
         <div id="fm_defaultTimes">
           <div style="font-size:12px;font-weight:600;color:var(--ink2);margin:0 0 8px">🛫 가는편</div>
           <div class="form-row col3" style="margin-bottom:12px">
-            <div class="field"><label>편명</label><input type="text" id="fm_flightOut" placeholder="LJ363"></div>
-            <div class="field"><label>출발 시간</label><input type="text" id="fm_depTimeOut" placeholder="14:45"></div>
-            <div class="field"><label>도착 시간</label><input type="text" id="fm_arrTimeOut" placeholder="17:00"></div>
+            <div class="field"><label>편명</label><input type="text" id="fm_flightOut" placeholder=""></div>
+            <div class="field"><label>출발 시간</label><input type="text" id="fm_depTimeOut" placeholder=""></div>
+            <div class="field"><label>도착 시간</label><input type="text" id="fm_arrTimeOut" placeholder=""></div>
           </div>
           <div style="font-size:12px;font-weight:600;color:var(--ink2);margin:4px 0 8px">🛬 오는편</div>
           <div class="form-row col3" style="margin-bottom:12px">
-            <div class="field"><label>편명</label><input type="text" id="fm_flightIn" placeholder="LJ364"></div>
-            <div class="field"><label>출발 시간</label><input type="text" id="fm_depTimeIn" placeholder="18:00"></div>
-            <div class="field"><label>도착 시간</label><input type="text" id="fm_arrTimeIn" placeholder="20:20"></div>
+            <div class="field"><label>편명</label><input type="text" id="fm_flightIn" placeholder=""></div>
+            <div class="field"><label>출발 시간</label><input type="text" id="fm_depTimeIn" placeholder=""></div>
+            <div class="field"><label>도착 시간</label><input type="text" id="fm_arrTimeIn" placeholder=""></div>
           </div>
         </div>
 
@@ -622,9 +622,9 @@ select option{background:white;color:var(--ink)}
           <div id="quoteOnlyFields" style="display:none;margin-bottom:14px;padding:14px 16px;border:1.5px solid #BFDBFE;border-radius:10px">
             <div style="font-size:11px;font-weight:700;color:#1D4ED8;letter-spacing:1px;margin-bottom:10px">👤 고객 정보</div>
             <div class="form-row col3">
-              <div class="field"><label style="color:#1D4ED8;border-bottom-color:#1D4ED8">고객명</label><input type="text" id="customerName" placeholder="홍길동" oninput="updateSummary()"></div>
-              <div class="field"><label style="color:#1D4ED8;border-bottom-color:#1D4ED8">인원</label><input type="text" id="pax" placeholder="4인 기준" oninput="updateSummary();calcTotal()"></div>
-              <div class="field"><label style="color:#1D4ED8;border-bottom-color:#1D4ED8">담당자</label><input type="text" id="agent" placeholder="최진우"></div>
+              <div class="field"><label style="color:#1D4ED8;border-bottom-color:#1D4ED8">고객명</label><input type="text" id="customerName" placeholder="" oninput="updateSummary()"></div>
+              <div class="field"><label style="color:#1D4ED8;border-bottom-color:#1D4ED8">인원</label><input type="text" id="pax" placeholder="" oninput="updateSummary();calcTotal()"></div>
+              <div class="field"><label style="color:#1D4ED8;border-bottom-color:#1D4ED8">담당자</label><input type="text" id="agent" placeholder=""></div>
             </div>
           </div>
           <input type="hidden" id="quoteDate" value="">
@@ -632,13 +632,13 @@ select option{background:white;color:var(--ink)}
           <!-- 상품명 (가장 중요, 풀너비) -->
           <div class="field" style="margin-bottom:10px">
             <label>상품명</label>
-            <input type="text" id="destination" placeholder="[일본] 구마모토 아소그랑비리오 골프&리조트" oninput="updateSummary()" style="font-size:15px;font-weight:600">
+            <input type="text" id="destination" placeholder="" oninput="updateSummary()" style="font-size:15px;font-weight:600">
           </div>
 
           <!-- 여행지 + 호텔명 -->
           <div class="form-row col2" style="margin-bottom:10px">
-            <div class="field"><label>여행지</label><input type="text" id="travelDest" placeholder="일본 · 구마모토"></div>
-            <div class="field"><label>호텔명</label><input type="text" id="hotelQuickName" placeholder="아소그랑비리오 리조트(2인1실)" oninput="syncHotelToItinerary()"></div>
+            <div class="field"><label>여행지</label><input type="text" id="travelDest" placeholder=""></div>
+            <div class="field"><label>호텔명</label><input type="text" id="hotelQuickName" placeholder="" oninput="syncHotelToItinerary()"></div>
           </div>
 
           <!-- 출발일 + 여행일수 -->
@@ -664,13 +664,13 @@ select option{background:white;color:var(--ink)}
               </select>
             </div>
           </div>
-          <div class="field" id="customNightField" style="display:none;margin-bottom:10px"><label>박수 직접입력</label><input type="number" id="customNights" placeholder="7" min="1" oninput="autoGenDays()" style="width:200px"></div>
+          <div class="field" id="customNightField" style="display:none;margin-bottom:10px"><label>박수 직접입력</label><input type="number" id="customNights" placeholder="" min="1" oninput="autoGenDays()" style="width:200px"></div>
 
           <!-- 요금 + 항공사 -->
           <div style="border-top:1.5px solid var(--line);padding-top:12px;margin-top:4px">
             <div class="form-row col2" style="margin-bottom:8px">
-              <div class="field"><label>요금 (원/인)</label><input type="number" id="pricePerPerson" placeholder="2240000" oninput="calcTotal()"></div>
-              <div class="field"><label>항공사</label><input type="text" id="airlineName" placeholder="진에어 (항공편 선택 시 자동)"></div>
+              <div class="field"><label>요금 (원/인)</label><input type="number" id="pricePerPerson" placeholder="" oninput="calcTotal()"></div>
+              <div class="field"><label>항공사</label><input type="text" id="airlineName" placeholder=""></div>
             </div>
             <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px">
               <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" id="chkNoFlight" onchange="toggleExtraPrice()" style="width:15px;height:15px"> 항공권 미포함</label>
@@ -678,9 +678,9 @@ select option{background:white;color:var(--ink)}
               <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" id="chkInfant" onchange="toggleExtraPrice()" style="width:15px;height:15px"> 유아 요금</label>
             </div>
             <div id="extraPriceFields" style="display:none;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
-              <div class="field" id="noFlightField" style="display:none"><label>항공 제외 1인</label><input type="number" id="priceNoFlight" placeholder="750000"></div>
-              <div class="field" id="childField" style="display:none"><label>아동 1인</label><input type="number" id="priceChild" placeholder="800000"></div>
-              <div class="field" id="infantField" style="display:none"><label>유아 1인</label><input type="number" id="priceInfant" placeholder="300000"></div>
+              <div class="field" id="noFlightField" style="display:none"><label>항공 제외 1인</label><input type="number" id="priceNoFlight" placeholder=""></div>
+              <div class="field" id="childField" style="display:none"><label>아동 1인</label><input type="number" id="priceChild" placeholder=""></div>
+              <div class="field" id="infantField" style="display:none"><label>유아 1인</label><input type="number" id="priceInfant" placeholder=""></div>
             </div>
             <input type="hidden" id="priceNote" value="">
             <!-- 항공편 선택 (인라인) -->
@@ -721,7 +721,7 @@ select option{background:white;color:var(--ink)}
 
           <!-- REMARK -->
           <div style="border-top:1.5px solid var(--line);padding-top:12px;margin-top:4px">
-            <div class="field" style="margin-bottom:10px"><label>REMARK (비고)</label><textarea id="remark" placeholder="특이사항, 요청사항 등" style="min-height:60px"></textarea></div>
+            <div class="field" style="margin-bottom:10px"><label>REMARK (비고)</label><textarea id="remark" placeholder="" style="min-height:60px"></textarea></div>
           </div>
         </div>
         <!-- 숨김 필드 -->
@@ -756,12 +756,12 @@ select option{background:white;color:var(--ink)}
             <button onclick="openPickerModal('hotel','single')" style="display:inline-flex;align-items:center;gap:5px;background:rgba(28,61,46,0.07);border:1.5px solid var(--accent);border-radius:8px;padding:6px 13px;font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;font-family:'Noto Sans KR',sans-serif">📚 상품소개서에서 불러오기</button>
           </div>
           <div class="form-row col2" style="margin-bottom:10px">
-            <div class="field"><label>호텔명 (영문)</label><input type="text" id="hotelName" placeholder="Phoenix Seagaia Resort"></div>
-            <div class="field"><label>호텔명 (한글)</label><input type="text" id="hotelNameKr" placeholder="피닉스 시가이어 리조트"></div>
+            <div class="field"><label>호텔명 (영문)</label><input type="text" id="hotelName" placeholder=""></div>
+            <div class="field"><label>호텔명 (한글)</label><input type="text" id="hotelNameKr" placeholder=""></div>
           </div>
           <div class="form-row col4" style="margin-bottom:10px">
-            <div class="field"><label>객실 타입</label><input type="text" id="hotelRoom" placeholder="디럭스 트윈"></div>
-            <div class="field"><label>숙박 박수</label><input type="number" id="hotelNights" placeholder="3" min="1"></div>
+            <div class="field"><label>객실 타입</label><input type="text" id="hotelRoom" placeholder=""></div>
+            <div class="field"><label>숙박 박수</label><input type="number" id="hotelNights" placeholder="" min="1"></div>
             <div class="field" style="grid-column:span 2">
               <label>등급</label>
               <select id="hotelStars">
@@ -780,12 +780,12 @@ select option{background:white;color:var(--ink)}
             </div>
           </div>
           <div class="form-row" style="margin-bottom:10px">
-            <div class="field"><label>호텔 소개</label><textarea id="hotelDesc" placeholder="호텔 소개글" style="min-height:60px"></textarea></div>
+            <div class="field"><label>호텔 소개</label><textarea id="hotelDesc" placeholder="" style="min-height:60px"></textarea></div>
           </div>
           <div class="field">
             <label>편의시설 태그</label>
             <div class="tags-wrap" id="hotelFacilities-wrap" onclick="focusTagInput('hotelFacilities-input')">
-              <input class="tag-input" id="hotelFacilities-input" placeholder="예: 천연 온천, 조식 포함" onkeydown="addTag(event,'hotelFacilities')">
+              <input class="tag-input" id="hotelFacilities-input" placeholder="" onkeydown="addTag(event,'hotelFacilities')">
             </div>
           </div>
         </div>
@@ -844,11 +844,11 @@ select option{background:white;color:var(--ink)}
       <div class="sec-body hidden" id="body-invoice">
         <div class="form-card" style="margin-bottom:10px">
           <div class="form-row col2">
-            <div class="field"><label>예약금</label><input type="text" id="deposit" placeholder="1인 50만원 / 총 금액의 30%"></div>
-            <div class="field"><label>입금 계좌</label><input type="text" id="bankAccount" placeholder="국민은행 000-000-00-000000 (주)초이스골프"></div>
+            <div class="field"><label>예약금</label><input type="text" id="deposit" placeholder=""></div>
+            <div class="field"><label>입금 계좌</label><input type="text" id="bankAccount" placeholder=""></div>
           </div>
           <div class="form-row">
-            <div class="field"><label>취소 및 환불 규정</label><textarea id="cancelPolicy" placeholder="출발 30일 전: 100% 환불&#10;출발 15~29일 전: 80% 환불&#10;출발 7~14일 전: 50% 환불&#10;출발 6일 이내: 환불 불가" style="min-height:90px"></textarea></div>
+            <div class="field"><label>취소 및 환불 규정</label><textarea id="cancelPolicy" placeholder="" style="min-height:90px"></textarea></div>
           </div>
         </div>
       </div>
@@ -861,13 +861,13 @@ select option{background:white;color:var(--ink)}
       <div class="sec-body hidden" id="body-contact">
         <div class="form-card" style="margin-bottom:10px">
           <div class="form-row col2">
-            <div class="field"><label>전화번호</label><input type="text" id="contactPhone" placeholder="010-0000-0000"></div>
-            <div class="field"><label>카카오톡 채널</label><input type="text" id="contactKakao" placeholder="@초이스골프"></div>
+            <div class="field"><label>전화번호</label><input type="text" id="contactPhone" placeholder=""></div>
+            <div class="field"><label>카카오톡 채널</label><input type="text" id="contactKakao" placeholder=""></div>
           </div>
         </div>
         <div class="form-card" style="margin-bottom:10px">
           <div class="form-row">
-            <div class="field"><label>로고 이미지 URL</label><input type="text" id="logoUrl" placeholder="https://... 로고 이미지 URL"></div>
+            <div class="field"><label>로고 이미지 URL</label><input type="text" id="logoUrl" placeholder=""></div>
           </div>
           <div class="form-row col2">
             <div class="field"><label>회사명 (한글)</label><input type="text" id="companyName" placeholder="초이스골프" value="초이스골프"></div>
@@ -910,7 +910,7 @@ select option{background:white;color:var(--ink)}
 
     <div class="field" style="margin-bottom:14px">
       <label>이름 *</label>
-      <input type="text" id="libName" placeholder="예: Phoenix Seagaia CC" style="background:var(--input-bg);border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;font-size:13px;width:100%;font-family:'Noto Sans KR',sans-serif;outline:none">
+      <input type="text" id="libName" placeholder="" style="background:var(--input-bg);border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;font-size:13px;width:100%;font-family:'Noto Sans KR',sans-serif;outline:none">
     </div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px" id="libCountryRegionGrid">
@@ -949,12 +949,12 @@ select option{background:white;color:var(--ink)}
 
     <div class="field" style="margin-bottom:14px">
       <label>소개글</label>
-      <textarea id="libDesc" placeholder="소개 내용" style="background:var(--input-bg);border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;font-size:13px;width:100%;font-family:'Noto Sans KR',sans-serif;outline:none;min-height:90px;resize:vertical;line-height:1.6"></textarea>
+      <textarea id="libDesc" placeholder="" style="background:var(--input-bg);border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;font-size:13px;width:100%;font-family:'Noto Sans KR',sans-serif;outline:none;min-height:90px;resize:vertical;line-height:1.6"></textarea>
     </div>
 
     <div class="field" style="margin-bottom:20px">
       <label>태그 (쉼표 구분)</label>
-      <input type="text" id="libTags" placeholder="예: 18홀, 오션뷰, 카트 포함" style="background:var(--input-bg);border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;font-size:13px;width:100%;font-family:'Noto Sans KR',sans-serif;outline:none">
+      <input type="text" id="libTags" placeholder="" style="background:var(--input-bg);border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;font-size:13px;width:100%;font-family:'Noto Sans KR',sans-serif;outline:none">
     </div>
 
     <div style="display:flex;gap:10px">
@@ -1445,7 +1445,7 @@ function addDay(data={}, num=null, fromStr=null, dateObj=null) {
       <!-- 호텔 숙박 -->
       <div class="day-hotel-row">
         <label>🏨 숙박</label>
-        <input type="text" placeholder="숙박 호텔명" value="${hotelName}" data-hotel="true">
+        <input type="text" placeholder="" value="${hotelName}" data-hotel="true">
       </div>
     </div>
   `;
@@ -1531,10 +1531,10 @@ function photoGridHTML(photos, h=200, fallbackEmoji='⛳') {
 
 function scheduleItemHTML(dayId, place='', time='', transport='', text='', color='') {
   return `<div class="schedule-item">
-    <input type="text" placeholder="인천" value="${place}" style="font-size:12px">
-    <input type="text" placeholder="버스" value="${transport}" style="font-size:12px">
+    <input type="text" placeholder="" value="${place}" style="font-size:12px">
+    <input type="text" placeholder="" value="${transport}" style="font-size:12px">
     <input type="text" placeholder="09:00" value="${time}" style="text-align:center;font-size:12px">
-    <input type="text" placeholder="일정 내용 ([빨강]텍스트[빨강] = 색상)" value="${text}" style="font-size:12px">
+    <input type="text" placeholder="" value="${text}" style="font-size:12px">
     <button class="schedule-item-del" onclick="this.parentElement.remove()">✕</button>
   </div>`;
 }
@@ -1594,22 +1594,22 @@ function addCourse(data={}) {
         </div>
       </div>
       <div class="form-row col2">
-        <div class="field"><label>라운드</label><input type="number" placeholder="1" value="${data.round||roundNum}" min="1" style="font-size:13px"></div>
-        <div class="field"><label>진행 Day</label><input type="number" placeholder="2" value="${data.day||''}" min="1" style="font-size:13px"></div>
+        <div class="field"><label>라운드</label><input type="number" placeholder="" value="${data.round||roundNum}" min="1" style="font-size:13px"></div>
+        <div class="field"><label>진행 Day</label><input type="number" placeholder="" value="${data.day||''}" min="1" style="font-size:13px"></div>
       </div>
       <div class="form-row col2">
-        <div class="field"><label>골프장명 (영문/한글)</label><input type="text" placeholder="Phoenix Seagaia CC" value="${data.name||''}"></div>
-        <div class="field"><label>골프장명 (현지어)</label><input type="text" placeholder="シーガイアCC" value="${data.nameJp||''}"></div>
+        <div class="field"><label>골프장명 (영문)</label><input type="text" value="${data.name||''}"></div>
+        <div class="field"><label>골프장명 (한글)</label><input type="text" value="${data.nameKr||data.nameJp||''}"></div>
       </div>
       <div class="form-row col2">
-        <div class="field"><label>홀·파 정보</label><input type="text" placeholder="18홀 파72" value="${data.holes||''}"></div>
-        <div class="field"><label>코스 등급/레이팅</label><input type="text" placeholder="PGA 공인 챔피언십" value="${data.rating||''}"></div>
+        <div class="field"><label>홀·파 정보</label><input type="text" placeholder="" value="${data.holes||''}"></div>
+        <div class="field"><label>코스 등급/레이팅</label><input type="text" placeholder="" value="${data.rating||''}"></div>
       </div>
       <div class="form-row">
-        <div class="field"><label>코스 소개</label><textarea placeholder="코스 소개">${data.desc||''}</textarea></div>
+        <div class="field"><label>코스 소개</label><textarea placeholder="">${data.desc||''}</textarea></div>
       </div>
       <div class="form-row">
-        <div class="field"><label>특징 태그 (쉼표로 구분)</label><input type="text" placeholder="🚗 카트 포함, 🏆 PGA 개최지, 🌊 오션뷰" value="${data.features||''}"></div>
+        <div class="field"><label>특징 태그 (쉼표로 구분)</label><input type="text" placeholder="" value="${data.features||''}"></div>
       </div>
     </div>
   `;
@@ -1667,7 +1667,7 @@ function collectData() {
       round:    inputs[0]?.value || '',
       day:      inputs[1]?.value || '',
       name:     inputs[2]?.value || '',
-      nameJp:   inputs[3]?.value || '',
+      nameKr:   inputs[3]?.value || '',
       holes:    inputs[4]?.value || '',
       rating:   inputs[5]?.value || '',
       desc:     ta?.value || '',
@@ -1747,18 +1747,28 @@ function generateHTML(d) {
       const bgStyle = ri%2===0 ? '' : 'background:#FAFAF8';
       return '<tr style="' + bgStyle + '">' +
         '<td style="' + dayBorder + ';padding:8px 8px;font-size:12px;color:#A07840;font-weight:700;text-align:center;vertical-align:top">' + (it.time||'') + '</td>' +
-        '<td style="' + dayBorder + ';padding:8px 14px;font-size:13px;color:#222;line-height:1.6;word-break:keep-all">' + parseColorTags(it.text||'') + '</td>' +
+        '<td style="' + dayBorder + ';padding:8px 14px;font-size:13px;font-weight:700;color:#222;line-height:1.6;word-break:keep-all">' + parseColorTags(it.text||'') + '</td>' +
       '</tr>';
     }).join('');
 
-    const hotelRow = day.hotelStay ? '<tr style="background:#F0F6FF"><td colspan="2" style="' + dayBorder + ';padding:8px 12px"><span style=\\"display:inline-block;background:#1D4ED8;color:white;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;margin-right:8px\\">HOTEL</span><span style=\\"font-size:13px;font-weight:600;color:#1D4ED8\\">' + day.hotelStay + '</span></td></tr>' : '';
+    // 식사 정보 렌더링
+    const meals = day.meals || {};
+    const mealItems = [];
+    if(meals.bf) mealItems.push('🍳 ' + meals.bf);
+    if(meals.lunch) mealItems.push('🍜 ' + meals.lunch);
+    if(meals.dinner) mealItems.push('🍽 ' + meals.dinner);
+    const mealRow = mealItems.length ? '<tr><td colspan="2" style="padding:10px 14px;background:#FFF9F0;border-top:1.5px solid #E8C97A;font-size:12px;color:#92400E;font-weight:700">' + mealItems.join(' &nbsp;│&nbsp; ') + '</td></tr>' : '';
+
+    // 호텔 정보 렌더링 (고급 테두리로 구분)
+    const hotelRow = day.hotelStay ? '<tr><td colspan="2" style="padding:0"><div style="margin:8px 10px;border:2px solid #1D4ED8;border-radius:8px;padding:10px 14px;background:#F0F6FF;display:flex;align-items:center;gap:8px"><span style="display:inline-block;background:#1D4ED8;color:white;font-size:10px;font-weight:700;padding:3px 10px;border-radius:4px;letter-spacing:1px">HOTEL</span><span style="font-size:13px;font-weight:700;color:#1D4ED8">' + day.hotelStay + '</span></div></td></tr>' : '';
 
     return `<div style="border:1.5px solid #2A6B3C;border-radius:10px;overflow:hidden;margin-bottom:12px">
       <div style="background:#2A4A5E;padding:10px 16px;font-size:14px;font-weight:800;color:white">${dayLabel}${dateStr}${day.title ? '&nbsp;&nbsp;' + day.title : ''}</div>
       <table style="width:100%;border-collapse:collapse;table-layout:fixed">
         <colgroup><col style="width:58px"><col></colgroup>
-        <tr><th style="${thS};text-align:center">시간</th><th style="${thS};text-align:left;padding-left:14px">일정</th></tr>
+        <tr><th style="${thS};text-align:center">시간</th><th style="${thS};text-align:center">일정</th></tr>
         ${itemRows}
+        ${mealRow}
         ${hotelRow}
       </table>
     </div>`;
@@ -1767,8 +1777,8 @@ function generateHTML(d) {
   // daysHTML 끝
 
   // 포함/불포함
-  const incHTML = d.includes.map(t=>`<li style="font-size:13px;font-weight:600;color:#000;padding:5px 0">· ${parseColorTags(t)}</li>`).join('');
-  const excHTML = d.excludes.map(t=>`<li style="font-size:13px;font-weight:600;color:#000;padding:5px 0">· ${parseColorTags(t)}</li>`).join('');
+  const incHTML = d.includes.map(t=>`<li style="font-size:13px;font-weight:600;color:#000;padding:6px 0;border-bottom:1px solid rgba(42,74,94,0.15)">· ${parseColorTags(t)}</li>`).join('');
+  const excHTML = d.excludes.map(t=>`<li style="font-size:13px;font-weight:600;color:#000;padding:6px 0;border-bottom:1px solid rgba(192,57,43,0.15)">· ${parseColorTags(t)}</li>`).join('');
 
   // 호텔 편의시설
   const hotelFacHTML = d.hotelFacilities.map(f=>`<span style="font-size:12px;padding:5px 12px;background:#F0F4F2;border:1px solid #C8DDD4;border-radius:20px;color:#2C2C2C;font-weight:500">${f}</span>`).join('');
@@ -1779,12 +1789,13 @@ function generateHTML(d) {
     const coursePhotoEl = photoGridHTML(cPhotos, 200, '⛳');
     const featHTML = (Array.isArray(c.features) ? c.features : (c.features||'').split(',').filter(Boolean)).map(f=>`<span style="font-size:12px;padding:5px 12px;background:#F0F4F2;border:1px solid #C8DDD4;border-radius:20px;color:#2C2C2C;font-weight:500">${f.trim()}</span>`).join('');
     return `
-      <div style="border:1px solid #E8E6E1;border-radius:14px;overflow:hidden;background:white;margin-bottom:20px">
+      <div style="border:2px solid #2A4A5E;border-radius:14px;overflow:hidden;background:white;margin-bottom:20px;box-shadow:0 2px 12px rgba(42,74,94,0.08)">
         <div style="border-radius:14px 14px 0 0;overflow:hidden">${coursePhotoEl}</div>
         <div style="padding:20px 18px 22px;text-align:center">
           ${c.rating?`<div style="font-size:11px;color:#A07840;font-weight:700;letter-spacing:1.5px;margin-bottom:8px">${c.rating}</div>`:''}
-          <div style="font-family:'Noto Serif KR',serif;font-size:20px;font-weight:700;color:#1a1a1a;margin-bottom:4px;line-height:1.3">${c.name}</div>
-          <div style="font-size:12px;font-weight:500;color:#000;margin-bottom:6px">${c.nameJp}${c.nameJp&&c.holes?' · ':''}${c.holes}</div>
+          <div style="font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:2px;line-height:1.3;letter-spacing:0.5px">${c.name}</div>
+          <div style="font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:6px;line-height:1.3">${c.nameKr||c.nameJp||''}</div>
+          ${c.holes?'<div style="font-size:12px;font-weight:500;color:#666;margin-bottom:4px">'+c.holes+'</div>':''}
           <div style="width:40px;height:1.5px;background:#C9A268;margin:14px auto;border-radius:2px"></div>
           ${c.desc?`<div style="font-size:13px;color:#000;font-weight:500;line-height:1.9;text-align:left;padding:0 4px;margin-bottom:14px;word-break:keep-all">${parseColorTags(c.desc)}</div>`:''}
           <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center">${featHTML}</div>
@@ -1807,7 +1818,7 @@ function generateHTML(d) {
 body{background:#DDDBD5;font-family:'Noto Sans KR',sans-serif;font-weight:400;-webkit-font-smoothing:antialiased;color:#222}
 .reveal{opacity:0;transform:translateY(16px);transition:opacity .5s ease,transform .5s ease}
 .reveal.visible{opacity:1;transform:translateY(0)}
-.sec-title{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#111;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.sec-title{font-size:14px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#111;margin-bottom:18px;display:flex;align-items:center;gap:10px}
 .sec-title::after{content:'';flex:1;height:1px;background:#E8E6E1}
 body{padding-bottom:76px}
 @media(min-width:768px){
@@ -1836,7 +1847,7 @@ body{padding-bottom:76px}
 
   <!-- HERO -->
   <div class="hero reveal" style="padding:40px 24px 30px;border-bottom:1px solid #E8E6E1;background:linear-gradient(135deg,#1B2838,#2A4A5E);text-align:center">
-    ${d.travelDest ? `<div style="font-family:'Gaegu',cursive;font-size:18px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,0.85);margin-bottom:14px">${countryFlag ? countryFlag + ' ' : ''}${d.travelDest}</div>` : ''}
+    ${d.travelDest ? `<div style="font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:500;letter-spacing:3px;color:rgba(255,255,255,0.75);margin-bottom:14px">${countryFlag ? countryFlag + ' ' : ''}${d.travelDest}</div>` : ''}
     <div style="font-family:'Noto Serif KR',serif;font-size:clamp(20px,5.5vw,28px);font-weight:700;color:white;line-height:1.35;word-break:keep-all">${parseColorTags(d.destination||'')}</div>
     <div style="width:60%;max-width:200px;height:1.5px;background:rgba(255,255,255,0.25);margin:20px auto 18px;border-radius:2px"></div>
     <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center">
@@ -1876,11 +1887,11 @@ body{padding-bottom:76px}
     <!-- 포함 / 불포함 -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px">
       <div style="border-radius:10px;padding:16px;border:1.5px solid #2A4A5E;background:#F7FAFA">
-        <div style="font-size:12px;font-weight:700;letter-spacing:2px;color:#2A4A5E;margin-bottom:10px;text-align:center">✓ 포 함</div>
+        <div style="font-size:14px;font-weight:800;letter-spacing:2px;color:#2A4A5E;margin-bottom:12px;text-align:center">✓ 포 함</div>
         <ul style="list-style:none;margin:0;padding:0">${incHTML}</ul>
       </div>
       <div style="border-radius:10px;padding:16px;border:1.5px solid #C0392B;background:#FDF6F6">
-        <div style="font-size:12px;font-weight:700;letter-spacing:2px;color:#C0392B;margin-bottom:10px;text-align:center">✕ 불포함</div>
+        <div style="font-size:14px;font-weight:800;letter-spacing:2px;color:#C0392B;margin-bottom:12px;text-align:center">✕ 불포함</div>
         <ul style="list-style:none;margin:0;padding:0">${excHTML}</ul>
       </div>
     </div>
@@ -1908,12 +1919,13 @@ body{padding-bottom:76px}
   <!-- 04 호텔 -->
   <section class="reveal" style="padding:36px 20px;border-bottom:1px solid #E8E6E1">
     <div class="sec-title">04 &nbsp;숙박 정보</div>
-    <div style="border:1px solid #E8E6E1;border-radius:14px;overflow:hidden;background:white">
+    <div style="border:2px solid #2A4A5E;border-radius:14px;overflow:hidden;background:white;box-shadow:0 2px 12px rgba(42,74,94,0.08)">
       <div style="border-radius:14px 14px 0 0;overflow:hidden">${hotelPhotoEl}</div>
       <div style="padding:20px 18px 22px;text-align:center">
         ${starsStr ? `<div style="font-size:13px;color:#A07840;font-weight:700;letter-spacing:2px;margin-bottom:8px">${starsStr}</div>` : ''}
-        <div style="font-family:'Noto Serif KR',serif;font-size:20px;font-weight:700;color:#1a1a1a;margin-bottom:4px;line-height:1.3">${d.hotelName}</div>
-        <div style="font-size:12px;font-weight:500;color:#000;margin-bottom:6px">${d.hotelNameKr}${d.hotelNameKr&&d.hotelRoom?' · ':''}${d.hotelRoom}</div>
+        <div style="font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:2px;line-height:1.3;letter-spacing:0.5px">${d.hotelName}</div>
+        <div style="font-size:16px;font-weight:700;color:#1a1a1a;margin-bottom:6px;line-height:1.3">${d.hotelNameKr||''}</div>
+        ${d.hotelRoom?'<div style="font-size:12px;font-weight:500;color:#666;margin-bottom:4px">'+d.hotelRoom+'</div>':''}
         <div style="width:40px;height:1.5px;background:#C9A268;margin:14px auto;border-radius:2px"></div>
         ${d.hotelDesc?`<div style="font-size:13px;color:#000;font-weight:500;line-height:1.9;text-align:left;padding:0 4px;margin-bottom:14px;word-break:keep-all">${parseColorTags(d.hotelDesc)}</div>`:''}
         <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center">${hotelFacHTML}</div>
@@ -3084,7 +3096,7 @@ function addExtraCard(type, data={}) {
       <div class="field"><label>이름</label><input type="text" value="${data.name||''}" placeholder="${type==='tour'?'예: 아오시마 신사':'예: 온천 스파'}" style="font-size:12px"></div>
       <div class="field"><label>태그</label><input type="text" value="${(data.tags||[]).join(', ')}" placeholder="쉼표로 구분" style="font-size:12px"></div>
     </div>
-    <div class="field"><label>소개글</label><textarea placeholder="소개 내용" style="font-size:12px;min-height:60px">${data.description||''}</textarea></div>
+    <div class="field"><label>소개글</label><textarea placeholder="" style="font-size:12px;min-height:60px">${data.description||''}</textarea></div>
     ${(data.photos||[]).length?`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${(data.photos||[]).map(u=>`<img src="${u}" style="height:60px;border-radius:6px;object-fit:cover">`).join('')}</div>`:''}
   `;
   container.appendChild(div);
@@ -4386,7 +4398,7 @@ function generateConfHTML(d) {
     const items=(day.items||[]).map((it,ri)=>{const bg=ri%2===0?'':'background:#FAFAF8';return '<tr style="'+bg+'"><td style="border-bottom:1px solid #D5D5D5;padding:8px 8px;font-size:12px;color:#A07840;font-weight:700;text-align:center;vertical-align:top">'+(it.time||'')+'</td><td style="border-bottom:1px solid #D5D5D5;padding:8px 14px;font-size:13px;color:#222;line-height:1.6;word-break:keep-all">'+pCT(it.text||'')+'</td></tr>';}).join('');
     const meals=day.meals||{};const mi=[];if(meals.bf)mi.push('🍳 '+meals.bf);if(meals.lunch)mi.push('🍜 '+meals.lunch);if(meals.dinner)mi.push('🍽 '+meals.dinner);
     const mealRow=mi.length?'<tr><td colspan="2" style="padding:8px 14px;background:#FFF9F0;font-size:12px;color:#92400E;font-weight:600">'+mi.join(' │ ')+'</td></tr>':'';
-    return '<div style="border:1.5px solid #2A6B3C;border-radius:10px;overflow:hidden;margin-bottom:12px"><div style="background:#2A4A5E;padding:10px 16px;font-size:14px;font-weight:800;color:white">'+label+'</div>'+badgeRow+'<table style="width:100%;border-collapse:collapse;table-layout:fixed"><colgroup><col style="width:58px"><col></colgroup><tr><th style="'+thS+';text-align:center">시간</th><th style="'+thS+';text-align:left;padding-left:14px">일정</th></tr>'+items+mealRow+'</table></div>';
+    return '<div style="border:1.5px solid #2A6B3C;border-radius:10px;overflow:hidden;margin-bottom:12px"><div style="background:#2A4A5E;padding:10px 16px;font-size:14px;font-weight:800;color:white">'+label+'</div>'+badgeRow+'<table style="width:100%;border-collapse:collapse;table-layout:fixed"><colgroup><col style="width:58px"><col></colgroup><tr><th style="'+thS+';text-align:center">시간</th><th style="'+thS+';text-align:center">일정</th></tr>'+items+mealRow+'</table></div>';
   }).join('');
 
   const weatherHTML=(d.weather||[]).filter(Boolean).length?'<div style="padding:36px 20px;border-bottom:1px solid #E8E6E1"><div style="font-size:11px;font-weight:700;letter-spacing:2.5px;color:#111;margin-bottom:18px;display:flex;align-items:center;gap:10px">02 &nbsp;날씨 정보<span style="flex:1;height:1px;background:#E8E6E1"></span></div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;text-align:center">'+(d.weather||[]).map((w,i)=>'<div style="border:1px solid #E8E6E1;border-radius:10px;padding:12px 6px;background:white"><div style="font-size:10px;color:#888;font-weight:600;margin-bottom:4px">Day '+(i+1)+'</div><div style="font-size:14px;font-weight:700;color:#111">'+(w||'-')+'</div></div>').join('')+'</div></div>':'';
@@ -4417,7 +4429,7 @@ function generateConfHTML(d) {
   </header>
 
   <div style="padding:40px 24px 30px;border-bottom:1px solid #E8E6E1;background:linear-gradient(135deg,#1B2838,#2A4A5E);text-align:center">
-    <div style="font-family:Gaegu,cursive;font-size:18px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,0.85);margin-bottom:14px">✅ 출발 확정서</div>
+    <div style="font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:500;letter-spacing:3px;color:rgba(255,255,255,0.75);margin-bottom:14px">✅ 출발 확정서</div>
     <div style="font-family:'Noto Serif KR',serif;font-size:clamp(20px,5.5vw,28px);font-weight:700;color:white;line-height:1.35">${pCT(d.destination||'')}</div>
     <div style="width:60%;max-width:200px;height:1.5px;background:rgba(255,255,255,0.25);margin:20px auto 18px;border-radius:2px"></div>
     <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center">
