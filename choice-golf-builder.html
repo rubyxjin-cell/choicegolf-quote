@@ -310,7 +310,6 @@ select option{background:white;color:var(--ink)}
     <div class="sidebar-section" id="sectionNavWrap" style="display:none">
       <div class="sidebar-label">섹션 이동</div>
       <div class="sidebar-item" onclick="scrollToSection('sec-basic')"><span class="sidebar-item-icon">📋</span> 기본정보·요금</div>
-      <div class="sidebar-item" onclick="scrollToSection('sec-flight')"><span class="sidebar-item-icon">✈️</span> 항공편</div>
       <div class="sidebar-item" onclick="scrollToSection('sec-schedule')"><span class="sidebar-item-icon">🗓</span> 일정표</div>
       <div class="sidebar-item" onclick="scrollToSection('sec-hotel')"><span class="sidebar-item-icon">🏨</span> 호텔</div>
       <div class="sidebar-item" onclick="scrollToSection('sec-golf')"><span class="sidebar-item-icon">⛳</span> 골프장</div>
@@ -564,26 +563,44 @@ select option{background:white;color:var(--ink)}
           </div>
           <div class="field" id="customNightField" style="display:none;margin-bottom:10px"><label>박수 직접입력</label><input type="number" id="customNights" placeholder="7" min="1" oninput="autoGenDays()" style="width:200px"></div>
 
-          <!-- 호텔명 + 요금 -->
-          <div class="form-row col2" style="margin-bottom:10px">
-            <div class="field"><label>호텔명</label><input type="text" id="hotelQuickName" placeholder="아소그랑비리오 리조트" oninput="syncHotelToItinerary()"></div>
-            <div class="field"><label>요금 (원/인)</label><input type="number" id="pricePerPerson" placeholder="2240000" oninput="calcTotal()"></div>
+          <!-- 호텔명 -->
+          <div class="field" style="margin-bottom:10px">
+            <label>호텔명</label><input type="text" id="hotelQuickName" placeholder="아소그랑비리오 리조트(2인1실 기준)" oninput="syncHotelToItinerary()">
           </div>
 
-          <!-- 항공사 + 체크박스 -->
+          <!-- 요금 + 항공사 -->
           <div style="border-top:1.5px solid var(--line);padding-top:12px;margin-top:4px">
-            <div class="field" style="margin-bottom:10px"><label>항공사</label><input type="text" id="airlineName" placeholder="진에어 (항공편 선택 시 자동입력)"></div>
-            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px">
-              <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" id="chkNoFlight" onchange="toggleExtraPrice()" style="width:15px;height:15px"> 항공권 미포함 견적</label>
+            <div class="form-row col2" style="margin-bottom:8px">
+              <div class="field"><label>요금 (원/인)</label><input type="number" id="pricePerPerson" placeholder="2240000" oninput="calcTotal()"></div>
+              <div class="field"><label>항공사</label><input type="text" id="airlineName" placeholder="진에어 (항공편 선택 시 자동)"></div>
+            </div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+              <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" id="chkNoFlight" onchange="toggleExtraPrice()" style="width:15px;height:15px"> 항공권 미포함</label>
               <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" id="chkChild" onchange="toggleExtraPrice()" style="width:15px;height:15px"> 아동 요금</label>
               <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer"><input type="checkbox" id="chkInfant" onchange="toggleExtraPrice()" style="width:15px;height:15px"> 유아 요금</label>
             </div>
             <div id="extraPriceFields" style="display:none;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
-              <div class="field" id="noFlightField" style="display:none"><label>항공권 제외 시 1인</label><input type="number" id="priceNoFlight" placeholder="750000"></div>
-              <div class="field" id="childField" style="display:none"><label>아동 1인 요금</label><input type="number" id="priceChild" placeholder="800000"></div>
-              <div class="field" id="infantField" style="display:none"><label>유아 1인 요금</label><input type="number" id="priceInfant" placeholder="300000"></div>
+              <div class="field" id="noFlightField" style="display:none"><label>항공 제외 1인</label><input type="number" id="priceNoFlight" placeholder="750000"></div>
+              <div class="field" id="childField" style="display:none"><label>아동 1인</label><input type="number" id="priceChild" placeholder="800000"></div>
+              <div class="field" id="infantField" style="display:none"><label>유아 1인</label><input type="number" id="priceInfant" placeholder="300000"></div>
             </div>
             <input type="hidden" id="priceNote" value="">
+            <!-- 항공편 선택 (인라인) -->
+            <div style="margin-top:6px;padding:10px 14px;background:var(--input-bg);border:1.5px solid var(--line);border-radius:10px">
+              <div style="display:flex;gap:6px;margin-bottom:8px">
+                <button onclick="setPickerDep('인천')" class="cat-btn cat-active" data-pdep="인천">🛫 인천</button>
+                <button onclick="setPickerDep('부산')" class="cat-btn" data-pdep="부산">🛫 부산</button>
+                <button onclick="setPickerDep('청주')" class="cat-btn" data-pdep="청주">🛫 청주</button>
+              </div>
+              <div id="flightPickerInfo" style="font-size:12px;color:var(--ink3);margin-bottom:6px">출발일 선택 시 운항 항공편이 표시됩니다.</div>
+              <div id="flightPickerList" style="display:flex;flex-direction:column;gap:6px"></div>
+              <div id="flightPickerEmpty" style="display:none;text-align:center;padding:12px;color:var(--ink3);font-size:13px">해당 요일에 운항하는 항공편이 없습니다.</div>
+              <div id="flightSelected" style="display:none;margin-top:8px;padding:10px;background:#F5F5F5;border:1.5px solid #E5E5E5;border-radius:8px">
+                <div style="font-size:11px;font-weight:700;color:var(--ink);margin-bottom:6px">✅ 선택된 항공편</div>
+                <div id="flightSelectedInfo" style="font-size:13px;color:#111;line-height:1.8"></div>
+                <button onclick="clearFlightSelection()" style="margin-top:6px;background:none;border:1px solid var(--line);border-radius:6px;padding:4px 12px;font-size:11px;cursor:pointer;color:var(--ink3);font-family:'Noto Sans KR',sans-serif">선택 해제</button>
+              </div>
+            </div>
           </div>
 
           <!-- 포함/불포함 -->
@@ -616,29 +633,6 @@ select option{background:white;color:var(--ink)}
         <input type="hidden" id="dateTo">
         <input type="hidden" id="rounds" value="2">
         <input type="hidden" id="priceTotal">
-      </div>
-
-      <!-- ── 섹션: 항공편 선택 ── -->
-      <div class="sec-header" id="sec-flight" onclick="toggleSection('body-flight')">
-        <div class="sec-header-left"><span>✈️</span> 항공편</div>
-        <span class="sec-toggle" id="tog-flight">▼</span>
-      </div>
-      <div class="sec-body" id="body-flight">
-        <div class="form-card" style="margin-bottom:10px">
-          <div style="display:flex;gap:6px;margin-bottom:10px">
-            <button onclick="setPickerDep('인천')" class="cat-btn cat-active" data-pdep="인천">🛫 인천출발</button>
-            <button onclick="setPickerDep('부산')" class="cat-btn" data-pdep="부산">🛫 부산출발</button>
-            <button onclick="setPickerDep('청주')" class="cat-btn" data-pdep="청주">🛫 청주출발</button>
-          </div>
-          <div id="flightPickerInfo" style="font-size:12px;color:var(--ink3);margin-bottom:10px">출발일 선택 시 운항 항공편이 표시됩니다.</div>
-          <div id="flightPickerList" style="display:flex;flex-direction:column;gap:6px"></div>
-          <div id="flightPickerEmpty" style="display:none;text-align:center;padding:20px;color:var(--ink3);font-size:13px">해당 요일에 운항하는 항공편이 없습니다.</div>
-          <div id="flightSelected" style="display:none;margin-top:10px;padding:12px;background:#F5F5F5;border:1.5px solid #E5E5E5;border-radius:10px">
-            <div style="font-size:11px;font-weight:700;color:var(--ink);margin-bottom:8px">✅ 선택된 항공편</div>
-            <div id="flightSelectedInfo" style="font-size:13px;color:#111;line-height:1.8"></div>
-            <button onclick="clearFlightSelection()" style="margin-top:8px;background:none;border:1px solid var(--line);border-radius:6px;padding:4px 12px;font-size:11px;cursor:pointer;color:var(--ink3);font-family:'Noto Sans KR',sans-serif">선택 해제</button>
-          </div>
-        </div>
       </div>
 
       <!-- ── 섹션: 일정표 ── -->
