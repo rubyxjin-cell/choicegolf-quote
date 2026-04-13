@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{--white:#fff;--off:#F8F7F5;--line:#E8E6E1;--line2:#D4D1CA;--ink:#111110;--ink2:#4A4A46;--ink3:#8A8A84;--accent:#1C3D2E;--gold:#A07840;--gold-lt:#C9A268;--red:#8B2E2E}
+:root{--white:#fff;--off:#F8F7F5;--line:#E8E6E1;--line2:#D4D1CA;--ink:#111110;--ink2:#4A4A46;--ink3:#8A8A84;--accent:#2C2C2C;--navy:#2A4A5E;--green:#4A7A5A;--gold:#A07840;--gold-lt:#C9A268;--red:#8B2E2E;--red2:#C0392B}
 html{scroll-behavior:smooth}
 body{background:#DDDBD5;font-family:'Noto Sans KR',sans-serif;font-weight:300;-webkit-font-smoothing:antialiased;color:var(--ink);padding-bottom:80px}
 .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
@@ -35,16 +35,10 @@ body{background:#DDDBD5;font-family:'Noto Sans KR',sans-serif;font-weight:300;-w
 
 @media(min-width:768px){
   body{padding:40px 24px 0;padding-bottom:0!important}
-  .wrap{max-width:1100px;border-radius:20px;overflow:hidden;min-height:auto;box-shadow:0 20px 80px rgba(0,0,0,0.14)}
-  .site-header{padding:22px 52px!important}
-  .hero{padding:64px 52px 60px!important;display:grid!important;grid-template-columns:1fr 340px!important;gap:48px;align-items:start}
-  .hero-right{display:flex!important}
-  section,.contact-sec{padding:56px 52px!important}
-  .media-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:20px!important}
-  .share-bar{position:static!important;justify-content:flex-end!important;padding:16px 52px!important;border-top:1px solid var(--line)!important}
+  .wrap{max-width:540px;border-radius:20px;overflow:hidden;min-height:auto;box-shadow:0 20px 80px rgba(0,0,0,0.14)}
+  section,.contact-sec{padding:48px 40px!important}
+  .share-bar{position:static!important;padding:16px 40px 24px!important;border-top:1px solid var(--line)!important}
   .share-btn{flex:0 0 auto!important;padding:12px 28px!important}
-  .site-footer{padding:36px 52px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;text-align:left!important}
-  .footer-right{text-align:right}
 }
 
 /* HEADER */
@@ -54,10 +48,8 @@ body{background:#DDDBD5;font-family:'Noto Sans KR',sans-serif;font-weight:300;-w
 
 /* SECTION */
 section,.contact-sec{padding:44px 20px;border-bottom:1px solid var(--line)}
-.sec-hd{display:flex;align-items:center;gap:10px;margin-bottom:24px}
-.sec-n{font-family:'Cormorant Garamond',serif;font-size:11px;color:#888;letter-spacing:1px}
-.sec-t{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--ink)}
-.sec-l{flex:1;height:1px;background:var(--line)}
+.sec-title{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#8A8A84;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.sec-title::after{content:'';flex:1;height:1px;background:#E8E6E1}
 
 /* CHIP */
 .chip{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;background:var(--off);border-radius:20px;font-size:12px;color:var(--ink2);border:1px solid var(--line)}
@@ -73,13 +65,7 @@ section,.contact-sec{padding:44px 20px;border-bottom:1px solid var(--line)}
 .btn-kakao{background:#FEE500;color:#3A1D1D}
 .btn-link{background:var(--accent);color:white}
 
-/* ITINERARY RESPONSIVE */
-.itin-desktop{display:none}
-.itin-mobile{display:block}
-@media(min-width:768px){
-  .itin-desktop{display:block}
-  .itin-mobile{display:none}
-}
+
 </style>
 </head>
 <body>
@@ -147,314 +133,227 @@ function showError() {
 function renderPage(d) {
   const wrap = document.getElementById('mainWrap');
 
-  // ── 인원 표기 (텍스트 or 숫자 둘 다 처리)
+  // ── 인원 표기
   const paxText = d.pax || '';
-  const paxNum = parseInt(paxText) || 0;
 
   // ── 요금 표기
   const pp = d.pricePerPerson || 0;
-  const perPersonStr = pp ? '₩' + pp.toLocaleString() : '—';
-  const perPersonMan = pp ? Math.round(pp / 10000) + '만원' : '—';
+  const perPerson = pp ? pp.toLocaleString() : '—';
 
   // ── 별점
   const starsStr = '★'.repeat(parseInt(d.hotelStars) || 5);
 
-  // ── chip style
-  const chipS = 'display:inline-flex;align-items:center;gap:5px;padding:6px 12px;background:#F8F7F5;border-radius:20px;font-size:12px;color:#111;border:1px solid #E8E6E1;margin:3px 0';
+  // ── 날짜 계산용
+  const dayLabels = ['1일차','2일차','3일차','4일차','5일차','6일차','7일차','8일차','9일차','10일차'];
+
+  // ── 일정표 HTML (2컬럼: 시간+일정, 카드형)
+  const thS = 'padding:8px 12px;font-size:11px;font-weight:700;color:#FFFFFF;background:#4A7A5A;border:1px solid #3A6A4A;white-space:nowrap';
+  const daysHTML = (d.days || []).map((day, i) => {
+    const dayLabel = dayLabels[i] || (i+1)+'일차';
+    const items = day.items || [];
+    const dayBorder = 'border-bottom:1px solid #D5D5D5';
+
+    let dateStr = '';
+    if (d.dateFrom) {
+      const dt = new Date(d.dateFrom);
+      dt.setDate(dt.getDate() + i);
+      const dayNames = ['일','월','화','수','목','금','토'];
+      dateStr = ' (' + (dt.getMonth()+1) + '/' + dt.getDate() + ' ' + dayNames[dt.getDay()] + ')';
+    }
+
+    const itemRows = items.map((it, ri) => {
+      const textStyle = it.color ? 'color:' + it.color + ';font-weight:700' : 'color:#222';
+      const bgStyle = it.color ? 'background:' + it.color + '10' : (ri%2===0 ? '' : 'background:#FAFAF8');
+      return '<tr style="' + bgStyle + '">' +
+        '<td style="' + dayBorder + ';padding:8px 8px;font-size:12px;color:#A07840;font-weight:700;text-align:center;vertical-align:top">' + (it.time||'') + '</td>' +
+        '<td style="' + dayBorder + ';padding:8px 14px;font-size:13px;' + textStyle + ';line-height:1.6;word-break:keep-all">' + (it.text||'') + '</td>' +
+      '</tr>';
+    }).join('');
+
+    const hotelRow = day.hotelStay ? '<tr style="background:#F0F6FF"><td colspan="2" style="' + dayBorder + ';padding:8px 12px"><span style="display:inline-block;background:#1D4ED8;color:white;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;margin-right:8px">HOTEL</span><span style="font-size:13px;font-weight:600;color:#1D4ED8">' + day.hotelStay + '</span></td></tr>' : '';
+
+    return '<div style="border:1.5px solid #2A6B3C;border-radius:10px;overflow:hidden;margin-bottom:12px">' +
+      '<div style="background:#2A4A5E;padding:10px 16px;font-size:14px;font-weight:800;color:white">' + dayLabel + dateStr + (day.title ? '&nbsp;&nbsp;' + day.title : '') + '</div>' +
+      '<table style="width:100%;border-collapse:collapse;table-layout:fixed">' +
+        '<colgroup><col style="width:58px"><col></colgroup>' +
+        '<tr><th style="' + thS + ';text-align:center">시간</th><th style="' + thS + ';text-align:left;padding-left:14px">일정</th></tr>' +
+        itemRows +
+        hotelRow +
+      '</table>' +
+    '</div>';
+  }).join('');
 
   // ── 포함/불포함
   const incHTML = (d.includes || []).map(t =>
-    `<li style="font-size:12px;color:#111;display:flex;gap:7px;align-items:flex-start;margin-bottom:7px"><span style="font-size:10px;margin-top:1px;flex-shrink:0;font-weight:700;color:#1C3D2E">✓</span>${t}</li>`).join('');
+    '<li style="font-size:13px;color:#333;padding:5px 0;border-bottom:1px solid #F0EFE9;display:flex;gap:8px;align-items:flex-start"><span style="color:#2C2C2C;font-weight:700;flex-shrink:0">✓</span>' + t + '</li>'
+  ).join('');
   const excHTML = (d.excludes || []).map(t =>
-    `<li style="font-size:12px;color:#111;display:flex;gap:7px;align-items:flex-start;margin-bottom:7px"><span style="font-size:10px;margin-top:1px;flex-shrink:0;font-weight:700;color:#8B2E2E">✕</span>${t}</li>`).join('');
+    '<li style="font-size:13px;color:#333;padding:5px 0;border-bottom:1px solid #F0EFE9;display:flex;gap:8px;align-items:flex-start"><span style="color:#C0392B;font-weight:700;flex-shrink:0">✕</span>' + t + '</li>'
+  ).join('');
 
   // ── 호텔 편의시설
   const hotelFacHTML = (d.hotelFacilities || []).map(f =>
-    `<span style="font-size:11px;padding:4px 10px;background:#F8F7F5;border:1px solid #E8E6E1;border-radius:20px;color:#111">${f}</span>`).join('');
-
-  // ── 일정표 (모바일 카드 + 데스크톱 테이블)
-  const dayLabels = ['1일차','2일차','3일차','4일차','5일차','6일차','7일차','8일차','9일차','10일차'];
-
-  // ── 모바일 카드 레이아웃
-  const dayCardsMobile = (d.days || []).map((day, i) => {
-    const dayLabel = dayLabels[i] || (i+1)+'일차';
-
-    // 식사
-    const mealParts = [];
-    if (day.meals) {
-      if (day.meals.bf) mealParts.push(`조: ${day.meals.bf}`);
-      if (day.meals.lunch) mealParts.push(`중: ${day.meals.lunch}`);
-      if (day.meals.dinner) mealParts.push(`석: ${day.meals.dinner}`);
-    }
-    const mealHTML = mealParts.length ? `<div style="display:flex;flex-wrap:wrap;gap:6px;padding:8px 12px;background:#FFFDF5;border-top:1px solid #EDE8D8">${mealParts.map(m => `<span style="font-size:10px;font-weight:600;color:#6B5A30;background:#FFF8E8;padding:3px 8px;border-radius:12px;border:1px solid #E8DFC0">${m}</span>`).join('')}</div>` : '';
-
-    // 일정 아이템
-    const itemsHTML = (day.items || []).map((it, ri) => {
-      const isGolf = it.color || it.isGolf;
-      const bg = isGolf ? '#F0F9F0' : (ri % 2 === 0 ? '#fff' : '#FAFAF8');
-      const borderL = isGolf ? 'border-left:3px solid #2E8B57' : 'border-left:3px solid transparent';
-      const golfIcon = isGolf ? '⛳ ' : '';
-      const textColor = isGolf ? 'color:#1C6B3A;font-weight:700' : 'color:#111;font-weight:400';
-
-      const tags = [];
-      if (it.place) tags.push(`<span style="font-size:10px;font-weight:600;color:#333;background:#EEEDEB;padding:2px 7px;border-radius:4px">${it.place}</span>`);
-      if (it.transport) tags.push(`<span style="font-size:10px;color:#666;background:#F0F0EE;padding:2px 7px;border-radius:4px">${it.transport}</span>`);
-      if (it.time) tags.push(`<span style="font-size:10px;font-weight:700;color:#8A6020;background:#FFF8E8;padding:2px 7px;border-radius:4px">${it.time}</span>`);
-      const tagsRow = tags.length ? `<div style="display:flex;gap:4px;margin-bottom:4px;flex-wrap:wrap">${tags.join('')}</div>` : '';
-
-      return `<div style="padding:9px 12px;background:${bg};${borderL};border-bottom:1px solid #EFEFED">
-        ${tagsRow}
-        <div style="font-size:13px;${textColor};line-height:1.6">${golfIcon}${it.text||''}</div>
-      </div>`;
-    }).join('');
-
-    // 호텔
-    const hotelHTML = day.hotelStay ? `<div style="padding:8px 12px;background:#EDF4FF;border-top:1px solid #C7DEFF;display:flex;align-items:center;gap:6px">
-      <span style="background:#1A4BAB;color:white;font-size:8px;padding:2px 7px;border-radius:10px;letter-spacing:.5px;font-weight:700">HOTEL</span>
-      <span style="font-size:11px;font-weight:600;color:#1A4BAB">${day.hotelStay}</span>
-    </div>` : '';
-
-    return `<div style="border:1px solid #D4D1CA;border-radius:12px;overflow:hidden;margin-bottom:12px">
-      <div style="padding:10px 12px;background:#1C3D2E;display:flex;align-items:center;justify-content:space-between">
-        <div><span style="font-size:14px;font-weight:900;color:white">${dayLabel}</span><span style="font-size:11px;color:rgba(255,255,255,0.7);margin-left:8px">${day.title||''}</span></div>
-      </div>
-      ${itemsHTML}
-      ${mealHTML}
-      ${hotelHTML}
-    </div>`;
-  }).join('');
-
-  // ── 데스크톱 테이블 레이아웃
-  const dayRowsAll = (d.days || []).map((day, i) => {
-    const isLast = i === d.days.length - 1;
-    const dayLabel = dayLabels[i] || (i+1)+'일차';
-    const itemCount = (day.items || []).length;
-
-    const mealLines = [];
-    if (day.meals) {
-      if (day.meals.bf) mealLines.push(`조: ${day.meals.bf}`);
-      if (day.meals.lunch) mealLines.push(`중: ${day.meals.lunch}`);
-      if (day.meals.dinner) mealLines.push(`석: ${day.meals.dinner}`);
-    }
-    const mealCellContent = mealLines.join('<br>');
-    const totalRows = itemCount + (day.hotelStay ? 1 : 0);
-
-    const itemRows = (day.items || []).map((it, ri) => {
-      const isGolf = it.color || it.isGolf;
-      const bg = isGolf ? '#F0F9F0' : (ri % 2 === 0 ? '#fff' : '#FAFAF8');
-      const textStyle = isGolf ? 'font-weight:700;color:#1C6B3A' : 'font-weight:400;color:#111';
-      const golfIcon = isGolf ? '⛳ ' : '';
-      const dayCell = ri === 0 ? `<td rowspan="${totalRows}" style="padding:10px 8px;vertical-align:top;text-align:center;background:#F4F3F0;border-right:2px solid #D4D1CA;width:62px">
-        <div style="font-size:14px;font-weight:900;color:#1C3D2E;line-height:1.2">${dayLabel}</div>
-        <div style="font-size:10px;color:#888;margin-top:3px">${day.title||''}</div>
-      </td>` : '';
-      const mealCell = ri === 0 ? (mealCellContent ? `<td rowspan="${totalRows}" style="padding:8px 10px;vertical-align:middle;text-align:right;background:#FFFDF5;border-left:2px solid #E8E2D0;width:80px;font-size:11px;font-weight:600;color:#6B5A30;line-height:2;white-space:nowrap">${mealCellContent}</td>` : `<td rowspan="${totalRows}" style="padding:8px;vertical-align:middle;text-align:center;background:#FAFAF8;border-left:2px solid #E8E6E0;width:80px;font-size:10px;color:#bbb">—</td>`) : '';
-      return `<tr style="background:${bg};border-bottom:1px solid #EFEFED">
-        ${dayCell}
-        <td style="padding:8px 10px;font-size:12px;color:#333;white-space:nowrap;vertical-align:top;width:60px;border-right:1px solid #EFEFED;font-weight:600">${it.place||''}</td>
-        <td style="padding:8px 8px;font-size:11px;color:#666;white-space:nowrap;vertical-align:top;width:64px;border-right:1px solid #EFEFED">${it.transport||''}</td>
-        <td style="padding:8px 8px;font-size:12px;color:#8A6020;font-weight:700;white-space:nowrap;vertical-align:top;width:52px;border-right:1px solid #EFEFED">${it.time||''}</td>
-        <td style="padding:8px 12px;font-size:13px;${textStyle};line-height:1.6;word-break:keep-all">${golfIcon}${it.text||''}</td>
-        ${mealCell}
-      </tr>`;
-    }).join('');
-
-    const hotelRow = day.hotelStay ? `<tr style="background:#EDF4FF;border-bottom:${isLast?'none':'2px solid #C8C5BE'}">
-      <td colspan="4" style="padding:8px 12px;font-size:12px;font-weight:700;color:#1A4BAB"><span style="background:#1A4BAB;color:white;font-size:9px;padding:2px 8px;border-radius:10px;margin-right:8px;letter-spacing:.5px">HOTEL</span>${day.hotelStay}</td>
-    </tr>` : `<tr style="height:2px;background:#E0DED8;border-bottom:${isLast?'none':'2px solid #C8C5BE'}"><td colspan="6"></td></tr>`;
-
-    return itemRows + hotelRow;
-  }).join('');
-
-  const colHeader = `<tr style="background:#1C3D2E">
-    <th style="padding:9px 8px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.65);letter-spacing:1px;text-align:center;width:62px">날짜</th>
-    <th style="padding:9px 8px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.65);letter-spacing:1px;width:60px">장소</th>
-    <th style="padding:9px 8px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.65);letter-spacing:1px;width:64px">교통</th>
-    <th style="padding:9px 8px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.65);letter-spacing:1px;width:52px">시간</th>
-    <th style="padding:9px 10px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.65);letter-spacing:1px">일정</th>
-    <th style="padding:9px 10px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.65);letter-spacing:1px;text-align:right;width:80px">식사</th>
-  </tr>`;
-
-  const daysHTML = `
-    <div class="itin-mobile">${dayCardsMobile}</div>
-    <div class="itin-desktop"><div style="border:1px solid #C8C5BE;border-radius:12px;overflow:hidden">
-      <table style="width:100%;border-collapse:collapse">${colHeader}${dayRowsAll}</table>
-    </div></div>`;
-
-  // ── 요금 (새 형식: 성인 1인 + 선택 추가)
-  const extraPrices = [];
-  if (d.priceNoFlight != null) extraPrices.push({label:'항공권 미포함 1인', amount: d.priceNoFlight});
-  if (d.priceChild != null) extraPrices.push({label:'아동 1인', amount: d.priceChild});
-  if (d.priceInfant != null) extraPrices.push({label:'유아 1인', amount: d.priceInfant});
-
-  const extraPriceHTML = extraPrices.map((ep, i) => `
-    <div style="display:flex;justify-content:space-between;align-items:center;padding:11px 16px;border-bottom:1px solid #E8E6E1;background:${i%2===0?'white':'#FAFAF8'}">
-      <div style="font-size:13px;color:#111">${ep.label}</div>
-      <div style="font-size:15px;font-weight:600;color:#111;font-variant-numeric:tabular-nums">₩${Number(ep.amount).toLocaleString()}</div>
-    </div>`).join('');
-
-  // ── 안내 메모
-  const noteLines = (d.priceNote || '').split('\n').filter(Boolean).map(l => `${l}<br>`).join('');
-
-  // ── 호텔 사진
-  const hotelPhotoEl = d.hotelPhotoUrl
-    ? `<img src="${d.hotelPhotoUrl}" style="width:100%;height:190px;object-fit:cover">`
-    : `<div style="width:100%;height:190px;display:flex;align-items:center;justify-content:center;font-size:44px;position:relative;background:linear-gradient(135deg,#BFD4C8 0%,#7A9A8A 100%)"><div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,0.3))"></div><div style="position:absolute;bottom:12px;left:14px;background:rgba(0,0,0,0.5);color:white;font-size:11px;padding:4px 10px;border-radius:20px">${d.destination||''} · ${d.hotelNights||''}박</div>🏨</div>`;
+    '<span style="font-size:12px;padding:5px 12px;background:#F0F4F2;border:1px solid #C8DDD4;border-radius:20px;color:#2C2C2C;font-weight:500">' + f + '</span>'
+  ).join('');
 
   // ── 골프장
   const coursesHTML = (d.courses || []).map((c, i) => {
     const bg = i%2===0 ? 'linear-gradient(135deg,#A8C8A8,#4A7860)' : 'linear-gradient(135deg,#90B4A0,#3A6050)';
     const photoEl = c.photoUrl
-      ? `<img src="${c.photoUrl}" style="width:100%;height:190px;object-fit:cover">`
-      : `<div style="width:100%;height:190px;display:flex;align-items:center;justify-content:center;font-size:44px;position:relative;background:${bg}"><div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(0,0,0,0.3))"></div><div style="position:absolute;bottom:12px;left:14px;background:rgba(0,0,0,0.5);color:white;font-size:11px;padding:4px 10px;border-radius:20px">Day ${c.day||''} · ${c.round||''}라운드</div><span style="position:relative">⛳</span></div>`;
-    const featHTML = (Array.isArray(c.features) ? c.features : (c.features||'').split(',').filter(Boolean))
-      .map(f => `<span style="font-size:11px;padding:4px 10px;background:#F8F7F5;border:1px solid #E8E6E1;border-radius:20px;color:#111">${f.trim()}</span>`).join('');
-    return `
-      <div style="border:1px solid #E8E6E1;border-radius:14px;overflow:hidden;background:white;margin-bottom:20px">
-        ${photoEl}
-        <div style="padding:18px 18px 20px">
-          <div style="font-size:11px;color:#A07840;letter-spacing:1px;margin-bottom:6px">${c.rating||''}</div>
-          <div style="font-family:'Noto Serif KR',serif;font-size:17px;font-weight:600;color:#111;margin-bottom:4px;line-height:1.3">${c.name||''}</div>
-          <div style="font-size:12px;color:#444;margin-bottom:12px">${c.nameJp||''}${c.nameJp&&c.holes?' · ':''}${c.holes||''}</div>
-          ${c.desc ? `<div style="font-size:13px;color:#111;line-height:1.8;border-top:1px solid #E8E6E1;padding-top:12px;margin-bottom:12px">${c.desc}</div>` : ''}
-          <div style="display:flex;flex-wrap:wrap;gap:6px">${featHTML}</div>
-        </div>
-      </div>`;
+      ? '<img src="' + c.photoUrl + '" style="width:100%;height:200px;object-fit:cover">'
+      : '<div style="width:100%;height:200px;background:' + bg + ';display:flex;align-items:center;justify-content:center;font-size:48px;position:relative"><div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(0,0,0,0.4))"></div><span style="position:relative">⛳</span></div>';
+    const featArr = Array.isArray(c.features) ? c.features : (c.features||'').split(',').filter(Boolean);
+    const featHTML = featArr.map(f =>
+      '<span style="font-size:12px;padding:5px 12px;background:#F0F4F2;border:1px solid #C8DDD4;border-radius:20px;color:#2C2C2C;font-weight:500">' + f.trim() + '</span>'
+    ).join('');
+    return '<div style="border:1px solid #E8E6E1;border-radius:14px;overflow:hidden;background:white;margin-bottom:20px">' +
+      '<div style="position:relative">' + photoEl +
+        '<div style="position:absolute;bottom:10px;left:12px;background:rgba(0,0,0,0.55);color:white;font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px">Day ' + (c.day||'') + ' · ' + (c.round||'') + '라운드</div>' +
+      '</div>' +
+      '<div style="padding:18px 18px 20px">' +
+        '<div style="font-size:11px;color:#A07840;font-weight:700;letter-spacing:1px;margin-bottom:6px">' + (c.rating||'') + '</div>' +
+        '<div style="font-size:18px;font-weight:700;color:#111;margin-bottom:4px;line-height:1.3">' + (c.name||'') + '</div>' +
+        '<div style="font-size:12px;color:#8A8A84;margin-bottom:14px">' + (c.nameJp||'') + (c.nameJp&&c.holes?' · ':'') + (c.holes||'') + '</div>' +
+        (c.desc ? '<div style="font-size:13px;color:#444;line-height:1.8;border-top:1px solid #EDEBE6;padding-top:14px;margin-bottom:12px">' + c.desc + '</div>' : '') +
+        '<div style="display:flex;flex-wrap:wrap;gap:6px">' + featHTML + '</div>' +
+      '</div>' +
+    '</div>';
   }).join('');
 
+  // ── 안내 메모
+  const noteLines = (d.priceNote || '').split('\n').filter(Boolean).map(l => l + '<br>').join('');
+
+  // ── 요금 옵션
+  const extraPrices = [];
+  if (d.priceNoFlight != null) extraPrices.push({label:'항공권 미포함 1인', amount: d.priceNoFlight});
+  if (d.priceChild != null) extraPrices.push({label:'아동 1인', amount: d.priceChild});
+  if (d.priceInfant != null) extraPrices.push({label:'유아 1인', amount: d.priceInfant});
+
+  // ── 호텔 사진
+  const hotelPhotoEl = d.hotelPhotoUrl
+    ? '<img src="' + d.hotelPhotoUrl + '" style="width:100%;height:200px;object-fit:cover">'
+    : '<div style="width:100%;height:200px;background:linear-gradient(135deg,#BFD4C8,#7A9A8A);display:flex;align-items:center;justify-content:center;font-size:48px;position:relative"><div style="position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(0,0,0,0.3))"></div><span style="position:relative">🏨</span></div>';
+
+  // ── 뱃지 스타일
+  const badgeS = 'display:inline-flex;align-items:center;gap:5px;padding:7px 13px;background:rgba(255,255,255,0.12);border-radius:20px;font-size:12px;color:white;font-weight:500';
+
+  // ── 상품요약 행 생성 헬퍼
+  function summaryRow(label, value, isLast) {
+    const bb = isLast ? '' : 'border-bottom:1px solid #D5D5D5;';
+    return '<div style="display:flex;' + bb + '">' +
+      '<div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">' + label + '</div>' +
+      '<div style="flex:1;padding:10px 14px;font-size:13px;color:#111">' + (value||'-') + '</div>' +
+    '</div>';
+  }
+
+  // ============== 렌더링 시작 ==============
   wrap.innerHTML = `
-    <!-- HEADER (간결하게 로고 + 견적서 뱃지만) -->
-    <header class="site-header" style="padding:10px 16px;height:auto">
-      <div style="display:flex;align-items:center;gap:10px">
-        ${d.logoUrl ? `<img src="${d.logoUrl}" style="height:36px;object-fit:contain">` : `<div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:8px;background:#1C3D2E;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#C9A268;flex-shrink:0">CG</div><div><div style="font-size:14px;font-weight:700;color:#111">${d.companyName||'초이스골프'}</div><div style="font-size:9px;color:#444;letter-spacing:2px;text-transform:uppercase">${d.companyNameEn||'Choice Golf Tour'}</div></div></div>`}
+    <!-- HEADER -->
+    <header style="border-bottom:1px solid #E8E6E1;position:sticky;top:0;background:rgba(255,255,255,0.97);backdrop-filter:blur(14px);z-index:100">
+      <div style="padding:10px 16px 8px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #F0EDE8">
+        ${d.logoUrl
+          ? '<img src="' + d.logoUrl + '" style="height:40px;display:block" alt="초이스골프">'
+          : '<div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:8px;background:#2C2C2C;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#C9A268;flex-shrink:0">CG</div><div><div style="font-size:14px;font-weight:700;color:#111">' + (d.companyName||'초이스골프') + '</div><div style="font-size:9px;color:#444;letter-spacing:2px;text-transform:uppercase">' + (d.companyNameEn||'Choice Golf Tour') + '</div></div></div>'
+        }
+        <div style="font-size:11px;font-weight:600;color:#2C2C2C;letter-spacing:1px;border:1.5px solid #2C2C2C;padding:4px 12px;border-radius:20px">견적서</div>
       </div>
-      <div style="font-size:10px;color:#444;letter-spacing:1px;text-transform:uppercase;border:1px solid #D4D1CA;padding:4px 10px;border-radius:20px">견적서</div>
     </header>
 
     <!-- HERO -->
-    <div class="hero reveal" style="padding:40px 20px 36px;border-bottom:1px solid #E8E6E1;position:relative;overflow:hidden">
-      <div style="position:relative;z-index:1">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
-          <span style="width:24px;height:1px;background:#A07840;display:inline-block"></span>
-          <span style="font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#A07840;font-weight:500">Overseas Golf Tour Proposal</span>
-        </div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:clamp(28px,8vw,42px);font-weight:600;color:#111;line-height:1.15;margin-bottom:6px">${d.destination||''}</div>
-        <p style="font-size:13px;color:#444;margin-top:14px;line-height:1.75">세계가 인정한 명코스에서 잊을 수 없는 라운드를 경험하세요.</p>
-        <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:20px">
-          ${d.period ? `<div style="${chipS}">📅 ${d.period}</div>` : ''}
-          ${paxText ? `<div style="${chipS}">👤 ${paxText}</div>` : ''}
-          ${d.rounds ? `<div style="${chipS}">⛳ ${d.rounds}라운드</div>` : ''}
-          ${d.nights ? `<div style="${chipS}">🌙 ${d.nights}박 ${parseInt(d.nights)+1}일</div>` : ''}
-        </div>
-        ${d.customerName ? `<div style="margin-top:16px;padding:10px 14px;background:rgba(28,61,46,0.06);border-radius:10px;font-size:13px;color:#2A4A2E;font-weight:500">📋 ${d.customerName} 님 · ${paxText}</div>` : ''}
+    <div class="hero reveal" style="padding:36px 20px 32px;border-bottom:1px solid #E8E6E1;background:#2C2C2C">
+      <div style="font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:16px">Overseas Golf Tour Proposal</div>
+      <div style="font-size:34px;font-weight:900;color:white;line-height:1.15;letter-spacing:-0.5px;margin-bottom:8px">${d.destination||''}</div>
+      <div style="font-size:14px;color:rgba(255,255,255,0.55);margin-bottom:24px;font-weight:400">해외 골프투어 여행 견적서</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        ${d.customerName ? '<span style="' + badgeS + '">👤 ' + d.customerName + '님</span>' : ''}
+        ${d.period ? '<span style="' + badgeS + '">📅 ' + d.period + '</span>' : ''}
+        ${paxText ? '<span style="' + badgeS + '">👥 ' + paxText + '</span>' : ''}
+        ${d.nights ? '<span style="' + badgeS + '">🌙 ' + d.nights + '박 ' + (parseInt(d.nights)+1) + '일</span>' : ''}
+        ${d.agent ? '<span style="' + badgeS + '">📋 담당: ' + d.agent + '</span>' : ''}
       </div>
     </div>
 
-    <!-- 01 요금 안내 -->
-    <section class="reveal">
-      <div class="sec-hd"><span class="sec-n">01</span><span class="sec-t">여행 요금 안내</span><span class="sec-l"></span></div>
-      <div style="border:1px solid #E8E6E1;border-radius:16px;padding:20px;margin-bottom:16px;background:#FAFAF8;text-align:center">
-        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#888;margin-bottom:10px">패키지 요금</div>
-        <div style="font-size:24px;font-weight:700;color:#C0392B">${perPersonStr} / 인</div>
+    <!-- 01 상품 요약 -->
+    <section class="reveal" style="padding:36px 20px;border-bottom:1px solid #E8E6E1">
+      <div class="sec-title">01 &nbsp;상품 요약</div>
+
+      <div style="border:2px solid #2A4A5E;border-radius:10px;overflow:hidden;font-family:'Noto Sans KR',sans-serif">
+        ${d.customerName ? '<div style="display:flex;border-bottom:1px solid #D5D5D5"><div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">고객명</div><div style="flex:1;padding:10px 14px;font-size:14px;font-weight:600;color:#111">' + d.customerName + '</div><div style="min-width:56px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">인원</div><div style="min-width:70px;padding:10px 12px;font-size:14px;color:#111">' + (paxText||'-') + '</div></div>' : ''}
+        <div style="display:flex;border-bottom:1px solid #D5D5D5">
+          <div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">일정</div>
+          <div style="flex:1;padding:10px 14px;font-size:13px;color:#111">${d.period||'-'}${d.nights ? ' ('+d.nights+'박'+(parseInt(d.nights)+1)+'일)' : ''}</div>
+        </div>
+        <div style="display:flex;border-bottom:1px solid #D5D5D5">
+          <div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">항공</div>
+          <div style="flex:1;padding:10px 14px;font-size:13px;color:#111">${d.airlineName||'-'}</div>
+        </div>
+        ${(d.hotelQuickName||d.hotelName) ? '<div style="display:flex;border-bottom:1px solid #D5D5D5"><div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">호텔</div><div style="flex:1;padding:10px 14px;font-size:13px;color:#111">' + (d.hotelQuickName||d.hotelName||'') + '</div></div>' : ''}
+        ${d.agent ? '<div style="display:flex;border-bottom:1px solid #D5D5D5"><div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">담당자</div><div style="flex:1;padding:10px 14px;font-size:13px;color:#111">' + d.agent + '</div></div>' : ''}
+        <div style="display:flex">
+          <div style="min-width:76px;padding:12px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">요금</div>
+          <div style="flex:1;padding:12px 14px;font-size:20px;font-weight:800;color:#C0392B">₩${perPerson} / 인</div>
+        </div>
       </div>
-      ${extraPriceHTML ? `<div style="border:1px solid #E8E6E1;border-radius:12px;overflow:hidden;margin-bottom:14px">${extraPriceHTML}</div>` : ''}
-      ${d.priceNote ? `<div style="padding:12px 14px;background:#FFF9F0;border-left:2.5px solid #C9A268;border-radius:0 8px 8px 0;font-size:12px;color:#444;line-height:1.8">${noteLines}</div>` : ''}
+
+      ${extraPrices.length ? '<div style="border:1px solid #E8E6E1;border-radius:12px;overflow:hidden;margin-top:14px">' + extraPrices.map((ep,i) => '<div style="display:flex;justify-content:space-between;align-items:center;padding:11px 16px;border-bottom:1px solid #E8E6E1;background:' + (i%2===0?'white':'#FAFAF8') + '"><div style="font-size:13px;color:#111">' + ep.label + '</div><div style="font-size:15px;font-weight:600;color:#111;font-variant-numeric:tabular-nums">₩' + Number(ep.amount).toLocaleString() + '</div></div>').join('') + '</div>' : ''}
+
+      ${noteLines ? '<div style="padding:12px 14px;background:#FFF9F0;border-left:2.5px solid #C9A268;border-radius:0 8px 8px 0;font-size:12px;color:#444;line-height:1.8;margin-top:14px">' + noteLines + '</div>' : ''}
+
+      <!-- 포함 / 불포함 -->
+      ${incHTML || excHTML ? '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px"><div style="border-radius:12px;padding:16px;border:1px solid #E5E5E5;background:#F3FAF6"><div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#2C2C2C;margin-bottom:12px">✓ 포함</div><ul style="list-style:none">' + incHTML + '</ul></div><div style="border-radius:12px;padding:16px;border:1px solid #DFCAC9;background:#FDF4F4"><div style="font-size:11px;font-weight:700;letter-spacing:2px;color:#C0392B;margin-bottom:12px">✕ 불포함</div><ul style="list-style:none">' + excHTML + '</ul></div></div>' : ''}
     </section>
 
-    <!-- 02 상세 일정표 -->
-    <section class="reveal" style="background:#F8F7F5">
-      <div class="sec-hd"><span class="sec-n">02</span><span class="sec-t">상세 일정표</span><span class="sec-l"></span></div>
-      <div>${daysHTML}</div>
-      ${incHTML || excHTML ? `
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px">
-        <div style="border-radius:12px;padding:16px;border:1px solid #C4DFD0;background:#F3FAF6">
-          <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;color:#1C3D2E">포함</div>
-          <ul style="list-style:none">${incHTML}</ul>
-        </div>
-        <div style="border-radius:12px;padding:16px;border:1px solid #DFCAC9;background:#FDF4F4">
-          <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;color:#8B2E2E">불포함</div>
-          <ul style="list-style:none">${excHTML}</ul>
-        </div>
-      </div>` : ''}
+    <!-- 02 일정표 -->
+    <section class="reveal" style="padding:36px 20px;border-bottom:1px solid #E8E6E1;background:#F8F7F5">
+      <div class="sec-title">02 &nbsp;상세 일정표</div>
+      ${daysHTML}
     </section>
 
     <!-- 03 호텔 -->
-    ${d.hotelName ? `
-    <section class="reveal">
-      <div class="sec-hd"><span class="sec-n">03</span><span class="sec-t">숙박 호텔</span><span class="sec-l"></span></div>
-      <div style="border:1px solid #E8E6E1;border-radius:14px;overflow:hidden;background:white">
-        ${hotelPhotoEl}
-        <div style="padding:18px 18px 20px">
-          <div style="font-size:11px;color:#A07840;letter-spacing:1px;margin-bottom:6px">${starsStr}</div>
-          <div style="font-family:'Noto Serif KR',serif;font-size:17px;font-weight:600;color:#111;margin-bottom:4px;line-height:1.3">${d.hotelName||''}</div>
-          <div style="font-size:12px;color:#444;margin-bottom:12px">${d.hotelNameKr||''} · ${d.hotelRoom||''}</div>
-          ${d.hotelDesc ? `<div style="font-size:13px;color:#111;line-height:1.8;border-top:1px solid #E8E6E1;padding-top:12px">${d.hotelDesc}</div>` : ''}
-          ${hotelFacHTML ? `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px">${hotelFacHTML}</div>` : ''}
-        </div>
-      </div>
-    </section>` : ''}
+    ${d.hotelName ? '<section class="reveal" style="padding:36px 20px;border-bottom:1px solid #E8E6E1"><div class="sec-title">03 &nbsp;숙박 호텔</div><div style="border:1px solid #E8E6E1;border-radius:14px;overflow:hidden;background:white"><div style="position:relative">' + hotelPhotoEl + '<div style="position:absolute;bottom:10px;left:12px;background:rgba(0,0,0,0.55);color:white;font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px">' + (d.destination||'') + ' · ' + (d.hotelNights||'') + '박</div></div><div style="padding:18px 18px 20px"><div style="font-size:12px;color:#A07840;font-weight:700;letter-spacing:1px;margin-bottom:6px">' + starsStr + '</div><div style="font-size:18px;font-weight:700;color:#111;margin-bottom:4px;line-height:1.3">' + (d.hotelName||'') + '</div><div style="font-size:13px;color:#8A8A84;margin-bottom:14px">' + (d.hotelNameKr||'') + ((d.hotelNameKr&&d.hotelRoom)?' · ':'') + (d.hotelRoom||'') + '</div>' + (d.hotelDesc ? '<div style="font-size:13px;color:#444;line-height:1.8;border-top:1px solid #EDEBE6;padding-top:14px;margin-bottom:14px">' + d.hotelDesc + '</div>' : '') + '<div style="display:flex;flex-wrap:wrap;gap:6px">' + hotelFacHTML + '</div></div></div></section>' : ''}
 
     <!-- 04 골프장 -->
-    ${coursesHTML ? `
-    <section class="reveal" style="background:#F8F7F5">
-      <div class="sec-hd"><span class="sec-n">04</span><span class="sec-t">라운드 코스</span><span class="sec-l"></span></div>
-      <div>${coursesHTML}</div>
-    </section>` : ''}
+    ${coursesHTML ? '<section class="reveal" style="padding:36px 20px;border-bottom:1px solid #E8E6E1;background:#F8F7F5"><div class="sec-title">04 &nbsp;라운드 코스</div>' + coursesHTML + '</section>' : ''}
 
-    <!-- 05 예약 안내 (인보이스) -->
-    ${(d.deposit || d.bankAccount || d.cancelPolicy) ? `
-    <section class="reveal">
-      <div class="sec-hd"><span class="sec-n">05</span><span class="sec-t">예약 안내</span><span class="sec-l"></span></div>
-      ${d.deposit ? `
-      <div style="border:1px solid #E8E6E1;border-radius:12px;padding:16px;margin-bottom:12px;background:#FAFAF8">
-        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#888;margin-bottom:8px">예약금</div>
-        <div style="font-size:18px;font-weight:700;color:#C0392B">${d.deposit}</div>
-      </div>` : ''}
-      ${d.bankAccount ? `
-      <div style="border:1px solid #E8E6E1;border-radius:12px;padding:16px;margin-bottom:12px;background:#FAFAF8">
-        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#888;margin-bottom:8px">입금 계좌</div>
-        <div style="font-size:14px;font-weight:600;color:#111;line-height:1.8">${(d.bankAccount||'').replace(/\n/g,'<br>')}</div>
-      </div>` : ''}
-      ${d.cancelPolicy ? `
-      <div style="border:1px solid #E8E6E1;border-radius:12px;padding:16px;margin-bottom:12px;background:#FFF9F0">
-        <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#8B6020;margin-bottom:10px">취소 및 환불 규정</div>
-        <div style="font-size:12px;color:#444;line-height:1.9">${(d.cancelPolicy||'').replace(/\n/g,'<br>')}</div>
-      </div>` : ''}
-    </section>` : ''}
+    <!-- REMARK 참고 사항 -->
+    ${d.remark ? '<section class="reveal" style="padding:36px 20px;border-bottom:1px solid #E8E6E1"><div class="sec-title">📌 &nbsp;참고 사항</div><div style="border:1px solid #E8E6E1;border-radius:12px;padding:18px 20px;background:#FFFBF2;border-left:3px solid #C9A268;font-size:13px;color:#444;line-height:2">' + (d.remark||'').replace(/\n/g,'<br>') + '</div></section>' : ''}
+
+    <!-- 05 예약 안내 -->
+    ${(d.deposit || d.bankAccount || d.cancelPolicy) ? '<section class="reveal" style="padding:36px 20px;border-bottom:1px solid #E8E6E1"><div class="sec-title">05 &nbsp;예약 안내</div>' + (d.deposit ? '<div style="border:1px solid #E8E6E1;border-radius:12px;padding:16px;margin-bottom:12px;background:#FAFAF8"><div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#888;margin-bottom:8px">예약금</div><div style="font-size:18px;font-weight:700;color:#C0392B">' + d.deposit + '</div></div>' : '') + (d.bankAccount ? '<div style="border:1px solid #E8E6E1;border-radius:12px;padding:16px;margin-bottom:12px;background:#FAFAF8"><div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#888;margin-bottom:8px">입금 계좌</div><div style="font-size:14px;font-weight:600;color:#111;line-height:1.8">' + (d.bankAccount||'').replace(/\n/g,'<br>') + '</div></div>' : '') + (d.cancelPolicy ? '<div style="border:1px solid #E8E6E1;border-radius:12px;padding:16px;margin-bottom:12px;background:#FFF9F0"><div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#8B6020;margin-bottom:10px">취소 및 환불 규정</div><div style="font-size:12px;color:#444;line-height:1.9">' + (d.cancelPolicy||'').replace(/\n/g,'<br>') + '</div></div>' : '') + '</section>' : ''}
 
     <!-- 06 문의 -->
-    <div class="contact-sec reveal">
-      <div class="sec-hd"><span class="sec-n">06</span><span class="sec-t">문의 · 예약</span><span class="sec-l"></span></div>
+    <div class="contact-sec reveal" style="padding:36px 20px;border-bottom:1px solid #E8E6E1">
+      <div class="sec-title">06 &nbsp;문의 · 예약</div>
       <div style="border:1px solid #E8E6E1;border-radius:14px;overflow:hidden">
-        <a href="tel:${d.contactPhone||''}" style="display:flex;align-items:center;gap:14px;padding:15px 18px;border-bottom:1px solid #E8E6E1;text-decoration:none;color:inherit">
-          <div style="width:36px;height:36px;border-radius:10px;background:#E8F2EC;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">📞</div>
-          <div><div style="font-size:11px;color:#444;margin-bottom:2px">전화 문의</div><div style="font-family:'Noto Serif KR',serif;font-size:14px;font-weight:600;color:#111">${d.contactPhone||''}</div></div>
-          <div style="margin-left:auto;color:#444;font-size:18px">›</div>
+        <a href="tel:${d.contactPhone||''}" style="display:flex;align-items:center;gap:14px;padding:16px 18px;border-bottom:1px solid #E8E6E1;text-decoration:none;color:inherit">
+          <div style="width:40px;height:40px;border-radius:10px;background:#E8F2EC;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">📞</div>
+          <div><div style="font-size:11px;color:#8A8A84;margin-bottom:3px">전화 문의</div><div style="font-size:15px;font-weight:700;color:#111">${d.contactPhone||''}</div></div>
+          <div style="margin-left:auto;color:#8A8A84;font-size:20px">›</div>
         </a>
-        <div style="display:flex;align-items:center;gap:14px;padding:15px 18px">
-          <div style="width:36px;height:36px;border-radius:10px;background:#FEE500;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">💬</div>
-          <div><div style="font-size:11px;color:#444;margin-bottom:2px">카카오톡 채널</div><div style="font-family:'Noto Serif KR',serif;font-size:14px;font-weight:600;color:#111">${d.contactKakao||''}</div></div>
-          <div style="margin-left:auto;color:#444;font-size:18px">›</div>
+        <div style="display:flex;align-items:center;gap:14px;padding:16px 18px">
+          <div style="width:40px;height:40px;border-radius:10px;background:#FEE500;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">💬</div>
+          <div><div style="font-size:11px;color:#8A8A84;margin-bottom:3px">카카오톡 채널</div><div style="font-size:15px;font-weight:700;color:#111">${d.contactKakao||''}</div></div>
+          <div style="margin-left:auto;color:#8A8A84;font-size:20px">›</div>
         </div>
       </div>
     </div>
 
-    <!-- FOOTER (회사정보 하단) -->
-    <footer class="site-footer" style="padding:28px 20px 80px;text-align:center;background:#F4F3F0;border-top:1px solid #E8E6E1">
-      ${d.logoUrl ? `<img src="${d.logoUrl}" style="height:32px;object-fit:contain;margin-bottom:10px">` : `<div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:#111;letter-spacing:.5px;margin-bottom:4px">${d.companyName||'초이스골프'}</div>`}
-      <div style="font-size:11px;color:#444;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px">${d.companyNameEn||'Choice Golf Tour'}</div>
-      <div style="font-size:10px;color:#888;line-height:2">
-        <span style="font-weight:600;color:#555">(주)초이스골프</span>&nbsp;|&nbsp;☎ 1533-3160 / 02-545-5055<br>
+    <!-- FOOTER -->
+    <footer style="padding:28px 20px 80px;text-align:center;background:#2C2C2C">
+      <div style="font-size:16px;font-weight:700;color:white;margin-bottom:4px">${d.companyName||'초이스골프'}</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">${d.companyNameEn||'Choice Golf Tour'}</div>
+      <div style="font-size:10px;color:rgba(255,255,255,0.5);line-height:2">
+        <span style="font-weight:600;color:rgba(255,255,255,0.7)">(주)초이스골프</span>&nbsp;|&nbsp;☎ 1533-3160 / 02-545-5055<br>
         사업자등록 594-88-03010&nbsp;|&nbsp;관광사업 제2025-000011호<br>
         통신판매업 제2025-서울중구-213호
-        ${d.quoteDate ? `<br>견적발송일: ${d.quoteDate}` : ''}
+        ${d.quoteDate ? '<br>견적발송일: ' + d.quoteDate : ''}
       </div>
     </footer>
 
     <!-- SHARE BAR -->
-    <div class="share-bar">
-      <button class="share-btn btn-kakao" onclick="shareKakao()">💬 카카오톡 공유</button>
-      <button class="share-btn btn-link" onclick="copyLink()">🔗 링크 복사</button>
+    <div class="share-bar" style="position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,0.97);backdrop-filter:blur(14px);border-top:1px solid #E8E6E1;padding:12px 20px 20px;display:flex;gap:10px;z-index:200;box-sizing:border-box">
+      <button onclick="shareKakao()" class="share-btn" style="display:flex;align-items:center;justify-content:center;gap:7px;padding:13px 0;border-radius:12px;font-size:13px;font-weight:600;border:none;cursor:pointer;flex:1;background:#FEE500;color:#3A1D1D;font-family:'Noto Sans KR',sans-serif">💬 카카오톡 공유</button>
+      <button onclick="copyLink()" class="share-btn" style="display:flex;align-items:center;justify-content:center;gap:7px;padding:13px 0;border-radius:12px;font-size:13px;font-weight:600;border:none;cursor:pointer;flex:1;background:#2C2C2C;color:white;font-family:'Noto Sans KR',sans-serif">🔗 링크 복사</button>
     </div>
   `;
 
