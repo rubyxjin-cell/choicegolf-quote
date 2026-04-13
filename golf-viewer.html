@@ -168,6 +168,8 @@ function renderPage(d) {
 
   // ── 국기
   const CFI = {'일본':'jp','중국':'cn','대만':'tw','태국':'th','베트남':'vn','필리핀':'ph','인도네시아':'id','말레이시아':'my','캄보디아':'kh','미국':'us','호주':'au','싱가포르':'sg'};
+  const AIRLINE_LOGOS = {'대한항공':'https://pics.avs.io/60/60/KE.png','아시아나항공':'https://pics.avs.io/60/60/OZ.png','진에어':'https://pics.avs.io/60/60/LJ.png','제주항공':'https://pics.avs.io/60/60/7C.png','티웨이항공':'https://pics.avs.io/60/60/TW.png','에어부산':'https://pics.avs.io/60/60/BX.png','에어서울':'https://pics.avs.io/60/60/RS.png','이스타항공':'https://pics.avs.io/60/60/ZE.png','피치항공':'https://pics.avs.io/60/60/MM.png'};
+  const airlineLogoUrl = AIRLINE_LOGOS[d.airlineName] || '';
   const cfCode = CFI[d.category] || '';
   const countryFlag = cfCode ? '<img src="https://flagcdn.com/w40/' + cfCode + '.png" style="height:20px;vertical-align:middle;border-radius:2px;margin-right:4px" alt="">' : '';
 
@@ -314,17 +316,17 @@ function renderPage(d) {
       <div class="sec-title">01 &nbsp;상품 요약</div>
 
       <div style="border:2px solid #2A4A5E;border-radius:10px;overflow:hidden;font-family:'Noto Sans KR',sans-serif">
-        ${d.customerName ? '<div style="display:flex;border-bottom:1px solid #D5D5D5"><div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;text-align:center;letter-spacing:3px">수 신</div><div style="flex:1;padding:10px 14px;font-size:14px;font-weight:700;color:#000;text-align:center">' + d.customerName + '</div></div>' : ''}
-        ${d.agent ? '<div style="display:flex;border-bottom:1px solid #D5D5D5"><div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;text-align:center;letter-spacing:3px">담 당 자</div><div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000;text-align:center">' + d.agent + '</div></div>' : ''}
+        ${d.customerName ? '<div style="display:flex;border-bottom:1px solid #D5D5D5"><div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;text-align:center;letter-spacing:3px">수 신</div><div style="flex:1;padding:10px 14px;font-size:14px;font-weight:700;color:#000">' + d.customerName + '</div></div>' : ''}
+        ${d.agent ? '<div style="display:flex;border-bottom:1px solid #D5D5D5"><div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;text-align:center;letter-spacing:3px">담 당</div><div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000">' + d.agent + '</div></div>' : ''}
         <div style="display:flex;border-bottom:1px solid #D5D5D5">
           <div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;text-align:center;letter-spacing:3px">항 공</div>
-          <div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000;text-align:center">${d.airlineName||'-'}</div>
+          <div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000">${airlineLogoUrl ? '<img src="'+airlineLogoUrl+'" style="width:20px;height:20px;border-radius:3px;object-fit:contain;vertical-align:middle;margin-right:6px">' : ''}${d.airlineName||'-'}</div>
         </div>
-        ${(d.hotelQuickName||d.hotelName) ? '<div style="display:flex;border-bottom:1px solid #D5D5D5"><div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;text-align:center;letter-spacing:3px">호 텔</div><div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000;text-align:center">' + (d.hotelQuickName||d.hotelName||'') + '</div></div>' : ''}
-        ${d.period ? '<div style="display:flex;border-bottom:1px solid #D5D5D5"><div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;text-align:center;letter-spacing:3px">일 정</div><div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000;text-align:center">' + d.period + (d.nights ? ' (' + d.nights + '박' + (parseInt(d.nights)+1) + '일)' : '') + '</div></div>' : ''}
+        ${(d.hotelQuickName||d.hotelName) ? '<div style="display:flex;border-bottom:1px solid #D5D5D5"><div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;text-align:center;letter-spacing:3px">호 텔</div><div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000">' + (d.hotelQuickName||d.hotelName||'') + '</div></div>' : ''}
+        ${d.period ? '<div style="display:flex;border-bottom:1px solid #D5D5D5"><div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;text-align:center;letter-spacing:3px">일 정</div><div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000">' + d.period + (d.nights ? ' (' + d.nights + '박' + (parseInt(d.nights)+1) + '일)' : '') + '</div></div>' : ''}
         <div style="display:flex">
           <div style="min-width:76px;padding:12px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;text-align:center;letter-spacing:3px">요 금</div>
-          <div style="flex:1;padding:12px 14px;font-size:20px;font-weight:800;color:#C0392B;text-align:center">₩${perPerson} / 인</div>
+          <div style="flex:1;padding:12px 14px;font-size:20px;font-weight:800;color:#C0392B">₩${perPerson} / 인</div>
         </div>
       </div>
 
