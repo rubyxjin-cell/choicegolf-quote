@@ -929,9 +929,15 @@ select option{background:white;color:var(--ink)}
     <button class="modal-close" onclick="closeLibModal()">✕</button>
     <div class="modal-title" id="libModalTitle">📚 새 항목 등록</div>
 
-    <div class="field" style="margin-bottom:14px">
-      <label>이름 *</label>
-      <input type="text" id="libName" placeholder="" style="background:var(--input-bg);border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;font-size:13px;width:100%;font-family:'Noto Sans KR',sans-serif;outline:none">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+      <div class="field">
+        <label>영문명 *</label>
+        <input type="text" id="libName" style="background:var(--input-bg);border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;font-size:13px;width:100%;font-family:'Noto Sans KR',sans-serif;outline:none">
+      </div>
+      <div class="field">
+        <label>한글명</label>
+        <input type="text" id="libNameKr" style="background:var(--input-bg);border:1.5px solid var(--line);border-radius:8px;padding:9px 12px;font-size:13px;width:100%;font-family:'Noto Sans KR',sans-serif;outline:none">
+      </div>
     </div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px" id="libCountryRegionGrid">
@@ -3459,7 +3465,7 @@ function libItemCard(item) {
   return `<div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;margin-bottom:8px;background:var(--white)">
     <div style="flex-shrink:0">${photoEl}${extraPhotos}</div>
     <div onclick="openLibItemModal('${item.id}')" style="flex:1;min-width:0;cursor:pointer" title="클릭하여 수정">
-      <div style="font-size:14px;font-weight:600;color:var(--ink);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${item.name}</div>
+      <div style="font-size:14px;font-weight:600;color:var(--ink);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${item.name}${item.name_kr ? ' <span style="font-weight:400;color:var(--ink2)">'+item.name_kr+'</span>' : ''}</div>
       <div style="font-size:11px;color:var(--ink3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${item.description||''}</div>
       ${photoCount > 0 ? '<div style="font-size:10px;color:var(--gold);margin-top:3px">📷 ' + photoCount + '장</div>' : ''}
     </div>
@@ -3506,6 +3512,7 @@ async function openLibItemModal(id) {
   libState.editingId = id;
   libState.photos = ['','','',''];
   document.getElementById('libName').value = '';
+  document.getElementById('libNameKr').value = '';
   document.getElementById('libDesc').value = '';
   document.getElementById('libTags').value = '';
   const libCountryEl = document.getElementById('libCountry');
@@ -3524,6 +3531,7 @@ async function openLibItemModal(id) {
       const [item] = await res.json();
       if (item) {
         document.getElementById('libName').value = item.name || '';
+        document.getElementById('libNameKr').value = item.name_kr || '';
         document.getElementById('libDesc').value = item.description || '';
         document.getElementById('libTags').value = (item.tags || []).join(', ');
         if (libCountryEl) {
@@ -3618,7 +3626,8 @@ async function uploadLibPhoto(file) {
 /* ─── Save Library Item ─── */
 async function saveLibItem() {
   const name = document.getElementById('libName').value.trim();
-  if (!name) { showToast('❌ 이름을 입력해주세요'); return; }
+  if (!name) { showToast('❌ 영문명을 입력해주세요'); return; }
+  const name_kr = document.getElementById('libNameKr').value.trim();
   const photos = libState.photos.filter(u => u);
   const tags = document.getElementById('libTags').value.split(',').map(t=>t.trim()).filter(Boolean);
   const description = document.getElementById('libDesc').value.trim();
@@ -3626,7 +3635,7 @@ async function saveLibItem() {
   const region = document.getElementById('libRegion') ? document.getElementById('libRegion').value.trim() : '';
   const payload = {
     category: libState.currentCat,
-    name, description, tags, photos,
+    name, name_kr, description, tags, photos,
     ...(country ? { country } : {}),
     ...(region ? { region } : {})
   };
@@ -3722,7 +3731,7 @@ function renderPickerGrid(items) {
     return `
       <div class="picker-card" id="pc_${item.id}" onclick="togglePickerCard('${item.id}')">
         ${photoEl}
-        <div class="picker-card-name">${item.name}</div>
+        <div class="picker-card-name">${item.name}${item.name_kr ? '<br><span style="font-size:11px;color:var(--ink3)">'+item.name_kr+'</span>' : ''}</div>
       </div>`;
   }).join('');
 }
