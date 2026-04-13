@@ -147,7 +147,7 @@ function renderPage(d) {
   // ── 국기
   const CFI = {'일본':'jp','중국':'cn','대만':'tw','태국':'th','베트남':'vn','필리핀':'ph','인도네시아':'id','말레이시아':'my','캄보디아':'kh','미국':'us','호주':'au','싱가포르':'sg'};
   const cfCode = CFI[d.category] || '';
-  const countryFlag = cfCode ? '<img src="https://flagcdn.com/40x30/' + cfCode + '.png" style="height:20px;vertical-align:middle;border-radius:2px;margin-right:4px" alt="">' : '';
+  const countryFlag = cfCode ? '<img src="https://flagcdn.com/w40/' + cfCode + '.png" style="height:20px;vertical-align:middle;border-radius:2px;margin-right:4px" alt="">' : '';
 
   // ── 날짜 계산용
   const dayLabels = ['1일차','2일차','3일차','4일차','5일차','6일차','7일차','8일차','9일차','10일차'];
