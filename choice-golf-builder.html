@@ -897,6 +897,12 @@ const state = {
 
 /* ═══ 국가 플래그 매핑 (Windows에서 국기 이모지 미지원으로 제거) ═══ */
 const COUNTRY_FLAGS = {'일본':'🇯🇵','중국':'🇨🇳','대만':'🇹🇼','태국':'🇹🇭','베트남':'🇻🇳','필리핀':'🇵🇭','인도네시아':'🇮🇩','말레이시아':'🇲🇾','캄보디아':'🇰🇭','괌/사이판':'🌺','미국':'🇺🇸','호주':'🇦🇺','뉴질랜드':'🇳🇿','싱가포르':'🇸🇬','라오스':'🇱🇦','미얀마':'🇲🇲','몽골':'🇲🇳','하와이':'🌺'};
+const COUNTRY_FLAG_IMG = {'일본':'jp','중국':'cn','대만':'tw','태국':'th','베트남':'vn','필리핀':'ph','인도네시아':'id','말레이시아':'my','캄보디아':'kh','미국':'us','호주':'au','뉴질랜드':'nz','싱가포르':'sg','라오스':'la','미얀마':'mm','몽골':'mn'};
+function flagImg(country, size=20) {
+  const code = COUNTRY_FLAG_IMG[country];
+  if (!code) return '';
+  return `<img src="https://flagcdn.com/${size*2}x${Math.round(size*1.5)}/${code}.png" style="height:${size}px;vertical-align:middle;border-radius:2px;margin-right:4px" alt="${country}">`;
+}
 
 let currentRegion = '';
 
@@ -1603,7 +1609,7 @@ function generateHTML(d) {
   const perPerson = d.pricePerPerson ? d.pricePerPerson.toLocaleString() : '—';
   const perPersonMan = d.pricePerPerson ? Math.round(d.pricePerPerson/10000) + '만' : '—';
   const starsStr = d.hotelStars ? '★'.repeat(parseInt(d.hotelStars)) : '';
-  const countryFlag = COUNTRY_FLAGS[d.category] || '';
+  const countryFlag = flagImg(d.category, 20);
   const dayLabels = ['1일차','2일차','3일차','4일차','5일차','6일차','7일차','8일차','9일차','10일차'];
 
   // 일정표 HTML
