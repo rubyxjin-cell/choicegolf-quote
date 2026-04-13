@@ -1033,6 +1033,9 @@ function newProduct() {
 }
 
 function clearForm() {
+  // 견적서 모드 초기화
+  state.quoteMode = false;
+  state.currentQuoteId = null;
   const ids = ['destination','airport','dateFrom','dateTo','rounds','quoteDate','agent','agentTeam',
     'pricePerPerson','priceNote','priceNoFlight','priceChild','priceInfant','remark','hotelQuickName','airlineName',
     'hotelName','hotelNameKr','hotelRoom','hotelNights','hotelDesc',
