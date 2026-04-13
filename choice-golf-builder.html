@@ -390,6 +390,7 @@ select option{background:white;color:var(--ink)}
           <div style="flex:1"></div>
           <div style="display:flex;gap:6px;flex-wrap:wrap">
             <button onclick="saveConfirmation()" style="background:var(--gold);color:white;border:none;padding:7px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">💾 확정서 저장</button>
+            <button onclick="openConfPreview()" style="background:#6366F1;color:white;border:none;padding:7px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">👁 미리보기</button>
             <button onclick="publishConfirmation()" style="background:#DC2626;color:white;border:none;padding:7px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">🔗 링크 생성</button>
             <button onclick="switchTab('confirmations')" style="background:#F5F5F5;color:var(--ink2);border:1.5px solid rgba(255,255,255,0.3);padding:7px 12px;border-radius:7px;font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif">✕ 목록</button>
           </div>
@@ -468,6 +469,7 @@ select option{background:white;color:var(--ink)}
       <!-- 하단 버튼 -->
       <div style="display:flex;gap:10px;margin-bottom:32px">
         <button onclick="saveConfirmation()" style="flex:1;background:var(--gold);color:white;border:none;padding:13px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">💾 확정서 저장</button>
+        <button onclick="openConfPreview()" style="flex:1;background:#6366F1;color:white;border:none;padding:13px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">👁 미리보기</button>
         <button onclick="publishConfirmation()" style="flex:1;background:#DC2626;color:white;border:none;padding:13px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">🔗 링크 생성</button>
       </div>
     </div>
@@ -4344,6 +4346,103 @@ async function publishConfirmation() {
   if (navigator.clipboard) { await navigator.clipboard.writeText(link); }
   else { const ta=document.createElement('textarea');ta.value=link;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta); }
   showToast('✅ 확정서 링크 복사 완료!');
+}
+
+function openConfPreview() {
+  const d = collectConfData();
+  const html = generateConfHTML(d);
+  const blob = new Blob([html], {type:'text/html'});
+  window.open(URL.createObjectURL(blob), '_blank');
+  showToast('🎉 확정서 미리보기가 열렸습니다!');
+}
+
+function generateConfHTML(d) {
+  const dayNames = ['일','월','화','수','목','금','토'];
+  const pCT = (t) => {
+    if(!t)return t||'';
+    return t.replace(/\[([^\]]+?)\](.+?)\[\1\]/g,(m,tag,c)=>{
+      const map={'빨강':'#E53E3E','빨간':'#E53E3E','빨간색':'#E53E3E','레드':'#E53E3E','red':'#E53E3E','파랑':'#2563EB','파란':'#2563EB','블루':'#2563EB','blue':'#2563EB','초록':'#059669','녹색':'#059669','그린':'#059669','green':'#059669','노랑':'#D97706','노란':'#D97706','주황':'#EA580C','오렌지':'#EA580C','보라':'#7C3AED','퍼플':'#7C3AED','분홍':'#EC4899','핑크':'#EC4899','하늘':'#0EA5E9','갈색':'#92400E','회색':'#6B7280'};
+      const h=map[tag.toLowerCase()]||map[tag];return h?'<span style="color:'+h+';font-weight:700">'+c+'</span>':m;
+    });
+  };
+
+  // 일정표
+  const daysHTML = (d.days||[]).map((day,i) => {
+    let ds='';
+    if(d.dateFrom){const dt=new Date(d.dateFrom);dt.setDate(dt.getDate()+i);ds=' ('+(dt.getMonth()+1)+'/'+dt.getDate()+' '+dayNames[dt.getDay()]+')';}
+    const label='Day '+(i+1)+ds;
+    const badges=[];
+    if(day.meeting) badges.push('<span style="display:inline-block;background:#1D4ED8;color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-right:6px">🤝 '+day.meeting+'</span>');
+    if(day.teeoff) badges.push('<span style="display:inline-block;background:#059669;color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px">⛳ '+day.teeoff+'</span>');
+    const badgeRow=badges.length?'<div style="padding:8px 14px;background:#F0FFF4;border-bottom:1px solid #E8E6E1">'+badges.join('')+'</div>':'';
+    const items=(day.items||[]).map((it,ri)=>{
+      const bg=ri%2===0?'':'background:#FAFAF8';
+      return '<tr style="'+bg+'"><td style="border-bottom:1px solid #E8E6E1;padding:7px 8px;font-size:12px;color:#A07840;font-weight:700;text-align:center;width:58px">'+(it.time||'')+'</td><td style="border-bottom:1px solid #E8E6E1;padding:7px 14px;font-size:13px;color:#222;line-height:1.6">'+pCT(it.text||'')+'</td></tr>';
+    }).join('');
+    const meals=day.meals||{};const mi=[];
+    if(meals.bf)mi.push('🍳 '+meals.bf);if(meals.lunch)mi.push('🍜 '+meals.lunch);if(meals.dinner)mi.push('🍽 '+meals.dinner);
+    const mealRow=mi.length?'<tr><td colspan="2" style="padding:8px 14px;background:#FFF9F0;font-size:12px;color:#92400E;font-weight:600">'+mi.join(' │ ')+'</td></tr>':'';
+    return '<div style="border:1.5px solid #1B5E20;border-radius:10px;overflow:hidden;margin-bottom:12px"><div style="background:#1B5E20;padding:10px 16px;font-size:14px;font-weight:800;color:white">'+label+'</div>'+badgeRow+'<table style="width:100%;border-collapse:collapse">'+items+mealRow+'</table></div>';
+  }).join('');
+
+  // 날씨
+  const weatherHTML=(d.weather||[]).filter(Boolean).length?'<div style="margin:24px 0"><div style="font-size:12px;font-weight:700;letter-spacing:2px;color:#1B5E20;margin-bottom:14px;text-align:center">🌤 날씨 정보</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;text-align:center">'+(d.weather||[]).map((w,i)=>{let ds='Day '+(i+1);if(d.dateFrom){const dt=new Date(d.dateFrom);dt.setDate(dt.getDate()+i);ds=(dt.getMonth()+1)+'/'+dt.getDate();}return '<div style="border:1px solid #E8E6E1;border-radius:8px;padding:10px 6px;background:white"><div style="font-size:10px;color:#888;font-weight:600;margin-bottom:4px">'+ds+'</div><div style="font-size:13px;font-weight:700;color:#111">'+(w||'-')+'</div></div>';}).join('')+'</div></div>':'';
+
+  // 안내문
+  const gS=(icon,title,content)=>!content?'':'<div style="border:1px solid #E8E6E1;border-radius:12px;padding:16px;margin-bottom:12px;background:white"><div style="font-size:12px;font-weight:700;color:#1B5E20;margin-bottom:8px">'+icon+' '+title+'</div><div style="font-size:13px;color:#222;line-height:1.9;font-weight:500">'+pCT(content.replace(/\n/g,'<br>'))+'</div></div>';
+  const guideHTML=(d.airportGuide||d.transportGuide||d.cautions||d.extraGuide)?'<div style="margin:24px 0;padding:20px;background:#F8F7F5;border-radius:14px"><div style="font-size:12px;font-weight:700;letter-spacing:2px;color:#1B5E20;margin-bottom:14px;text-align:center">📋 현지 안내문</div>'+gS('✈️','공항 안내',d.airportGuide)+gS('🚌','교통 안내',d.transportGuide)+gS('⚠️','주의사항',d.cautions)+gS('📝','기타 안내',d.extraGuide)+'</div>':'';
+
+  // 긴급연락처
+  const ci=[];
+  if(d.guideName||d.guidePhone) ci.push('<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F0F0F0"><span style="font-weight:600">🧑‍✈️ 현지 가이드</span><span style="color:#1B5E20;font-weight:700">'+(d.guideName||'')+' '+(d.guidePhone||'')+'</span></div>');
+  if(d.localEmergency) ci.push('<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F0F0F0"><span style="font-weight:600">🆘 현지 긴급</span><span style="color:#C0392B;font-weight:700">'+d.localEmergency+'</span></div>');
+  if(d.krEmergency) ci.push('<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F0F0F0"><span style="font-weight:600">📞 한국 비상</span><span style="font-weight:700">'+d.krEmergency+'</span></div>');
+  if(d.embassy) ci.push('<div style="display:flex;justify-content:space-between;padding:10px 0"><span style="font-weight:600">🏛 대사관</span><span style="font-weight:700">'+d.embassy+'</span></div>');
+  const contactHTML=ci.length?'<div style="margin:24px 0"><div style="font-size:12px;font-weight:700;letter-spacing:2px;color:#C0392B;margin-bottom:14px;text-align:center">🚨 긴급 연락처</div><div style="border:1.5px solid #C0392B;border-radius:12px;padding:16px;background:#FDF6F6;font-size:13px">'+ci.join('')+'</div></div>':'';
+
+  return `<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>${d.companyName||'초이스골프'} — ${d.destination||''} 확정서</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">
+<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Noto Sans KR',sans-serif;background:#F5F4F0;display:flex;justify-content:center}
+.wrap{max-width:500px;width:100%;background:white;min-height:100vh;box-shadow:0 0 40px rgba(0,0,0,.08)}</style></head><body>
+<div class="wrap">
+  <!-- HERO -->
+  <div style="background:linear-gradient(135deg,#1B5E20,#2E7D32);padding:48px 24px 36px;text-align:center;position:relative;overflow:hidden">
+    <div style="position:absolute;inset:0;opacity:0.06;background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22><circle cx=%2220%22 cy=%2220%22 r=%222%22 fill=%22white%22/></svg>');background-size:40px 40px"></div>
+    <div style="position:relative">
+      <div style="display:inline-block;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);padding:4px 16px;border-radius:20px;font-size:11px;font-weight:700;color:rgba(255,255,255,0.9);letter-spacing:2px;margin-bottom:16px">✅ 출발 확정서</div>
+      <div style="font-family:'Noto Serif KR',serif;font-size:clamp(20px,5.5vw,28px);font-weight:700;color:white;line-height:1.35">${pCT(d.destination||'')}</div>
+      <div style="margin-top:12px;font-size:13px;color:rgba(255,255,255,0.8)">${d.customer||''} 님${d.pax?' · '+d.pax:''}</div>
+    </div>
+  </div>
+
+  <!-- 기본정보 -->
+  <div style="padding:24px 20px;border-bottom:1px solid #E8E6E1">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px">
+      ${d.dateFrom?'<div style="border:1px solid #E8E6E1;border-radius:8px;padding:12px;background:white"><div style="font-size:10px;font-weight:700;color:#888;margin-bottom:4px">출발일</div><div style="font-weight:700;color:#111">'+d.dateFrom+'</div></div>':''}
+      ${d.hotel?'<div style="border:1px solid #E8E6E1;border-radius:8px;padding:12px;background:white"><div style="font-size:10px;font-weight:700;color:#888;margin-bottom:4px">호텔</div><div style="font-weight:700;color:#111">'+d.hotel+'</div></div>':''}
+      ${d.airline?'<div style="border:1px solid #E8E6E1;border-radius:8px;padding:12px;background:white"><div style="font-size:10px;font-weight:700;color:#888;margin-bottom:4px">항공</div><div style="font-weight:700;color:#111">'+d.airline+'</div></div>':''}
+      ${d.contactPhone?'<div style="border:1px solid #E8E6E1;border-radius:8px;padding:12px;background:white"><div style="font-size:10px;font-weight:700;color:#888;margin-bottom:4px">담당자</div><div style="font-weight:700;color:#111">'+d.contactPhone+'</div></div>':''}
+    </div>
+  </div>
+
+  <!-- 확정 일정표 -->
+  <div style="padding:24px 20px;border-bottom:1px solid #E8E6E1;background:#F8F7F5">
+    <div style="font-size:12px;font-weight:700;letter-spacing:2px;color:#1B5E20;margin-bottom:14px;text-align:center">📋 확정 일정표</div>
+    ${daysHTML}
+  </div>
+
+  ${weatherHTML}
+  ${guideHTML}
+  ${contactHTML}
+
+  <!-- 푸터 -->
+  <div style="padding:30px 20px;background:#1B5E20;text-align:center">
+    <div style="font-size:16px;font-weight:700;color:white;margin-bottom:4px">${d.companyName||'초이스골프'}</div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:2px">${d.companyNameEn||'Choice Golf Tour'}</div>
+    ${d.contactPhone?'<div style="margin-top:8px;font-size:13px;color:rgba(255,255,255,0.8)">📞 '+d.contactPhone+'</div>':''}
+  </div>
+</div></body></html>`;
 }
 
 async function editConfirmation(id) {
