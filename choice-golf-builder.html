@@ -285,6 +285,9 @@ select option{background:white;color:var(--ink)}
         <span class="sidebar-item-icon">📋</span> 고객견적서
         <span class="sidebar-badge" id="quoteBadge" style="display:none">0</span>
       </div>
+      <div class="sidebar-item" onclick="switchTab('confirmations')" id="tab-confirmations">
+        <span class="sidebar-item-icon">✅</span> 확정서
+      </div>
     </div>
     <div class="sidebar-section">
       <div class="sidebar-label">상품소개서</div>
@@ -362,6 +365,110 @@ select option{background:white;color:var(--ink)}
         <div id="quoteListWrap">
           <div style="text-align:center;padding:40px;color:var(--ink3);font-size:13px">로딩 중...</div>
         </div>
+      </div>
+    </div>
+
+    <!-- ④-2 확정서 목록 -->
+    <div class="tab-panel" id="panel-confirmations">
+      <div class="form-card">
+        <div class="form-card-title" style="justify-content:space-between">
+          <span><span class="form-card-title-icon">✅</span> 확정서 목록</span>
+          <button onclick="newConfirmation()" style="background:var(--gold);color:white;border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">+ 새 확정서</button>
+        </div>
+        <div style="font-size:12px;color:var(--ink3);margin-bottom:16px">계약완료 견적서에서 불러오거나, 새로 작성할 수 있습니다.</div>
+        <div id="confListWrap">
+          <div style="text-align:center;padding:40px;color:var(--ink3);font-size:13px">로딩 중...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ④-3 확정서 편집기 -->
+    <div class="tab-panel" id="panel-conf-edit">
+      <div class="form-card" style="background:linear-gradient(135deg,#1B5E20,#2E7D32);border:none;margin-bottom:16px;padding:14px 20px 12px">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px">
+          <div style="font-size:10px;letter-spacing:2px;color:rgba(255,255,255,0.5)" id="confBannerLabel">새 확정서</div>
+          <div style="flex:1"></div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button onclick="saveConfirmation()" style="background:var(--gold);color:white;border:none;padding:7px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">💾 확정서 저장</button>
+            <button onclick="publishConfirmation()" style="background:#DC2626;color:white;border:none;padding:7px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">🔗 링크 생성</button>
+            <button onclick="switchTab('confirmations')" style="background:#F5F5F5;color:var(--ink2);border:1.5px solid rgba(255,255,255,0.3);padding:7px 12px;border-radius:7px;font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif">✕ 목록</button>
+          </div>
+        </div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.9);font-weight:600" id="confTitle">—</div>
+      </div>
+
+      <!-- 견적서에서 불러오기 -->
+      <div class="form-card" style="margin-bottom:12px;padding:12px 16px;border:1.5px dashed var(--gold);background:#FFFBF2">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <span style="font-size:13px;font-weight:600;color:#A07840">📋 계약완료 견적서에서 불러오기:</span>
+          <select id="confQuoteSelect" style="flex:1;min-width:200px;padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;font-size:13px;font-family:'Noto Sans KR',sans-serif">
+            <option value="">선택...</option>
+          </select>
+          <button onclick="loadConfFromQuote()" style="background:var(--gold);color:white;border:none;padding:8px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">불러오기</button>
+        </div>
+      </div>
+
+      <!-- ① 기본 정보 -->
+      <div class="form-card" style="margin-bottom:12px">
+        <div style="font-size:14px;font-weight:700;color:#1B5E20;margin-bottom:12px;border-bottom:2px solid #1B5E20;padding-bottom:4px">① 기본 정보</div>
+        <div class="form-row col2" style="margin-bottom:8px">
+          <div class="field"><label>고객명</label><input type="text" id="cf_customer" placeholder="홍길동"></div>
+          <div class="field"><label>인원</label><input type="text" id="cf_pax" placeholder="4인"></div>
+        </div>
+        <div class="field" style="margin-bottom:8px"><label>상품명</label><input type="text" id="cf_destination" placeholder="[일본] 구마모토 골프투어"></div>
+        <div class="form-row col2" style="margin-bottom:8px">
+          <div class="field"><label>출발일</label><input type="date" id="cf_dateFrom" onchange="generateConfDays()"></div>
+          <div class="field"><label>여행일수</label><select id="cf_nights" onchange="generateConfDays()" style="width:100%;padding:8px;border:1.5px solid var(--line);border-radius:8px;font-size:13px;font-family:'Noto Sans KR',sans-serif"><option value="">선택</option><option value="2,3">2박3일</option><option value="3,4">3박4일</option><option value="3,5">3박5일(항공박)</option><option value="4,5">4박5일</option><option value="4,6">4박6일(항공박)</option><option value="5,6">5박6일</option></select></div>
+        </div>
+        <div class="form-row col2">
+          <div class="field"><label>호텔</label><input type="text" id="cf_hotel" placeholder="호텔명"></div>
+          <div class="field"><label>항공편</label><input type="text" id="cf_airline" placeholder="진에어 LJ201"></div>
+        </div>
+      </div>
+
+      <!-- ② 확정 일정표 -->
+      <div class="form-card" style="margin-bottom:12px">
+        <div style="font-size:14px;font-weight:700;color:#1B5E20;margin-bottom:12px;border-bottom:2px solid #1B5E20;padding-bottom:4px">② 확정 일정표</div>
+        <div id="confDayBlocks">
+          <div style="text-align:center;padding:20px;color:var(--ink3);font-size:13px">출발일과 여행일수를 선택하면 일정이 생성됩니다.</div>
+        </div>
+      </div>
+
+      <!-- ③ 현지 안내문 -->
+      <div class="form-card" style="margin-bottom:12px">
+        <div style="font-size:14px;font-weight:700;color:#1B5E20;margin-bottom:12px;border-bottom:2px solid #1B5E20;padding-bottom:4px">③ 현지 안내문</div>
+        <div class="field" style="margin-bottom:10px"><label>✈️ 공항 안내</label><textarea id="cf_airportGuide" placeholder="출국 절차, 미팅 장소, 수하물 안내 등..." style="min-height:80px"></textarea></div>
+        <div class="field" style="margin-bottom:10px"><label>🚌 교통 안내</label><textarea id="cf_transportGuide" placeholder="현지 이동 수단, 픽업 정보, 차량 안내 등..." style="min-height:80px"></textarea></div>
+        <div class="field" style="margin-bottom:10px"><label>⚠️ 주의사항</label><textarea id="cf_cautions" placeholder="현지 주의사항, 복장 안내, 팁 문화, 매너 등..." style="min-height:80px"></textarea></div>
+        <div class="field"><label>📝 기타 안내</label><textarea id="cf_extraGuide" placeholder="환전, 면세, 쇼핑, 추천 맛집 등..." style="min-height:80px"></textarea></div>
+      </div>
+
+      <!-- ④ 날씨 정보 -->
+      <div class="form-card" style="margin-bottom:12px">
+        <div style="font-size:14px;font-weight:700;color:#1B5E20;margin-bottom:12px;border-bottom:2px solid #1B5E20;padding-bottom:4px">④ 날씨 정보</div>
+        <div id="confWeatherBlocks">
+          <div style="text-align:center;padding:20px;color:var(--ink3);font-size:13px">출발일 선택 후 자동 생성됩니다.</div>
+        </div>
+      </div>
+
+      <!-- ⑤ 긴급 연락처 -->
+      <div class="form-card" style="margin-bottom:12px">
+        <div style="font-size:14px;font-weight:700;color:#1B5E20;margin-bottom:12px;border-bottom:2px solid #1B5E20;padding-bottom:4px">⑤ 긴급 연락처</div>
+        <div class="form-row col2" style="margin-bottom:8px">
+          <div class="field"><label>현지 가이드 이름</label><input type="text" id="cf_guideName" placeholder="김가이드"></div>
+          <div class="field"><label>현지 가이드 연락처</label><input type="text" id="cf_guidePhone" placeholder="+81-90-1234-5678"></div>
+        </div>
+        <div class="form-row col2" style="margin-bottom:8px">
+          <div class="field"><label>현지 긴급 연락처</label><input type="text" id="cf_localEmergency" placeholder="경찰 110 / 앰뷸런스 119"></div>
+          <div class="field"><label>한국 비상 연락처</label><input type="text" id="cf_krEmergency" placeholder="02-545-5055"></div>
+        </div>
+        <div class="field"><label>대사관/영사관</label><input type="text" id="cf_embassy" placeholder="주일본대한민국대사관 03-3452-7611"></div>
+      </div>
+
+      <!-- 하단 버튼 -->
+      <div style="display:flex;gap:10px;margin-bottom:32px">
+        <button onclick="saveConfirmation()" style="flex:1;background:var(--gold);color:white;border:none;padding:13px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">💾 확정서 저장</button>
+        <button onclick="publishConfirmation()" style="flex:1;background:#DC2626;color:white;border:none;padding:13px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif">🔗 링크 생성</button>
       </div>
     </div>
 
@@ -997,6 +1104,7 @@ function switchTab(name) {
     fetchLibrary();
   }
   if (name === 'quotes') fetchQuotes();
+  if (name === 'confirmations') fetchConfirmations();
   if (name === 'settings') renderSettings();
   // scroll to top
   document.querySelector('.content').scrollTop = 0;
@@ -4003,6 +4111,298 @@ function showSaveConfirm(title, msg, icon) {
 }
 function closeSaveConfirm() {
   document.getElementById('saveConfirmModal').style.display = 'none';
+}
+
+/* ════════════════════════════════════════
+   확정서 (CONFIRMATION) SYSTEM
+════════════════════════════════════════ */
+let confState = { currentId: null, days: 0 };
+
+async function fetchConfirmations() {
+  const wrap = document.getElementById('confListWrap');
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/quotes?select=id,data,created_at&order=created_at.desc`, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+    });
+    const rows = await res.json();
+    const confs = (rows||[]).filter(r => r.data && r.data.docType === 'confirmation');
+    if (!confs.length) { wrap.innerHTML = '<div style="text-align:center;padding:40px;color:var(--ink3)">등록된 확정서가 없습니다.</div>'; return; }
+    wrap.innerHTML = confs.map(r => {
+      const d = r.data;
+      const date = new Date(r.created_at).toLocaleDateString('ko-KR');
+      return `<div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border:1.5px solid #D5D5D5;border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all .15s;background:white" onmouseover="this.style.borderColor='#1B5E20'" onmouseout="this.style.borderColor='#D5D5D5'">
+        <div style="flex:1" onclick="editConfirmation('${r.id}')">
+          <div style="font-size:14px;font-weight:700;color:#111">${d.destination||'확정서'}</div>
+          <div style="font-size:12px;color:var(--ink3);margin-top:2px">${d.customer||''} · ${d.dateFrom||''} · ${date}</div>
+        </div>
+        <button onclick="event.stopPropagation();deleteConfirmation('${r.id}')" style="background:none;border:none;color:var(--ink3);cursor:pointer;font-size:14px;padding:4px 8px;border-radius:6px" title="삭제">🗑</button>
+      </div>`;
+    }).join('');
+  } catch(e) { wrap.innerHTML = '<div style="color:red;padding:20px">오류: '+e.message+'</div>'; }
+}
+
+function newConfirmation() {
+  confState.currentId = null;
+  document.getElementById('confBannerLabel').textContent = '새 확정서';
+  document.getElementById('confTitle').textContent = '—';
+  ['cf_customer','cf_pax','cf_destination','cf_dateFrom','cf_hotel','cf_airline','cf_airportGuide','cf_transportGuide','cf_cautions','cf_extraGuide','cf_guideName','cf_guidePhone','cf_localEmergency','cf_krEmergency','cf_embassy'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+  document.getElementById('cf_nights').value = '';
+  document.getElementById('confDayBlocks').innerHTML = '<div style="text-align:center;padding:20px;color:var(--ink3);font-size:13px">출발일과 여행일수를 선택하면 일정이 생성됩니다.</div>';
+  document.getElementById('confWeatherBlocks').innerHTML = '';
+  loadConfirmedQuoteOptions();
+  switchTab('conf-edit');
+}
+
+async function loadConfirmedQuoteOptions() {
+  const sel = document.getElementById('confQuoteSelect');
+  sel.innerHTML = '<option value="">선택...</option>';
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/quotes?select=id,data,created_at&order=created_at.desc`, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+    });
+    const rows = await res.json();
+    (rows||[]).filter(r => r.data && r.data.status === 'confirmed' && r.data.docType !== 'confirmation').forEach(r => {
+      const d = r.data;
+      const opt = document.createElement('option');
+      opt.value = r.id;
+      opt.textContent = `${d.destination||'?'} — ${d.customerName||d.customer||''}`;
+      sel.appendChild(opt);
+    });
+  } catch(e) {}
+}
+
+async function loadConfFromQuote() {
+  const qid = document.getElementById('confQuoteSelect').value;
+  if (!qid) { showToast('견적서를 선택해주세요'); return; }
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/quotes?id=eq.${qid}&select=data`, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+    });
+    const rows = await res.json();
+    if (!rows||!rows[0]) { showToast('❌ 불러오기 실패'); return; }
+    const d = rows[0].data;
+    document.getElementById('cf_customer').value = d.customerName || d.customer || '';
+    document.getElementById('cf_pax').value = d.pax || '';
+    document.getElementById('cf_destination').value = d.destination || '';
+    document.getElementById('cf_dateFrom').value = d.dateFrom || '';
+    document.getElementById('cf_hotel').value = d.hotelQuickName || d.hotelName || '';
+    document.getElementById('cf_airline').value = d.airlineName || '';
+    // 여행일수 매칭
+    if (d.days && d.days.length) {
+      const totalDays = d.days.length;
+      const selOpts = document.getElementById('cf_nights').options;
+      for (let i=0;i<selOpts.length;i++) {
+        if (selOpts[i].value && parseInt(selOpts[i].value.split(',')[1]) === totalDays) {
+          document.getElementById('cf_nights').value = selOpts[i].value; break;
+        }
+      }
+      generateConfDays(d.days);
+    }
+    document.getElementById('confTitle').textContent = d.destination || '확정서';
+    showToast('✅ 견적서 데이터를 불러왔습니다');
+  } catch(e) { showToast('❌ 오류: '+e.message); }
+}
+
+function generateConfDays(existingDays) {
+  const from = document.getElementById('cf_dateFrom').value;
+  const nightsVal = document.getElementById('cf_nights').value;
+  if (!from || !nightsVal) return;
+  const totalDays = parseInt(nightsVal.split(',')[1]);
+  confState.days = totalDays;
+  const dayNames = ['일','월','화','수','목','금','토'];
+  const wrap = document.getElementById('confDayBlocks');
+  wrap.innerHTML = '';
+  const wWrap = document.getElementById('confWeatherBlocks');
+  wWrap.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px">';
+  for (let i=0;i<totalDays;i++) {
+    const dt = new Date(from); dt.setDate(dt.getDate()+i);
+    const dayStr = `Day ${i+1} (${dt.getMonth()+1}/${dt.getDate()} ${dayNames[dt.getDay()]})`;
+    const ed = existingDays && existingDays[i];
+    const items = (ed && ed.items) || [{time:'',text:''}];
+    const itemsHTML = items.map((it,idx) =>
+      `<div class="conf-sched-row" style="display:flex;gap:6px;margin-bottom:4px;align-items:center">
+        <input type="text" placeholder="09:00" value="${it.time||''}" style="width:60px;padding:6px 8px;border:1.5px solid #D5D5D5;border-radius:6px;font-size:12px;font-family:'Noto Sans KR',sans-serif;text-align:center" data-cf-time>
+        <input type="text" placeholder="일정 내용 ([빨강]텍스트[빨강]=색상)" value="${it.text||''}" style="flex:1;padding:6px 8px;border:1.5px solid #D5D5D5;border-radius:6px;font-size:12px;font-family:'Noto Sans KR',sans-serif" data-cf-text>
+        <button onclick="this.parentElement.remove()" style="background:none;border:none;color:#CCC;cursor:pointer;font-size:12px">✕</button>
+      </div>`
+    ).join('');
+    wrap.innerHTML += `<div class="conf-day-block" style="border:1.5px solid #D5D5D5;border-radius:10px;overflow:hidden;margin-bottom:10px" data-conf-day="${i}">
+      <div style="background:#2A4A5E;padding:8px 14px;color:white;font-size:13px;font-weight:700">${dayStr}${ed&&ed.title?' — '+ed.title:''}</div>
+      <div style="padding:12px">
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <div class="field" style="flex:1"><label style="font-size:12px">🤝 미팅시간/장소</label><input type="text" placeholder="07:30 호텔 로비" data-cf-meeting value="${''}"></div>
+          <div class="field" style="flex:1"><label style="font-size:12px">⛳ 티옵시간</label><input type="text" placeholder="08:06 OUT" data-cf-teeoff value="${''}"></div>
+        </div>
+        <div style="font-size:11px;font-weight:700;color:#2A4A5E;margin-bottom:4px">📋 세부 일정</div>
+        <div class="conf-sched-items">${itemsHTML}</div>
+        <button onclick="addConfSchedItem(this)" style="width:100%;border:1.5px dashed #D5D5D5;background:none;padding:6px;border-radius:6px;font-size:11px;color:var(--ink3);cursor:pointer;font-family:'Noto Sans KR',sans-serif;margin-top:4px">+ 일정 추가</button>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <div class="field" style="flex:1"><label style="font-size:12px">🍳 조식</label><input type="text" placeholder="" data-cf-bf value="${(ed&&ed.meals&&ed.meals.bf)||''}"></div>
+          <div class="field" style="flex:1"><label style="font-size:12px">🍜 중식</label><input type="text" placeholder="" data-cf-lunch value="${(ed&&ed.meals&&ed.meals.lunch)||''}"></div>
+          <div class="field" style="flex:1"><label style="font-size:12px">🍽 석식</label><input type="text" placeholder="" data-cf-dinner value="${(ed&&ed.meals&&ed.meals.dinner)||''}"></div>
+        </div>
+      </div>
+    </div>`;
+    wWrap.innerHTML += `<div style="border:1.5px solid #D5D5D5;border-radius:8px;padding:10px;text-align:center">
+      <div style="font-size:11px;font-weight:700;color:#2A4A5E;margin-bottom:6px">${dayStr}</div>
+      <input type="text" placeholder="☀️ 25°C" data-cf-weather="${i}" style="width:100%;padding:6px;border:1.5px solid #D5D5D5;border-radius:6px;font-size:12px;text-align:center;font-family:'Noto Sans KR',sans-serif">
+    </div>`;
+  }
+  wWrap.innerHTML += '</div>';
+}
+
+function addConfSchedItem(btn) {
+  const container = btn.previousElementSibling;
+  container.insertAdjacentHTML('beforeend', `<div class="conf-sched-row" style="display:flex;gap:6px;margin-bottom:4px;align-items:center">
+    <input type="text" placeholder="09:00" style="width:60px;padding:6px 8px;border:1.5px solid #D5D5D5;border-radius:6px;font-size:12px;font-family:'Noto Sans KR',sans-serif;text-align:center" data-cf-time>
+    <input type="text" placeholder="일정 내용" style="flex:1;padding:6px 8px;border:1.5px solid #D5D5D5;border-radius:6px;font-size:12px;font-family:'Noto Sans KR',sans-serif" data-cf-text>
+    <button onclick="this.parentElement.remove()" style="background:none;border:none;color:#CCC;cursor:pointer;font-size:12px">✕</button>
+  </div>`);
+}
+
+function collectConfData() {
+  const v = id => document.getElementById(id)?.value || '';
+  const days = [];
+  document.querySelectorAll('.conf-day-block').forEach((block, i) => {
+    const items = [];
+    block.querySelectorAll('.conf-sched-row').forEach(row => {
+      const time = row.querySelector('[data-cf-time]')?.value || '';
+      const text = row.querySelector('[data-cf-text]')?.value || '';
+      if (time||text) items.push({time,text});
+    });
+    days.push({
+      num: i+1,
+      meeting: block.querySelector('[data-cf-meeting]')?.value || '',
+      teeoff: block.querySelector('[data-cf-teeoff]')?.value || '',
+      items,
+      meals: {
+        bf: block.querySelector('[data-cf-bf]')?.value || '',
+        lunch: block.querySelector('[data-cf-lunch]')?.value || '',
+        dinner: block.querySelector('[data-cf-dinner]')?.value || '',
+      }
+    });
+  });
+  const weather = [];
+  document.querySelectorAll('[data-cf-weather]').forEach(el => weather.push(el.value||''));
+  return {
+    docType: 'confirmation',
+    customer: v('cf_customer'), pax: v('cf_pax'), destination: v('cf_destination'),
+    dateFrom: v('cf_dateFrom'), nights: v('cf_nights'), hotel: v('cf_hotel'), airline: v('cf_airline'),
+    days, weather,
+    airportGuide: v('cf_airportGuide'), transportGuide: v('cf_transportGuide'),
+    cautions: v('cf_cautions'), extraGuide: v('cf_extraGuide'),
+    guideName: v('cf_guideName'), guidePhone: v('cf_guidePhone'),
+    localEmergency: v('cf_localEmergency'), krEmergency: v('cf_krEmergency'), embassy: v('cf_embassy'),
+    companyName: document.getElementById('companyName')?.value || '초이스골프',
+    companyNameEn: document.getElementById('companyNameEn')?.value || 'Choice Golf Tour',
+    logoUrl: document.getElementById('logoUrl')?.value || '',
+    contactPhone: document.getElementById('contactPhone')?.value || '',
+  };
+}
+
+async function saveConfirmation() {
+  const d = collectConfData();
+  if (!d.destination) { showToast('상품명을 입력해주세요'); return; }
+  try {
+    if (confState.currentId) {
+      await fetch(`${SUPABASE_URL}/rest/v1/quotes?id=eq.${confState.currentId}`, {
+        method: 'PATCH', headers: { 'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}` },
+        body: JSON.stringify({ data: d })
+      });
+    } else {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/quotes`, {
+        method: 'POST', headers: { 'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`,'Prefer':'return=representation' },
+        body: JSON.stringify({ data: d })
+      });
+      const rows = await res.json();
+      if (rows&&rows[0]) confState.currentId = rows[0].id;
+    }
+    document.getElementById('confBannerLabel').textContent = '확정서 수정';
+    document.getElementById('confTitle').textContent = d.destination;
+    showToast('✅ 확정서 저장 완료');
+  } catch(e) { showToast('❌ 오류: '+e.message); }
+}
+
+async function publishConfirmation() {
+  await saveConfirmation();
+  if (!confState.currentId) return;
+  const link = `${VIEWER_BASE}?id=${confState.currentId}`;
+  if (navigator.clipboard) { await navigator.clipboard.writeText(link); }
+  else { const ta=document.createElement('textarea');ta.value=link;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta); }
+  showToast('✅ 확정서 링크 복사 완료!');
+}
+
+async function editConfirmation(id) {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/quotes?id=eq.${id}&select=data`, {
+      headers: { 'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}` }
+    });
+    const rows = await res.json();
+    if (!rows||!rows[0]) { showToast('❌ 불러오기 실패'); return; }
+    confState.currentId = id;
+    const d = rows[0].data;
+    loadConfData(d);
+    loadConfirmedQuoteOptions();
+    switchTab('conf-edit');
+  } catch(e) { showToast('❌ '+e.message); }
+}
+
+function loadConfData(d) {
+  document.getElementById('confBannerLabel').textContent = '확정서 수정';
+  document.getElementById('confTitle').textContent = d.destination||'—';
+  const set = (id,val) => { const el=document.getElementById(id); if(el) el.value=val||''; };
+  set('cf_customer',d.customer); set('cf_pax',d.pax); set('cf_destination',d.destination);
+  set('cf_dateFrom',d.dateFrom); set('cf_nights',d.nights); set('cf_hotel',d.hotel); set('cf_airline',d.airline);
+  set('cf_airportGuide',d.airportGuide); set('cf_transportGuide',d.transportGuide);
+  set('cf_cautions',d.cautions); set('cf_extraGuide',d.extraGuide);
+  set('cf_guideName',d.guideName); set('cf_guidePhone',d.guidePhone);
+  set('cf_localEmergency',d.localEmergency); set('cf_krEmergency',d.krEmergency); set('cf_embassy',d.embassy);
+  if (d.dateFrom && d.nights) {
+    generateConfDays(d.days);
+    // 확정 일정 세부 데이터 복원
+    if (d.days) {
+      document.querySelectorAll('.conf-day-block').forEach((block,i) => {
+        const day = d.days[i];
+        if (!day) return;
+        const meetEl = block.querySelector('[data-cf-meeting]'); if(meetEl) meetEl.value = day.meeting||'';
+        const teeEl = block.querySelector('[data-cf-teeoff]'); if(teeEl) teeEl.value = day.teeoff||'';
+        if (day.meals) {
+          const bf=block.querySelector('[data-cf-bf]'); if(bf) bf.value=day.meals.bf||'';
+          const lu=block.querySelector('[data-cf-lunch]'); if(lu) lu.value=day.meals.lunch||'';
+          const di=block.querySelector('[data-cf-dinner]'); if(di) di.value=day.meals.dinner||'';
+        }
+        // 일정 아이템 복원
+        const schedWrap = block.querySelector('.conf-sched-items');
+        if (day.items && day.items.length && schedWrap) {
+          schedWrap.innerHTML = day.items.map(it =>
+            `<div class="conf-sched-row" style="display:flex;gap:6px;margin-bottom:4px;align-items:center">
+              <input type="text" value="${it.time||''}" placeholder="09:00" style="width:60px;padding:6px 8px;border:1.5px solid #D5D5D5;border-radius:6px;font-size:12px;font-family:'Noto Sans KR',sans-serif;text-align:center" data-cf-time>
+              <input type="text" value="${it.text||''}" placeholder="일정 내용" style="flex:1;padding:6px 8px;border:1.5px solid #D5D5D5;border-radius:6px;font-size:12px;font-family:'Noto Sans KR',sans-serif" data-cf-text>
+              <button onclick="this.parentElement.remove()" style="background:none;border:none;color:#CCC;cursor:pointer;font-size:12px">✕</button>
+            </div>`
+          ).join('');
+        }
+      });
+    }
+    // 날씨 복원
+    if (d.weather) {
+      d.weather.forEach((w,i) => {
+        const el = document.querySelector(`[data-cf-weather="${i}"]`);
+        if (el) el.value = w;
+      });
+    }
+  }
+}
+
+async function deleteConfirmation(id) {
+  if (!confirm('이 확정서를 삭제할까요?')) return;
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/quotes?id=eq.${id}`, {
+      method: 'DELETE', headers: { 'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}` }
+    });
+    showToast('🗑 삭제 완료');
+    fetchConfirmations();
+  } catch(e) { showToast('❌ '+e.message); }
 }
 </script>
 </body>
