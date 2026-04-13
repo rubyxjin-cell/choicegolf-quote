@@ -185,10 +185,10 @@ function renderPage(d) {
 
   // ── 포함/불포함
   const incHTML = (d.includes || []).map(t =>
-    '<li style="font-size:13px;color:#111;padding:5px 0">✓ ' + t + '</li>'
+    '<li style="font-size:13px;color:#111;padding:5px 0">· ' + t + '</li>'
   ).join('');
   const excHTML = (d.excludes || []).map(t =>
-    '<li style="font-size:13px;color:#111;padding:5px 0">✕ ' + t + '</li>'
+    '<li style="font-size:13px;color:#111;padding:5px 0">· ' + t + '</li>'
   ).join('');
 
   // ── 호텔 편의시설
@@ -300,7 +300,7 @@ function renderPage(d) {
       ${noteLines ? '<div style="padding:12px 14px;background:#FFF9F0;border-left:2.5px solid #C9A268;border-radius:0 8px 8px 0;font-size:12px;color:#444;line-height:1.8;margin-top:14px">' + noteLines + '</div>' : ''}
 
       <!-- 포함 / 불포함 -->
-      ${incHTML || excHTML ? '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px"><div style="border-radius:10px;padding:16px;border:1.5px solid #2A4A5E;background:#F7FAFA"><div style="font-size:12px;font-weight:700;letter-spacing:2px;color:#2A4A5E;margin-bottom:10px;text-align:center">포 함</div><ul style="list-style:none;margin:0;padding:0">' + incHTML + '</ul></div><div style="border-radius:10px;padding:16px;border:1.5px solid #C0392B;background:#FDF6F6"><div style="font-size:12px;font-weight:700;letter-spacing:2px;color:#C0392B;margin-bottom:10px;text-align:center">불포함</div><ul style="list-style:none;margin:0;padding:0">' + excHTML + '</ul></div></div>' : ''}
+      ${incHTML || excHTML ? '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px"><div style="border-radius:10px;padding:16px;border:1.5px solid #2A4A5E;background:#F7FAFA"><div style="font-size:12px;font-weight:700;letter-spacing:2px;color:#2A4A5E;margin-bottom:10px;text-align:center">✓ 포 함</div><ul style="list-style:none;margin:0;padding:0">' + incHTML + '</ul></div><div style="border-radius:10px;padding:16px;border:1.5px solid #C0392B;background:#FDF6F6"><div style="font-size:12px;font-weight:700;letter-spacing:2px;color:#C0392B;margin-bottom:10px;text-align:center">✕ 불포함</div><ul style="list-style:none;margin:0;padding:0">' + excHTML + '</ul></div></div>' : ''}
 
       ${d.remark ? '<div style="margin-top:20px;border:1.5px solid #2A4A5E;border-radius:10px;padding:18px 20px;background:#F7FAFA"><div style="font-size:12px;font-weight:700;letter-spacing:2px;color:#2A4A5E;margin-bottom:10px;text-align:center">REMARK</div><div style="font-size:13px;color:#111;line-height:1.9">' + (d.remark||'').replace(/\n/g,'<br>') + '</div></div>' : ''}
     </section>
