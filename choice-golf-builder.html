@@ -1791,7 +1791,7 @@ function generateHTML(d) {
     if(meals.bf) mealItems.push('조식: ' + meals.bf);
     if(meals.lunch) mealItems.push('중식: ' + meals.lunch);
     if(meals.dinner) mealItems.push('석식: ' + meals.dinner);
-    const mealRow = mealItems.length ? '<tr><td colspan="2" style="padding:0"><div style="margin:8px 10px;border:1.5px solid #D4A843;border-radius:8px;padding:10px 14px;background:#FFF9F0;font-size:12px;color:#92400E;font-weight:700">' + mealItems.join(' &nbsp;│&nbsp; ') + '</div></td></tr>' : '';
+    const mealRow = mealItems.length ? '<tr><td colspan="2" style="padding:0"><div style="margin:8px 10px;border:1.5px solid #D4A843;border-radius:8px;padding:10px 14px;background:#FFF9F0;font-size:12px;color:#92400E;font-weight:700;text-align:center">' + mealItems.join(' &nbsp;│&nbsp; ') + '</div></td></tr>' : '';
 
     // 호텔 정보 렌더링 (고급 테두리로 구분)
     const hotelRow = day.hotelStay ? '<tr><td colspan="2" style="padding:0"><div style="margin:8px 10px;border:2px solid #1D4ED8;border-radius:8px;padding:10px 14px;background:#F0F6FF;display:flex;align-items:center;gap:8px"><span style="display:inline-block;background:#1D4ED8;color:white;font-size:10px;font-weight:700;padding:3px 10px;border-radius:4px;letter-spacing:1px">HOTEL</span><span style="font-size:13px;font-weight:700;color:#1D4ED8">' + day.hotelStay + '</span></div></td></tr>' : '';
@@ -4453,7 +4453,7 @@ function generateConfHTML(d) {
     const badgeRow=badges.length?'<div style="padding:8px 14px;background:#F0FFF4;border-bottom:1px solid #E8E6E1;display:flex;flex-wrap:wrap;gap:6px">'+badges.join('')+'</div>':'';
     const items=(day.items||[]).map((it,ri)=>{const bg=ri%2===0?'':'background:#FAFAF8';return '<tr style="'+bg+'"><td style="border-bottom:1px solid #D5D5D5;padding:8px 8px;font-size:12px;color:#A07840;font-weight:700;text-align:center;vertical-align:top">'+(it.time||'')+'</td><td style="border-bottom:1px solid #D5D5D5;padding:8px 14px;font-size:13px;color:#222;line-height:1.6;word-break:keep-all">'+pCT(it.text||'')+'</td></tr>';}).join('');
     const meals=day.meals||{};const mi=[];if(meals.bf)mi.push('조식: '+meals.bf);if(meals.lunch)mi.push('중식: '+meals.lunch);if(meals.dinner)mi.push('석식: '+meals.dinner);
-    const mealRow=mi.length?'<tr><td colspan="2" style="padding:0"><div style="margin:8px 10px;border:1.5px solid #D4A843;border-radius:8px;padding:10px 14px;background:#FFF9F0;font-size:12px;color:#92400E;font-weight:700">'+mi.join(' │ ')+'</div></td></tr>':'';
+    const mealRow=mi.length?'<tr><td colspan="2" style="padding:0"><div style="margin:8px 10px;border:1.5px solid #D4A843;border-radius:8px;padding:10px 14px;background:#FFF9F0;font-size:12px;color:#92400E;font-weight:700;text-align:center">'+mi.join(' │ ')+'</div></td></tr>':'';
     return '<div style="border:1.5px solid #2A6B3C;border-radius:10px;overflow:hidden;margin-bottom:12px"><div style="background:#2A4A5E;padding:10px 16px;font-size:14px;font-weight:800;color:white">'+label+'</div>'+badgeRow+'<table style="width:100%;border-collapse:collapse;table-layout:fixed"><colgroup><col style="width:58px"><col></colgroup><tr><th style="'+thS+';text-align:center">시간</th><th style="'+thS+';text-align:center">일정</th></tr>'+items+mealRow+'</table></div>';
   }).join('');
 
