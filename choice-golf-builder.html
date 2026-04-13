@@ -106,13 +106,15 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
 
 /* ── DAY BLOCKS ── */
 .day-blocks{display:flex;flex-direction:column;gap:16px}
-.day-block{background:var(--input-bg);border:1.5px solid var(--line);border-radius:12px;overflow:hidden}
-.day-block-header{display:flex;align-items:center;gap:12px;padding:14px 16px;background:var(--white);border-bottom:1px solid var(--line)}
-.day-block-num{background:var(--accent);color:white;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:.5px}
-.day-block-title-input{flex:1;background:transparent;border:none;font-size:14px;font-weight:500;color:var(--ink);font-family:'Noto Sans KR',sans-serif;outline:none}
-.day-block-del{background:none;border:none;cursor:pointer;color:var(--ink3);font-size:16px;padding:4px;border-radius:6px;transition:all .15s}
-.day-block-del:hover{background:#FEE;color:var(--red)}
-.day-block-body{padding:16px}
+.day-block{background:#FFFFFF;border:2px solid #2A6B3C;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.day-block-header{display:flex;align-items:center;gap:12px;padding:12px 16px;background:#2A4A5E;border-bottom:none}
+.day-block-num{background:#FFFFFF;color:#2A4A5E;font-size:12px;font-weight:800;padding:5px 12px;border-radius:20px;letter-spacing:.5px}
+.day-block-title-input{flex:1;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:6px;padding:5px 10px;font-size:13px;font-weight:500;color:#FFFFFF;font-family:'Noto Sans KR',sans-serif;outline:none}
+.day-block-title-input::placeholder{color:rgba(255,255,255,0.5)}
+.day-block-title-input:focus{background:rgba(255,255,255,0.25);border-color:rgba(255,255,255,0.6)}
+.day-block-del{background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.6);font-size:16px;padding:4px;border-radius:6px;transition:all .15s}
+.day-block-del:hover{background:rgba(255,0,0,0.2);color:#FFF}
+.day-block-body{padding:16px;background:#FAFCFA}
 
 .golf-toggle-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:10px 12px;background:rgba(28,61,46,0.05);border-radius:8px}
 .golf-toggle-label{font-size:13px;color:var(--ink2);flex:1}
@@ -126,21 +128,22 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
 .golf-fields{background:rgba(28,61,46,0.04);border-radius:8px;padding:14px;margin-bottom:14px;display:none}
 .golf-fields.show{display:block}
 
-.schedule-item{display:grid;grid-template-columns:60px 60px 60px 1fr 30px 28px;gap:6px;align-items:center;margin-bottom:5px}
-.schedule-item input{background:var(--white);border:1.5px solid var(--line);border-radius:6px;padding:6px 8px;font-size:12px;color:var(--ink);font-family:'Noto Sans KR',sans-serif;outline:none;transition:border-color .15s}
-.schedule-item input:focus{border-color:var(--accent)}
+.schedule-item{display:grid;grid-template-columns:60px 60px 60px 1fr 30px 28px;gap:6px;align-items:center;margin-bottom:6px;padding:6px 8px;background:#FFFFFF;border:1.5px solid #D5D5D5;border-radius:8px}
+.schedule-item input{background:#F8F8F6;border:1.5px solid #C8C8C8;border-radius:6px;padding:7px 8px;font-size:12px;color:var(--ink);font-family:'Noto Sans KR',sans-serif;outline:none;transition:border-color .15s,background .15s}
+.schedule-item input:focus{border-color:#2A6B3C;background:#FAFFFE}
 .schedule-item-del{background:none;border:none;cursor:pointer;color:var(--ink3);font-size:14px;display:flex;align-items:center;justify-content:center;border-radius:4px;transition:all .15s;width:28px;height:28px}
 .schedule-item-del:hover{background:#FEE;color:var(--red)}
 .sched-color-btn{width:30px;height:30px;border-radius:6px;border:1.5px solid var(--line);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;background:var(--input-bg)}
-.day-meals{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:8px 0;padding:10px 12px;background:#F8FFF8;border-radius:8px;border:1px solid #D4EDDA}
+.day-meals{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:0 0 12px;padding:12px 12px;background:#F0F9F0;border-radius:8px;border:1.5px solid #B8DCBA}
 .day-meal-field{display:flex;flex-direction:column;gap:4px}
-.day-meal-field label{font-size:10px;font-weight:700;color:#1C7A3E;letter-spacing:.5px;text-transform:uppercase}
-.day-meal-field input{background:white;border:1px solid #D4EDDA;border-radius:6px;padding:5px 8px;font-size:12px;font-family:'Noto Sans KR',sans-serif;outline:none;color:var(--ink)}
-.day-meal-field input:focus{border-color:#4CAF50}
+.day-meal-field label{font-size:11px;font-weight:700;color:#1C7A3E;letter-spacing:.5px}
+.day-meal-field input{background:white;border:1.5px solid #B8DCBA;border-radius:6px;padding:7px 8px;font-size:12px;font-family:'Noto Sans KR',sans-serif;outline:none;color:var(--ink)}
+.day-meal-field input:focus{border-color:#2E8B57;background:#F5FFF8}
 .day-meal-field input::placeholder{color:#A0C8A0}
-.day-hotel-row{display:flex;align-items:center;gap:8px;padding:7px 10px;background:#F0F6FF;border-radius:8px;border:1px solid #C7DEFF;margin-top:6px}
-.day-hotel-row label{font-size:12px;color:#1D4ED8;font-weight:600;white-space:nowrap}
-.day-hotel-row input{flex:1;background:white;border:1px solid #C7DEFF;border-radius:6px;padding:5px 8px;font-size:12px;font-family:'Noto Sans KR',sans-serif;outline:none;color:var(--ink)}
+.day-hotel-row{display:flex;align-items:center;gap:8px;padding:9px 12px;background:#EBF2FF;border-radius:8px;border:1.5px solid #A8C4F0;margin-top:10px}
+.day-hotel-row label{font-size:12px;color:#1D4ED8;font-weight:700;white-space:nowrap}
+.day-hotel-row input{flex:1;background:white;border:1.5px solid #A8C4F0;border-radius:6px;padding:7px 8px;font-size:12px;font-family:'Noto Sans KR',sans-serif;outline:none;color:var(--ink)}
+.day-hotel-row input:focus{border-color:#1D4ED8;background:#F5F8FF}
 
 /* ── TAGS INPUT ── */
 .tags-wrap{display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:var(--input-bg);border:1.5px solid var(--line);border-radius:8px;padding:8px 10px;min-height:42px;cursor:text;transition:border-color .15s}
@@ -1188,7 +1191,7 @@ function autoGenDays() {
   }
 
   const from = document.getElementById('dateFrom')?.value;
-  if (!from || !val) return;
+  if (!val) return;
 
   let nights, totalDays;
   if (val === 'custom') {
@@ -1206,21 +1209,24 @@ function autoGenDays() {
     totalDays = parseInt(parts[1]);
   }
 
-  // 귀국일 자동계산
-  const fromDate = new Date(from);
-  const toDate = new Date(fromDate);
-  toDate.setDate(fromDate.getDate() + (totalDays - 1));
-  const toDateStr = toDate.toISOString().split('T')[0];
-  const toEl = document.getElementById('dateTo');
-  if (toEl) toEl.value = toDateStr;
+  // 귀국일 자동계산 (출발일이 있을 때만)
+  if (from) {
+    const fromDate = new Date(from);
+    const toDate = new Date(fromDate);
+    toDate.setDate(fromDate.getDate() + (totalDays - 1));
+    const toDateStr = toDate.toISOString().split('T')[0];
+    const toEl = document.getElementById('dateTo');
+    if (toEl) toEl.value = toDateStr;
+  }
 
   // 기존 일정 초기화
   document.getElementById('dayBlocks').innerHTML = '';
   dayCount = 0;
 
   const isLong = nights >= 30;
+  const fromDate = from ? new Date(from) : null;
 
-  if (isLong) {
+  if (isLong && fromDate) {
     // 30박 이상: 압축 표시
     addDay({ title: '', sub: '' }, 1, from, fromDate);
     const d2 = new Date(fromDate); d2.setDate(fromDate.getDate() + 1);
@@ -1233,12 +1239,16 @@ function autoGenDays() {
     document.getElementById('dayBlocks').appendChild(midDiv);
     const dn1 = new Date(fromDate); dn1.setDate(fromDate.getDate() + nights - 1);
     addDay({ title: '' }, nights, from, dn1);
-    addDay({ title: '' }, nights + 1, from, toDate);
+    const toDate2 = new Date(fromDate); toDate2.setDate(fromDate.getDate() + nights);
+    addDay({ title: '' }, nights + 1, from, toDate2);
   } else {
     for (let i = 0; i < totalDays; i++) {
-      const d = new Date(fromDate);
-      d.setDate(fromDate.getDate() + i);
-      addDay({ title: '' }, i + 1, from, d);
+      let dateObj = null;
+      if (fromDate) {
+        dateObj = new Date(fromDate);
+        dateObj.setDate(fromDate.getDate() + i);
+      }
+      addDay({ title: '' }, i + 1, from || '', dateObj);
     }
   }
   updateSummary();
@@ -1282,12 +1292,12 @@ function addDay(data={}, num=null, fromStr=null, dateObj=null) {
         <div class="day-meal-field"><label>🍽 석식</label><input type="text" placeholder="" value="${meals.dinner||''}" data-meal="dinner"></div>
       </div>
       <!-- 시간표 헤더 -->
-      <div style="display:grid;grid-template-columns:60px 60px 60px 1fr 30px 28px;gap:6px;margin:8px 0 4px">
-        <span style="font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;letter-spacing:.5px">장소</span>
-        <span style="font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;letter-spacing:.5px">교통</span>
-        <span style="font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;letter-spacing:.5px">시간</span>
-        <span style="font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;letter-spacing:.5px">일정 내용</span>
-        <span style="font-size:10px;color:var(--ink3);font-weight:600;text-transform:uppercase;letter-spacing:.5px">색상</span>
+      <div style="display:grid;grid-template-columns:60px 60px 60px 1fr 30px 28px;gap:6px;margin:0 0 6px;padding:6px 8px;background:#2A4A5E;border-radius:6px">
+        <span style="font-size:10px;color:#FFFFFF;font-weight:700;letter-spacing:.5px">장소</span>
+        <span style="font-size:10px;color:#FFFFFF;font-weight:700;letter-spacing:.5px">교통</span>
+        <span style="font-size:10px;color:#FFFFFF;font-weight:700;letter-spacing:.5px">시간</span>
+        <span style="font-size:10px;color:#FFFFFF;font-weight:700;letter-spacing:.5px">일정 내용</span>
+        <span style="font-size:10px;color:#FFFFFF;font-weight:700;letter-spacing:.5px">색상</span>
         <span></span>
       </div>
       <div class="schedule-items" id="sched-${id}">${schedItems}</div>
