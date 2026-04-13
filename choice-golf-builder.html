@@ -4365,82 +4365,87 @@ function generateConfHTML(d) {
       const h=map[tag.toLowerCase()]||map[tag];return h?'<span style="color:'+h+';font-weight:700">'+c+'</span>':m;
     });
   };
+  const badgeS = 'display:inline-flex;align-items:center;gap:5px;padding:7px 13px;background:rgba(255,255,255,0.12);border-radius:20px;font-size:12px;color:white;font-weight:500';
+  let periodStr='';
+  if(d.dateFrom&&d.nights){const n=parseInt(d.nights.split(',')[0]);const t=parseInt(d.nights.split(',')[1]);periodStr=n+'박 '+t+'일';}
 
-  // 일정표
+  function sumRow(label,value,isLast){
+    if(!value)return '';
+    const bb=isLast?'':'border-bottom:1px solid #D5D5D5;';
+    return '<div style="display:flex;'+bb+'"><div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">'+label+'</div><div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000">'+value+'</div></div>';
+  }
+
+  const thS='padding:8px 12px;font-size:11px;font-weight:700;color:#FFFFFF;background:#4A7A5A;border:1px solid #3A6A4A;white-space:nowrap';
   const daysHTML = (d.days||[]).map((day,i) => {
-    let ds='';
-    if(d.dateFrom){const dt=new Date(d.dateFrom);dt.setDate(dt.getDate()+i);ds=' ('+(dt.getMonth()+1)+'/'+dt.getDate()+' '+dayNames[dt.getDay()]+')';}
+    let ds='';if(d.dateFrom){const dt=new Date(d.dateFrom);dt.setDate(dt.getDate()+i);ds=' ('+(dt.getMonth()+1)+'/'+dt.getDate()+' '+dayNames[dt.getDay()]+')';}
     const label='Day '+(i+1)+ds;
     const badges=[];
-    if(day.meeting) badges.push('<span style="display:inline-block;background:#1D4ED8;color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-right:6px">🤝 '+day.meeting+'</span>');
-    if(day.teeoff) badges.push('<span style="display:inline-block;background:#059669;color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px">⛳ '+day.teeoff+'</span>');
-    const badgeRow=badges.length?'<div style="padding:8px 14px;background:#F0FFF4;border-bottom:1px solid #E8E6E1">'+badges.join('')+'</div>':'';
-    const items=(day.items||[]).map((it,ri)=>{
-      const bg=ri%2===0?'':'background:#FAFAF8';
-      return '<tr style="'+bg+'"><td style="border-bottom:1px solid #E8E6E1;padding:7px 8px;font-size:12px;color:#A07840;font-weight:700;text-align:center;width:58px">'+(it.time||'')+'</td><td style="border-bottom:1px solid #E8E6E1;padding:7px 14px;font-size:13px;color:#222;line-height:1.6">'+pCT(it.text||'')+'</td></tr>';
-    }).join('');
-    const meals=day.meals||{};const mi=[];
-    if(meals.bf)mi.push('🍳 '+meals.bf);if(meals.lunch)mi.push('🍜 '+meals.lunch);if(meals.dinner)mi.push('🍽 '+meals.dinner);
+    if(day.meeting)badges.push('<span style="display:inline-block;background:#1D4ED8;color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;margin-right:6px">🤝 미팅 '+day.meeting+'</span>');
+    if(day.teeoff)badges.push('<span style="display:inline-block;background:#059669;color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px">⛳ 티옵 '+day.teeoff+'</span>');
+    const badgeRow=badges.length?'<div style="padding:8px 14px;background:#F0FFF4;border-bottom:1px solid #E8E6E1;display:flex;flex-wrap:wrap;gap:6px">'+badges.join('')+'</div>':'';
+    const items=(day.items||[]).map((it,ri)=>{const bg=ri%2===0?'':'background:#FAFAF8';return '<tr style="'+bg+'"><td style="border-bottom:1px solid #D5D5D5;padding:8px 8px;font-size:12px;color:#A07840;font-weight:700;text-align:center;vertical-align:top">'+(it.time||'')+'</td><td style="border-bottom:1px solid #D5D5D5;padding:8px 14px;font-size:13px;color:#222;line-height:1.6;word-break:keep-all">'+pCT(it.text||'')+'</td></tr>';}).join('');
+    const meals=day.meals||{};const mi=[];if(meals.bf)mi.push('🍳 '+meals.bf);if(meals.lunch)mi.push('🍜 '+meals.lunch);if(meals.dinner)mi.push('🍽 '+meals.dinner);
     const mealRow=mi.length?'<tr><td colspan="2" style="padding:8px 14px;background:#FFF9F0;font-size:12px;color:#92400E;font-weight:600">'+mi.join(' │ ')+'</td></tr>':'';
-    return '<div style="border:1.5px solid #1B5E20;border-radius:10px;overflow:hidden;margin-bottom:12px"><div style="background:#1B5E20;padding:10px 16px;font-size:14px;font-weight:800;color:white">'+label+'</div>'+badgeRow+'<table style="width:100%;border-collapse:collapse">'+items+mealRow+'</table></div>';
+    return '<div style="border:1.5px solid #2A6B3C;border-radius:10px;overflow:hidden;margin-bottom:12px"><div style="background:#2A4A5E;padding:10px 16px;font-size:14px;font-weight:800;color:white">'+label+'</div>'+badgeRow+'<table style="width:100%;border-collapse:collapse;table-layout:fixed"><colgroup><col style="width:58px"><col></colgroup><tr><th style="'+thS+';text-align:center">시간</th><th style="'+thS+';text-align:left;padding-left:14px">일정</th></tr>'+items+mealRow+'</table></div>';
   }).join('');
 
-  // 날씨
-  const weatherHTML=(d.weather||[]).filter(Boolean).length?'<div style="margin:24px 0"><div style="font-size:12px;font-weight:700;letter-spacing:2px;color:#1B5E20;margin-bottom:14px;text-align:center">🌤 날씨 정보</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;text-align:center">'+(d.weather||[]).map((w,i)=>{let ds='Day '+(i+1);if(d.dateFrom){const dt=new Date(d.dateFrom);dt.setDate(dt.getDate()+i);ds=(dt.getMonth()+1)+'/'+dt.getDate();}return '<div style="border:1px solid #E8E6E1;border-radius:8px;padding:10px 6px;background:white"><div style="font-size:10px;color:#888;font-weight:600;margin-bottom:4px">'+ds+'</div><div style="font-size:13px;font-weight:700;color:#111">'+(w||'-')+'</div></div>';}).join('')+'</div></div>':'';
+  const weatherHTML=(d.weather||[]).filter(Boolean).length?'<div style="padding:36px 20px;border-bottom:1px solid #E8E6E1"><div style="font-size:11px;font-weight:700;letter-spacing:2.5px;color:#111;margin-bottom:18px;display:flex;align-items:center;gap:10px">02 &nbsp;날씨 정보<span style="flex:1;height:1px;background:#E8E6E1"></span></div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;text-align:center">'+(d.weather||[]).map((w,i)=>'<div style="border:1px solid #E8E6E1;border-radius:10px;padding:12px 6px;background:white"><div style="font-size:10px;color:#888;font-weight:600;margin-bottom:4px">Day '+(i+1)+'</div><div style="font-size:14px;font-weight:700;color:#111">'+(w||'-')+'</div></div>').join('')+'</div></div>':'';
 
-  // 안내문
-  const gS=(icon,title,content)=>!content?'':'<div style="border:1px solid #E8E6E1;border-radius:12px;padding:16px;margin-bottom:12px;background:white"><div style="font-size:12px;font-weight:700;color:#1B5E20;margin-bottom:8px">'+icon+' '+title+'</div><div style="font-size:13px;color:#222;line-height:1.9;font-weight:500">'+pCT(content.replace(/\n/g,'<br>'))+'</div></div>';
-  const guideHTML=(d.airportGuide||d.transportGuide||d.cautions||d.extraGuide)?'<div style="margin:24px 0;padding:20px;background:#F8F7F5;border-radius:14px"><div style="font-size:12px;font-weight:700;letter-spacing:2px;color:#1B5E20;margin-bottom:14px;text-align:center">📋 현지 안내문</div>'+gS('✈️','공항 안내',d.airportGuide)+gS('🚌','교통 안내',d.transportGuide)+gS('⚠️','주의사항',d.cautions)+gS('📝','기타 안내',d.extraGuide)+'</div>':'';
+  const gS=(icon,title,content)=>!content?'':'<div style="border:1px solid #E8E6E1;border-radius:12px;padding:16px;margin-bottom:12px;background:white"><div style="font-size:11px;font-weight:700;letter-spacing:1.5px;color:#A07840;margin-bottom:8px">'+icon+' '+title+'</div><div style="font-size:13px;color:#222;line-height:1.9;font-weight:500;word-break:keep-all">'+pCT(content.replace(/\n/g,'<br>'))+'</div></div>';
+  const guideHTML=(d.airportGuide||d.transportGuide||d.cautions||d.extraGuide)?'<div style="padding:36px 20px;border-bottom:1px solid #E8E6E1"><div style="font-size:11px;font-weight:700;letter-spacing:2.5px;color:#111;margin-bottom:18px;display:flex;align-items:center;gap:10px">03 &nbsp;현지 안내문<span style="flex:1;height:1px;background:#E8E6E1"></span></div>'+gS('✈️','공항 안내',d.airportGuide)+gS('🚌','교통 안내',d.transportGuide)+gS('⚠️','주의사항',d.cautions)+gS('📝','기타 안내',d.extraGuide)+'</div>':'';
 
-  // 긴급연락처
   const ci=[];
-  if(d.guideName||d.guidePhone) ci.push('<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F0F0F0"><span style="font-weight:600">🧑‍✈️ 현지 가이드</span><span style="color:#1B5E20;font-weight:700">'+(d.guideName||'')+' '+(d.guidePhone||'')+'</span></div>');
-  if(d.localEmergency) ci.push('<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F0F0F0"><span style="font-weight:600">🆘 현지 긴급</span><span style="color:#C0392B;font-weight:700">'+d.localEmergency+'</span></div>');
-  if(d.krEmergency) ci.push('<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F0F0F0"><span style="font-weight:600">📞 한국 비상</span><span style="font-weight:700">'+d.krEmergency+'</span></div>');
-  if(d.embassy) ci.push('<div style="display:flex;justify-content:space-between;padding:10px 0"><span style="font-weight:600">🏛 대사관</span><span style="font-weight:700">'+d.embassy+'</span></div>');
-  const contactHTML=ci.length?'<div style="margin:24px 0"><div style="font-size:12px;font-weight:700;letter-spacing:2px;color:#C0392B;margin-bottom:14px;text-align:center">🚨 긴급 연락처</div><div style="border:1.5px solid #C0392B;border-radius:12px;padding:16px;background:#FDF6F6;font-size:13px">'+ci.join('')+'</div></div>':'';
+  if(d.guideName||d.guidePhone)ci.push('<div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #F0F0F0"><span style="font-weight:600">🧑‍✈️ 현지 가이드</span><span style="color:#1B5E20;font-weight:700">'+(d.guideName||'')+' '+(d.guidePhone||'')+'</span></div>');
+  if(d.localEmergency)ci.push('<div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #F0F0F0"><span style="font-weight:600">🆘 현지 긴급</span><span style="color:#C0392B;font-weight:700">'+d.localEmergency+'</span></div>');
+  if(d.krEmergency)ci.push('<div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #F0F0F0"><span style="font-weight:600">📞 한국 비상</span><span style="font-weight:700">'+d.krEmergency+'</span></div>');
+  if(d.embassy)ci.push('<div style="display:flex;justify-content:space-between;padding:12px 0"><span style="font-weight:600">🏛 대사관</span><span style="font-weight:700">'+d.embassy+'</span></div>');
+  const contactHTML=ci.length?'<div style="padding:36px 20px;border-bottom:1px solid #E8E6E1"><div style="font-size:11px;font-weight:700;letter-spacing:2.5px;color:#111;margin-bottom:18px;display:flex;align-items:center;gap:10px">04 &nbsp;긴급 연락처<span style="flex:1;height:1px;background:#E8E6E1"></span></div><div style="border:1.5px solid #C0392B;border-radius:12px;padding:16px;background:#FDF6F6;font-size:13px">'+ci.join('')+'</div></div>':'';
+
+  const logoEl = d.logoUrl ? '<img src="'+d.logoUrl+'" style="height:36px;border-radius:6px">' : '<div style="font-family:Cormorant Garamond,serif;font-size:20px;font-weight:600;color:#C9A268;letter-spacing:1px">'+(d.companyName||'초이스골프')+'</div>';
 
   return `<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
 <title>${d.companyName||'초이스골프'} — ${d.destination||''} 확정서</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&family=Noto+Serif+KR:wght@400;600;700&family=Gaegu:wght@700&display=swap" rel="stylesheet">
 <style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Noto Sans KR',sans-serif;background:#F5F4F0;display:flex;justify-content:center}
 .wrap{max-width:500px;width:100%;background:white;min-height:100vh;box-shadow:0 0 40px rgba(0,0,0,.08)}</style></head><body>
 <div class="wrap">
-  <!-- HERO -->
-  <div style="background:linear-gradient(135deg,#1B5E20,#2E7D32);padding:48px 24px 36px;text-align:center;position:relative;overflow:hidden">
-    <div style="position:absolute;inset:0;opacity:0.06;background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22><circle cx=%2220%22 cy=%2220%22 r=%222%22 fill=%22white%22/></svg>');background-size:40px 40px"></div>
-    <div style="position:relative">
-      <div style="display:inline-block;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);padding:4px 16px;border-radius:20px;font-size:11px;font-weight:700;color:rgba(255,255,255,0.9);letter-spacing:2px;margin-bottom:16px">✅ 출발 확정서</div>
-      <div style="font-family:'Noto Serif KR',serif;font-size:clamp(20px,5.5vw,28px);font-weight:700;color:white;line-height:1.35">${pCT(d.destination||'')}</div>
-      <div style="margin-top:12px;font-size:13px;color:rgba(255,255,255,0.8)">${d.customer||''} 님${d.pax?' · '+d.pax:''}</div>
+  <header style="border-bottom:1px solid #E8E6E1;position:sticky;top:0;background:rgba(255,255,255,0.97);backdrop-filter:blur(14px);z-index:100">
+    <div style="padding:10px 16px 8px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #F0EDE8">
+      ${logoEl}
+      <div style="font-size:11px;font-weight:600;color:#1B5E20;letter-spacing:1px;border:1.5px solid #1B5E20;padding:4px 12px;border-radius:20px">확정서</div>
+    </div>
+  </header>
+
+  <div style="padding:40px 24px 30px;border-bottom:1px solid #E8E6E1;background:linear-gradient(135deg,#1B2838,#2A4A5E);text-align:center">
+    <div style="font-family:Gaegu,cursive;font-size:18px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,0.85);margin-bottom:14px">✅ 출발 확정서</div>
+    <div style="font-family:'Noto Serif KR',serif;font-size:clamp(20px,5.5vw,28px);font-weight:700;color:white;line-height:1.35">${pCT(d.destination||'')}</div>
+    <div style="width:60%;max-width:200px;height:1.5px;background:rgba(255,255,255,0.25);margin:20px auto 18px;border-radius:2px"></div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center">
+      ${d.dateFrom?'<span style="'+badgeS+'">📅 '+d.dateFrom+'</span>':''}
+      ${periodStr?'<span style="'+badgeS+'">🌙 '+periodStr+'</span>':''}
+      ${d.customer?'<span style="'+badgeS+'">👤 '+d.customer+(d.pax?' · '+d.pax:'')+'</span>':''}
     </div>
   </div>
 
-  <!-- 기본정보 -->
-  <div style="padding:24px 20px;border-bottom:1px solid #E8E6E1">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px">
-      ${d.dateFrom?'<div style="border:1px solid #E8E6E1;border-radius:8px;padding:12px;background:white"><div style="font-size:10px;font-weight:700;color:#888;margin-bottom:4px">출발일</div><div style="font-weight:700;color:#111">'+d.dateFrom+'</div></div>':''}
-      ${d.hotel?'<div style="border:1px solid #E8E6E1;border-radius:8px;padding:12px;background:white"><div style="font-size:10px;font-weight:700;color:#888;margin-bottom:4px">호텔</div><div style="font-weight:700;color:#111">'+d.hotel+'</div></div>':''}
-      ${d.airline?'<div style="border:1px solid #E8E6E1;border-radius:8px;padding:12px;background:white"><div style="font-size:10px;font-weight:700;color:#888;margin-bottom:4px">항공</div><div style="font-weight:700;color:#111">'+d.airline+'</div></div>':''}
-      ${d.contactPhone?'<div style="border:1px solid #E8E6E1;border-radius:8px;padding:12px;background:white"><div style="font-size:10px;font-weight:700;color:#888;margin-bottom:4px">담당자</div><div style="font-weight:700;color:#111">'+d.contactPhone+'</div></div>':''}
+  <div style="padding:36px 20px;border-bottom:1px solid #E8E6E1">
+    <div style="font-size:11px;font-weight:700;letter-spacing:2.5px;color:#111;margin-bottom:18px;display:flex;align-items:center;gap:10px">00 &nbsp;여행 정보<span style="flex:1;height:1px;background:#E8E6E1"></span></div>
+    <div style="border:2px solid #2A4A5E;border-radius:10px;overflow:hidden">
+      ${sumRow('고객명',d.customer)}${sumRow('항공',d.airline)}${sumRow('호텔',d.hotel)}
+      ${sumRow('가이드',(d.guideName?d.guideName+' ':'')+d.guidePhone,!d.contactPhone)}${sumRow('담당자',d.contactPhone,true)}
     </div>
   </div>
 
-  <!-- 확정 일정표 -->
-  <div style="padding:24px 20px;border-bottom:1px solid #E8E6E1;background:#F8F7F5">
-    <div style="font-size:12px;font-weight:700;letter-spacing:2px;color:#1B5E20;margin-bottom:14px;text-align:center">📋 확정 일정표</div>
+  <div style="padding:36px 20px;border-bottom:1px solid #E8E6E1;background:#F8F7F5">
+    <div style="font-size:11px;font-weight:700;letter-spacing:2.5px;color:#111;margin-bottom:18px;display:flex;align-items:center;gap:10px">01 &nbsp;확정 일정표<span style="flex:1;height:1px;background:#E8E6E1"></span></div>
     ${daysHTML}
   </div>
 
-  ${weatherHTML}
-  ${guideHTML}
-  ${contactHTML}
+  ${weatherHTML}${guideHTML}${contactHTML}
 
-  <!-- 푸터 -->
-  <div style="padding:30px 20px;background:#1B5E20;text-align:center">
-    <div style="font-size:16px;font-weight:700;color:white;margin-bottom:4px">${d.companyName||'초이스골프'}</div>
-    <div style="font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:2px">${d.companyNameEn||'Choice Golf Tour'}</div>
-    ${d.contactPhone?'<div style="margin-top:8px;font-size:13px;color:rgba(255,255,255,0.8)">📞 '+d.contactPhone+'</div>':''}
+  <div style="padding:30px 20px;background:#1B2838;text-align:center">
+    <div style="margin-bottom:12px">${logoEl}</div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:2px">${d.companyNameEn||'Choice Golf Tour'}</div>
+    ${d.contactPhone?'<div style="margin-top:8px;font-size:13px;color:rgba(255,255,255,0.7)">📞 '+d.contactPhone+'</div>':''}
   </div>
 </div></body></html>`;
 }
