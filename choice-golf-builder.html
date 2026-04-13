@@ -527,14 +527,13 @@ select option{background:white;color:var(--ink)}
           </div>
           <input type="hidden" id="quoteDate" value="">
 
-          <!-- 상품명 + 담당자 -->
-          <div class="form-row col2" style="margin-bottom:10px">
-            <div class="field"><label>상품명</label><input type="text" id="destination" placeholder="[일본] 미야코지마 3색 골프 5박6일" oninput="updateSummary()" style="font-size:15px;font-weight:600"></div>
-            <div class="field"><label>담당자</label><input type="text" id="agent" placeholder="최진우"></div>
-          </div>
-
-          <!-- 출발일 + 여행일수 + 호텔명 -->
+          <!-- 여행지 + 상품명 + 담당자 -->
           <div class="form-row col3" style="margin-bottom:10px">
+            <div class="field"><label>여행지</label><input type="text" id="travelDest" placeholder="일본 · 구마모토" oninput="updateSummary()" style="font-size:13px"></div>
+            <div class="field" style="grid-column:span 2"><label>상품명</label><input type="text" id="destination" placeholder="아소그랑비리오 골프&리조트 3박4일" oninput="updateSummary()" style="font-size:15px;font-weight:600"></div>
+          </div>
+          <div class="form-row col3" style="margin-bottom:10px">
+            <div class="field"><label>담당자</label><input type="text" id="agent" placeholder="최진우"></div>
             <div class="field"><label>출발일</label><input type="date" id="dateFrom" min="2025-01-01" max="2028-12-31" onchange="validateDate(this);updateSummary();autoGenDays();loadFlightPicker()" oninput="updateSummary();autoGenDays();loadFlightPicker()"></div>
             <div class="field">
               <label>여행 일수</label>
@@ -1030,7 +1029,7 @@ function clearForm() {
   // 견적서 모드 초기화
   state.quoteMode = false;
   state.currentQuoteId = null;
-  const ids = ['destination','airport','dateFrom','dateTo','rounds','quoteDate','agent','agentTeam',
+  const ids = ['destination','travelDest','airport','dateFrom','dateTo','rounds','quoteDate','agent','agentTeam',
     'pricePerPerson','priceNote','priceNoFlight','priceChild','priceInfant','remark','hotelQuickName','airlineName',
     'hotelName','hotelNameKr','hotelRoom','hotelNights','hotelDesc',
     'contactPhone','contactKakao','companyName','companyNameEn','logoUrl','deposit','bankAccount','cancelPolicy','productName','pax','customerName','customerPhone'];
@@ -1551,7 +1550,7 @@ function collectData() {
     category: document.getElementById('productCategory')?.value || '',
     region: document.getElementById('productRegion')?.value || '',
     customerName: v('customerName'), customerPhone: v('customerPhone'),
-    pax: v('pax'), destination: v('destination'), airport: v('airport'),
+    pax: v('pax'), destination: v('destination'), travelDest: v('travelDest'), airport: v('airport'),
     dateFrom: from, dateTo: to, period, nights,
     rounds: v('rounds'), quoteDate: v('quoteDate'),
     agent: v('agent'),
@@ -1699,15 +1698,15 @@ body{padding-bottom:76px}
   </header>
 
   <!-- HERO -->
-  <div class="hero reveal" style="padding:36px 20px 32px;border-bottom:1px solid #E8E6E1;background:#2C2C2C">
-    <div style="font-size:11px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:16px">Overseas Golf Tour Proposal</div>
-    <div style="font-size:34px;font-weight:900;color:white;line-height:1.15;letter-spacing:-0.5px;margin-bottom:8px">${d.destination}</div>
-    <div style="font-size:14px;color:rgba(255,255,255,0.55);margin-bottom:24px;font-weight:400">해외 골프투어 여행 견적서</div>
+  <div class="hero reveal" style="padding:36px 24px 28px;border-bottom:1px solid #E8E6E1;background:#2C2C2C">
+    ${d.travelDest ? `<div style="font-size:13px;font-weight:500;letter-spacing:2px;color:rgba(255,255,255,0.55);margin-bottom:10px">${d.travelDest}</div>` : ''}
+    <div style="font-family:'Noto Serif KR',serif;font-size:clamp(22px,6vw,32px);font-weight:700;color:white;line-height:1.3;word-break:keep-all">${d.destination||''}</div>
+    <div style="width:40px;height:2px;background:#C9A268;margin:18px 0 16px;border-radius:2px"></div>
     <div style="display:flex;flex-wrap:wrap;gap:8px">
       ${d.customerName?`<span style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;background:rgba(255,255,255,0.12);border-radius:20px;font-size:12px;color:white;font-weight:500">👤 ${d.customerName}님</span>`:''}
       ${d.period?`<span style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;background:rgba(255,255,255,0.12);border-radius:20px;font-size:12px;color:white;font-weight:500">📅 ${d.period}</span>`:''}
       ${d.pax?`<span style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;background:rgba(255,255,255,0.12);border-radius:20px;font-size:12px;color:white;font-weight:500">👥 ${d.pax}</span>`:''}
-      ${d.nights?`<span style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;background:rgba(255,255,255,0.12);border-radius:20px;font-size:12px;color:white;font-weight:500">🌙 ${d.nights}박 ${d.nights+1}일</span>`:''}
+      ${d.nights?`<span style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;background:rgba(255,255,255,0.12);border-radius:20px;font-size:12px;color:white;font-weight:500">🌙 ${d.nights}박 ${parseInt(d.nights)+1}일</span>`:''}
       ${d.agent?`<span style="display:inline-flex;align-items:center;gap:5px;padding:7px 13px;background:rgba(255,255,255,0.12);border-radius:20px;font-size:12px;color:white;font-weight:500">📋 담당: ${d.agent}</span>`:''}
     </div>
   </div>
@@ -1723,10 +1722,6 @@ body{padding-bottom:76px}
         <div style="min-width:56px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">인원</div>
         <div style="min-width:70px;padding:10px 12px;font-size:14px;color:#111">${d.pax||'-'}</div>
       </div>`:''}
-      <div style="display:flex;border-bottom:1px solid #D5D5D5">
-        <div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">일정</div>
-        <div style="flex:1;padding:10px 14px;font-size:13px;color:#111">${d.period||'-'}${d.nights ? ' ('+d.nights+'박'+(d.nights+1)+'일)' : ''}</div>
-      </div>
       <div style="display:flex;border-bottom:1px solid #D5D5D5">
         <div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">항공</div>
         <div style="flex:1;padding:10px 14px;font-size:13px;color:#111">${d.airlineName||'-'}</div>
@@ -2537,6 +2532,7 @@ function applyProductData(d) {
   set('customerPhone', d.customerPhone);
   set('pax', d.pax);
   set('destination', d.destination);
+  set('travelDest', d.travelDest);
   set('airport', d.airport);
   set('dateFrom', d.dateFrom);
   set('dateTo', d.dateTo);
