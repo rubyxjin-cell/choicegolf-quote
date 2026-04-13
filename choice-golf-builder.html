@@ -1788,9 +1788,9 @@ function generateHTML(d) {
     // 식사 정보 렌더링
     const meals = day.meals || {};
     const mealItems = [];
-    if(meals.bf) mealItems.push('🍳 ' + meals.bf);
-    if(meals.lunch) mealItems.push('🍜 ' + meals.lunch);
-    if(meals.dinner) mealItems.push('🍽 ' + meals.dinner);
+    if(meals.bf) mealItems.push('조: ' + meals.bf);
+    if(meals.lunch) mealItems.push('중: ' + meals.lunch);
+    if(meals.dinner) mealItems.push('석: ' + meals.dinner);
     const mealRow = mealItems.length ? '<tr><td colspan="2" style="padding:10px 14px;background:#FFF9F0;border-top:1.5px solid #E8C97A;font-size:12px;color:#92400E;font-weight:700">' + mealItems.join(' &nbsp;│&nbsp; ') + '</td></tr>' : '';
 
     // 호텔 정보 렌더링 (고급 테두리로 구분)
@@ -1975,8 +1975,8 @@ body{padding-bottom:76px}
       <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#2A4A5E;margin-bottom:8px">💳 입금 계좌 <span style="font-size:10px;color:#888;font-weight:500;margin-left:6px">(클릭하면 복사)</span></div>
       <div style="font-size:16px;font-weight:800;color:#000;line-height:1.8">${d.bankAccount}</div>
     </div>` : ''}
-    ${d.deposit ? `<div style="border:1.5px solid #C9A268;border-radius:12px;padding:18px 16px;margin-bottom:12px;background:#FFFBF2">
-      <div style="font-size:13px;font-weight:700;color:#92400E;line-height:1.9;word-break:keep-all">예약 시 담당자에게 여권 사본 전달 부탁드리며,<br>1인 예약금 <span style="font-size:16px;font-weight:800;color:#C0392B">${d.deposit}</span> 상기 계좌로 입금 부탁드립니다.</div>
+    ${d.deposit ? `<div style="border:2px solid #2A4A5E;border-radius:12px;padding:18px 16px;margin-bottom:12px;background:#EDF2F7">
+      <div style="font-size:13px;font-weight:700;color:#1a1a1a;line-height:1.9;word-break:keep-all">예약 시 담당자에게 여권 사본 전달 부탁드리며,<br>1인 예약금 <span style="font-size:16px;font-weight:800;color:#C0392B">${d.deposit}</span> 상기 계좌로 입금 부탁드립니다.</div>
     </div>` : ''}
     ${d.cancelPolicy ? `<div style="border:1px solid #E8E6E1;border-radius:12px;padding:16px;margin-bottom:12px;background:#FFF9F0">
       <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#8B6020;margin-bottom:10px">취소 및 환불 규정</div>
@@ -4452,7 +4452,7 @@ function generateConfHTML(d) {
     if(day.teeoff)badges.push('<span style="display:inline-block;background:#059669;color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px">⛳ 티옵 '+day.teeoff+'</span>');
     const badgeRow=badges.length?'<div style="padding:8px 14px;background:#F0FFF4;border-bottom:1px solid #E8E6E1;display:flex;flex-wrap:wrap;gap:6px">'+badges.join('')+'</div>':'';
     const items=(day.items||[]).map((it,ri)=>{const bg=ri%2===0?'':'background:#FAFAF8';return '<tr style="'+bg+'"><td style="border-bottom:1px solid #D5D5D5;padding:8px 8px;font-size:12px;color:#A07840;font-weight:700;text-align:center;vertical-align:top">'+(it.time||'')+'</td><td style="border-bottom:1px solid #D5D5D5;padding:8px 14px;font-size:13px;color:#222;line-height:1.6;word-break:keep-all">'+pCT(it.text||'')+'</td></tr>';}).join('');
-    const meals=day.meals||{};const mi=[];if(meals.bf)mi.push('🍳 '+meals.bf);if(meals.lunch)mi.push('🍜 '+meals.lunch);if(meals.dinner)mi.push('🍽 '+meals.dinner);
+    const meals=day.meals||{};const mi=[];if(meals.bf)mi.push('조: '+meals.bf);if(meals.lunch)mi.push('중: '+meals.lunch);if(meals.dinner)mi.push('석: '+meals.dinner);
     const mealRow=mi.length?'<tr><td colspan="2" style="padding:8px 14px;background:#FFF9F0;font-size:12px;color:#92400E;font-weight:600">'+mi.join(' │ ')+'</td></tr>':'';
     return '<div style="border:1.5px solid #2A6B3C;border-radius:10px;overflow:hidden;margin-bottom:12px"><div style="background:#2A4A5E;padding:10px 16px;font-size:14px;font-weight:800;color:white">'+label+'</div>'+badgeRow+'<table style="width:100%;border-collapse:collapse;table-layout:fixed"><colgroup><col style="width:58px"><col></colgroup><tr><th style="'+thS+';text-align:center">시간</th><th style="'+thS+';text-align:center">일정</th></tr>'+items+mealRow+'</table></div>';
   }).join('');
