@@ -294,7 +294,7 @@ function renderPage(d) {
     <!-- HERO -->
     <div class="hero reveal" style="padding:40px 24px 30px;border-bottom:1px solid #E8E6E1;background:linear-gradient(135deg,#1B2838,#2A4A5E);text-align:center">
       ${d.travelDest ? '<div style="font-family:Gaegu,cursive;font-size:18px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,0.85);margin-bottom:14px">' + (countryFlag ? countryFlag + ' ' : '') + d.travelDest + '</div>' : ''}
-      <div style="font-family:Noto Serif KR,serif;font-size:clamp(20px,5.5vw,28px);font-weight:700;color:white;line-height:1.35;word-break:keep-all">${d.destination||''}</div>
+      <div style="font-family:Noto Serif KR,serif;font-size:clamp(20px,5.5vw,28px);font-weight:700;color:white;line-height:1.35;word-break:keep-all">${parseColorTags(d.destination||'')}</div>
       <div style="width:60%;max-width:200px;height:1.5px;background:rgba(255,255,255,0.25);margin:20px auto 18px;border-radius:2px"></div>
       <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center">
         ${d.period ? '<span style="' + badgeS + '">📅 ' + d.period + '</span>' : ''}
