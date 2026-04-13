@@ -356,7 +356,7 @@ function renderPage(d) {
     ${d.hotelName ? '<section class="reveal" style="padding:36px 20px;border-bottom:1px solid #E8E6E1"><div class="sec-title">04 &nbsp;숙박 정보</div><div style="border:2px solid #2A4A5E;border-radius:14px;overflow:hidden;background:white;box-shadow:0 2px 12px rgba(42,74,94,0.08)"><div style="border-radius:14px 14px 0 0;overflow:hidden">' + hotelPhotoEl + '</div><div style="padding:20px 18px 22px;text-align:center">' + (starsStr ? '<div style="font-size:13px;color:#A07840;font-weight:700;letter-spacing:2px;margin-bottom:8px">' + starsStr + '</div>' : '') + '<div style="font-family:Noto Serif KR,serif;font-size:20px;font-weight:700;color:#1a1a1a;margin-bottom:4px;line-height:1.3">' + (d.hotelName||'') + '</div><div style="font-size:12px;color:#111;margin-bottom:6px">' + (d.hotelNameKr||'') + ((d.hotelNameKr&&d.hotelRoom)?' · ':'') + (d.hotelRoom||'') + '</div><div style="width:40px;height:1.5px;background:#C9A268;margin:14px auto;border-radius:2px"></div>' + (d.hotelDesc ? '<div style="font-size:13px;color:#000;font-weight:500;line-height:1.9;text-align:left;padding:0 4px;margin-bottom:14px;word-break:keep-all">' + parseColorTags(d.hotelDesc) + '</div>' : '') + '<div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center">' + hotelFacHTML + '</div></div></div></section>' : ''}
 
     <!-- 05 예약 안내 -->
-    ${(d.deposit || d.bankAccount || d.cancelPolicy) ? '<section class="reveal" style="padding:36px 20px;border-bottom:1px solid #E8E6E1"><div class="sec-title">05 &nbsp;예약 안내</div>' + (d.deposit ? '<div style="border:1px solid #E8E6E1;border-radius:12px;padding:16px;margin-bottom:12px;background:#FAFAF8"><div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#888;margin-bottom:8px">예약금</div><div style="font-size:18px;font-weight:700;color:#C0392B">' + d.deposit + '</div></div>' : '') + (d.bankAccount ? '<div style="border:1px solid #E8E6E1;border-radius:12px;padding:16px;margin-bottom:12px;background:#FAFAF8"><div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#888;margin-bottom:8px">입금 계좌</div><div style="font-size:14px;font-weight:600;color:#111;line-height:1.8">' + (d.bankAccount||'').replace(/\n/g,'<br>') + '</div></div>' : '') + (d.cancelPolicy ? '<div style="border:1px solid #E8E6E1;border-radius:12px;padding:16px;margin-bottom:12px;background:#FFF9F0"><div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#8B6020;margin-bottom:10px">취소 및 환불 규정</div><div style="font-size:12px;color:#111;line-height:1.9">' + (d.cancelPolicy||'').replace(/\n/g,'<br>') + '</div></div>' : '') + '</section>' : ''}
+    ${(d.deposit || d.bankAccount || d.cancelPolicy) ? '<section class="reveal" style="padding:36px 20px;border-bottom:1px solid #E8E6E1"><div class="sec-title">05 &nbsp;INVOICE</div>' + (d.bankAccount ? '<div style="border:2px solid #2A4A5E;border-radius:12px;padding:16px;margin-bottom:12px;background:#F7FAFA;cursor:pointer" onclick="copyAccount(this)"><div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#2A4A5E;margin-bottom:8px">💳 입금 계좌 <span style=\"font-size:10px;color:#888;font-weight:500;margin-left:6px\">(터치하면 복사)</span></div><div style="font-size:16px;font-weight:800;color:#000;line-height:1.8">' + d.bankAccount + '</div></div>' : '') + (d.deposit ? '<div style="border:1.5px solid #C9A268;border-radius:12px;padding:18px 16px;margin-bottom:12px;background:#FFFBF2"><div style="font-size:13px;font-weight:700;color:#92400E;line-height:1.9;word-break:keep-all">예약 시 담당자에게 여권 사본 전달 부탁드리며,<br>1인 예약금 <span style=\"font-size:16px;font-weight:800;color:#C0392B\">' + d.deposit + '</span> 상기 계좌로 입금 부탁드립니다.</div></div>' : '') + (d.cancelPolicy ? '<div style="border:1px solid #E8E6E1;border-radius:12px;padding:16px;margin-bottom:12px;background:#FFF9F0"><div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#8B6020;margin-bottom:10px">취소 및 환불 규정</div><div style="font-size:12px;color:#111;line-height:1.9">' + (d.cancelPolicy||'').replace(/\n/g,'<br>') + '</div></div>' : '') + '</section>' : ''}
 
     <!-- 06 문의 -->
     <div class="contact-sec reveal" style="padding:36px 20px;border-bottom:1px solid #E8E6E1">
@@ -405,6 +405,20 @@ function renderPage(d) {
   }, 100);
 }
 
+function copyAccount(el) {
+  const text = el.querySelector('div:last-child').textContent.trim();
+  if (navigator.clipboard) { navigator.clipboard.writeText(text).then(function(){ showToastMsg('계좌번호가 복사되었습니다 ✓'); }); }
+  else {
+    const t = document.createElement('textarea');
+    t.value = text; document.body.appendChild(t); t.select();
+    document.execCommand('copy'); document.body.removeChild(t); showToastMsg('계좌번호가 복사되었습니다 ✓');
+  }
+}
+function showToastMsg(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show'); setTimeout(() => { t.classList.remove('show'); t.textContent = '링크가 복사되었습니다 ✓'; }, 2200);
+}
 function copyLink() {
   const url = window.location.href;
   if (navigator.clipboard) { navigator.clipboard.writeText(url).then(showToast); }
