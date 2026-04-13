@@ -1013,7 +1013,9 @@ function setQuoteSections(quoteMode) {
   }
 }
 
-/* 인원 합산 (텍스트 필드이므로 퀵카드와 연동만) */
+
+
+function newProduct() {
   // Clear form for new product
   state.currentProductId = null;
   state.currentProductName = null;
@@ -1887,10 +1889,6 @@ async function uploadImageToStorage(file, prefix) {
   }
 }
 
-}
-
-  showToast('✅ 골프장 사진 업로드 완료!');
-}
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFtenJweXlhZG9hand6aXFhY2htIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMDI0NDcsImV4cCI6MjA4OTc3ODQ0N30.CI6ZFvNa2TRa0XqwnrXKL9x3ZHXfKg6GaNwJhqYvCmc';
 
 // 뷰어 URL — Vercel 배포 후 도메인으로 교체
@@ -1996,11 +1994,6 @@ function addRegion() {
   renderProductList();
   showToast(`✅ "${r}" 추가 완료`);
 }
-
-  renderProductList();
-}
-
-
 
 function goHome() {
   prodViewCountry = ''; prodViewRegion = ''; prodSearchTerm = '';
@@ -2152,10 +2145,6 @@ function newProductWithCategory(country, region) {
   updateCurrentProductBanner();
   switchTab('product-new');
   showToast('✏️ 새 상품');
-}
-
-}
-
 }
 
 async function fetchProducts() {
