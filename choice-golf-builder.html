@@ -148,7 +148,10 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
 /* ── TAGS INPUT ── */
 .tags-wrap{display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:var(--input-bg);border:1.5px solid var(--line);border-radius:8px;padding:8px 10px;min-height:42px;cursor:text;transition:border-color .15s}
 .tags-wrap:focus-within{border-color:var(--accent)}
-.tag-item{display:inline-flex;align-items:center;gap:5px;background:var(--accent);color:white;font-size:11px;padding:3px 10px;border-radius:20px}
+.tag-item{display:inline-flex;align-items:center;gap:5px;background:var(--accent);color:white;font-size:11px;padding:3px 10px;border-radius:20px;cursor:grab;user-select:none;transition:opacity .15s,transform .15s}
+.tag-item:active{cursor:grabbing}
+.tag-item.dragging{opacity:.4;transform:scale(.95)}
+.tag-item.drag-over{box-shadow:0 0 0 2px var(--gold);transform:scale(1.05)}
 .tag-item-del{cursor:pointer;font-size:13px;opacity:.7;background:none;border:none;color:white;line-height:1;padding:0}
 .tag-item-del:hover{opacity:1}
 .tag-input{border:none;background:transparent;outline:none;font-size:13px;color:var(--ink);font-family:'Noto Sans KR',sans-serif;min-width:100px;flex:1}
@@ -1478,25 +1481,26 @@ function addTagItem(type, val) {
   if(!wrap || !input) return;
   const tag = document.createElement('div');
   tag.className = 'tag-item';
-  tag.innerHTML = `<span class="tag-text">${val}</span><button class="tag-item-btn" onclick="moveTag(this,-1)" title="왼쪽">◀</button><button class="tag-item-btn" onclick="moveTag(this,1)" title="오른쪽">▶</button><button class="tag-item-btn" onclick="editTag(this)" title="수정">✏</button><button class="tag-item-del" onclick="this.parentElement.remove()">✕</button>`;
+  tag.draggable = true;
+  tag.innerHTML = `<span class="tag-text">${val}</span><button class="tag-item-del" onclick="this.parentElement.remove()">✕</button>`;
+  tag.addEventListener('dragstart', function(e){ e.dataTransfer.effectAllowed='move'; this.classList.add('dragging'); });
+  tag.addEventListener('dragend', function(){ this.classList.remove('dragging'); wrap.querySelectorAll('.tag-item').forEach(t=>t.classList.remove('drag-over')); });
+  tag.addEventListener('dragover', function(e){ e.preventDefault(); e.dataTransfer.dropEffect='move'; this.classList.add('drag-over'); });
+  tag.addEventListener('dragleave', function(){ this.classList.remove('drag-over'); });
+  tag.addEventListener('drop', function(e){
+    e.preventDefault();
+    this.classList.remove('drag-over');
+    const dragging = wrap.querySelector('.dragging');
+    if(dragging && dragging !== this){
+      const items = Array.from(wrap.querySelectorAll('.tag-item'));
+      const fromIdx = items.indexOf(dragging);
+      const toIdx = items.indexOf(this);
+      if(fromIdx < toIdx) this.after(dragging);
+      else wrap.insertBefore(dragging, this);
+    }
+  });
   wrap.insertBefore(tag, input);
 }
-function moveTag(btn, dir) {
-  const tag = btn.closest('.tag-item');
-  const wrap = tag.parentElement;
-  const tags = Array.from(wrap.querySelectorAll('.tag-item'));
-  const idx = tags.indexOf(tag);
-  if (dir === -1 && idx > 0) wrap.insertBefore(tag, tags[idx-1]);
-  else if (dir === 1 && idx < tags.length - 1) wrap.insertBefore(tag, tags[idx+1].nextSibling);
-}
-function editTag(btn) {
-  const tag = btn.closest('.tag-item');
-  const textEl = tag.querySelector('.tag-text');
-  const oldVal = textEl.textContent.trim();
-  const newVal = prompt('항목 수정:', oldVal);
-  if (newVal !== null && newVal.trim()) textEl.textContent = newVal.trim();
-}
-
 function getTagValues(type) {
   const wrap = document.getElementById(type + '-wrap');
   if(!wrap) return [];
