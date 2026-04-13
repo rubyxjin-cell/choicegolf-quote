@@ -314,19 +314,17 @@ function renderPage(d) {
       <div class="sec-title">01 &nbsp;상품 요약</div>
 
       <div style="border:2px solid #2A4A5E;border-radius:10px;overflow:hidden;font-family:'Noto Sans KR',sans-serif">
-        ${d.customerName ? '<div style="display:flex;border-bottom:1px solid #D5D5D5"><div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">고객명</div><div style="flex:1;padding:10px 14px;font-size:14px;font-weight:700;color:#000">' + d.customerName + '</div></div>' : ''}
-        ${d.agent ? '<div style="display:flex;border-bottom:1px solid #D5D5D5"><div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">담당자</div><div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000">' + d.agent + '</div></div>' : ''}
+        ${d.customerName ? '<div style="display:flex;border-bottom:1px solid #D5D5D5"><div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;text-align:center;letter-spacing:3px">수 신</div><div style="flex:1;padding:10px 14px;font-size:14px;font-weight:700;color:#000;text-align:center">' + d.customerName + '</div></div>' : ''}
+        ${d.agent ? '<div style="display:flex;border-bottom:1px solid #D5D5D5"><div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;text-align:center;letter-spacing:3px">담 당 자</div><div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000;text-align:center">' + d.agent + '</div></div>' : ''}
         <div style="display:flex;border-bottom:1px solid #D5D5D5">
-          <div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">항공</div>
-          <div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000">${d.airlineName||'-'}</div>
+          <div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;text-align:center;letter-spacing:3px">항 공</div>
+          <div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000;text-align:center">${d.airlineName||'-'}</div>
         </div>
-        ${(d.hotelQuickName||d.hotelName) ? '<div style="display:flex;border-bottom:1px solid #D5D5D5"><div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">호텔</div><div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000">' + (d.hotelQuickName||d.hotelName||'') + '</div></div>' : ''}
-        ${d.period ? '<div style="display:flex;border-bottom:1px solid #D5D5D5"><div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">일정</div><div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000">' + d.period + '</div></div>' : ''}
-        ${d.nights ? '<div style="display:flex;border-bottom:1px solid #D5D5D5"><div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">기간</div><div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000">' + d.nights + '박 ' + (parseInt(d.nights)+1) + '일</div></div>' : ''}
-        ${paxText ? '<div style="display:flex;border-bottom:1px solid #D5D5D5"><div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">인원</div><div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000">' + paxText + '</div></div>' : ''}
+        ${(d.hotelQuickName||d.hotelName) ? '<div style="display:flex;border-bottom:1px solid #D5D5D5"><div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;text-align:center;letter-spacing:3px">호 텔</div><div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000;text-align:center">' + (d.hotelQuickName||d.hotelName||'') + '</div></div>' : ''}
+        ${d.period ? '<div style="display:flex;border-bottom:1px solid #D5D5D5"><div style="min-width:76px;padding:10px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;text-align:center;letter-spacing:3px">일 정</div><div style="flex:1;padding:10px 14px;font-size:13px;font-weight:600;color:#000;text-align:center">' + d.period + (d.nights ? ' (' + d.nights + '박' + (parseInt(d.nights)+1) + '일)' : '') + '</div></div>' : ''}
         <div style="display:flex">
-          <div style="min-width:76px;padding:12px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E">요금</div>
-          <div style="flex:1;padding:12px 14px;font-size:20px;font-weight:800;color:#C0392B">₩${perPerson} / 인</div>
+          <div style="min-width:76px;padding:12px 12px;font-size:12px;font-weight:700;color:#FFF;background:#2A4A5E;text-align:center;letter-spacing:3px">요 금</div>
+          <div style="flex:1;padding:12px 14px;font-size:20px;font-weight:800;color:#C0392B;text-align:center">₩${perPerson} / 인</div>
         </div>
       </div>
 
