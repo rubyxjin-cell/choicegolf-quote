@@ -128,7 +128,7 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
 .golf-fields{background:rgba(28,61,46,0.04);border-radius:8px;padding:14px;margin-bottom:14px;display:none}
 .golf-fields.show{display:block}
 
-.schedule-item{display:grid;grid-template-columns:60px 60px 60px 1fr 28px;gap:6px;align-items:center;margin-bottom:6px;padding:6px 8px;background:#FFFFFF;border:1.5px solid #D5D5D5;border-radius:8px}
+.schedule-item{display:grid;grid-template-columns:60px 60px 60px 1fr 32px 28px;gap:6px;align-items:center;margin-bottom:6px;padding:6px 8px;background:#FFFFFF;border:1.5px solid #D5D5D5;border-radius:8px}
 .schedule-item input{background:#F8F8F6;border:1.5px solid #C8C8C8;border-radius:6px;padding:7px 8px;font-size:12px;color:var(--ink);font-family:'Noto Sans KR',sans-serif;outline:none;transition:border-color .15s,background .15s}
 .schedule-item input:focus{border-color:#2A6B3C;background:#FAFFFE}
 .schedule-item-del{background:none;border:none;cursor:pointer;color:var(--ink3);font-size:14px;display:flex;align-items:center;justify-content:center;border-radius:4px;transition:all .15s;width:28px;height:28px}
@@ -836,16 +836,19 @@ select option{background:white;color:var(--ink)}
         </div>
       </div>
 
-      <!-- ── 섹션: 예약 안내 (인보이스) ── -->
+      <!-- ── 섹션: INVOICE ── -->
       <div class="sec-header" id="sec-invoice" onclick="toggleSection('body-invoice')">
-        <div class="sec-header-left"><span>🧾</span> 예약 안내 (인보이스)</div>
+        <div class="sec-header-left"><span>🧾</span> INVOICE</div>
         <span class="sec-toggle collapsed" id="tog-invoice">▼</span>
       </div>
       <div class="sec-body hidden" id="body-invoice">
         <div class="form-card" style="margin-bottom:10px">
-          <div class="form-row col2">
-            <div class="field"><label>예약금</label><input type="text" id="deposit" placeholder=""></div>
+          <div class="form-row">
             <div class="field"><label>입금 계좌</label><input type="text" id="bankAccount" placeholder=""></div>
+          </div>
+          <div class="form-row col2">
+            <div class="field"><label>1인 예약금</label><input type="text" id="deposit" placeholder=""></div>
+            <div class="field"><label>안내 문구</label><input type="text" id="invoiceMsg" value="예약 시 담당자에게 여권 사본 전달 부탁드리며, 상기 계좌로 입금 부탁드립니다."></div>
           </div>
           <div class="form-row">
             <div class="field"><label>취소 및 환불 규정</label><textarea id="cancelPolicy" placeholder="" style="min-height:90px"></textarea></div>
@@ -970,6 +973,7 @@ select option{background:white;color:var(--ink)}
     <button class="modal-close" onclick="closePickerModal()">✕</button>
     <div class="modal-title" id="pickerModalTitle">📚 상품소개서에서 선택</div>
     <div style="font-size:12px;color:var(--ink3);margin-bottom:14px" id="pickerHint">클릭하여 선택하세요</div>
+    <div id="pickerFilterWrap"></div>
     <div class="picker-grid" id="pickerGrid">
       <div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--ink3)">로딩 중...</div>
     </div>
@@ -1299,14 +1303,29 @@ function addTagItem(type, val) {
   if(!wrap || !input) return;
   const tag = document.createElement('div');
   tag.className = 'tag-item';
-  tag.innerHTML = `${val}<button class="tag-item-del" onclick="this.parentElement.remove()">✕</button>`;
+  tag.innerHTML = `<span class="tag-text">${val}</span><button class="tag-item-btn" onclick="moveTag(this,-1)" title="왼쪽">◀</button><button class="tag-item-btn" onclick="moveTag(this,1)" title="오른쪽">▶</button><button class="tag-item-btn" onclick="editTag(this)" title="수정">✏</button><button class="tag-item-del" onclick="this.parentElement.remove()">✕</button>`;
   wrap.insertBefore(tag, input);
+}
+function moveTag(btn, dir) {
+  const tag = btn.closest('.tag-item');
+  const wrap = tag.parentElement;
+  const tags = Array.from(wrap.querySelectorAll('.tag-item'));
+  const idx = tags.indexOf(tag);
+  if (dir === -1 && idx > 0) wrap.insertBefore(tag, tags[idx-1]);
+  else if (dir === 1 && idx < tags.length - 1) wrap.insertBefore(tag, tags[idx+1].nextSibling);
+}
+function editTag(btn) {
+  const tag = btn.closest('.tag-item');
+  const textEl = tag.querySelector('.tag-text');
+  const oldVal = textEl.textContent.trim();
+  const newVal = prompt('항목 수정:', oldVal);
+  if (newVal !== null && newVal.trim()) textEl.textContent = newVal.trim();
 }
 
 function getTagValues(type) {
   const wrap = document.getElementById(type + '-wrap');
   if(!wrap) return [];
-  return Array.from(wrap.querySelectorAll('.tag-item')).map(t => t.firstChild.textContent.trim());
+  return Array.from(wrap.querySelectorAll('.tag-item')).map(t => { const tx = t.querySelector('.tag-text'); return tx ? tx.textContent.trim() : t.firstChild.textContent.trim(); });
 }
 
 /* ════════════════════════════
@@ -1530,13 +1549,28 @@ function photoGridHTML(photos, h=200, fallbackEmoji='⛳') {
 }
 
 function scheduleItemHTML(dayId, place='', time='', transport='', text='', color='') {
+  const isGolf = text.startsWith('⛳');
   return `<div class="schedule-item">
     <input type="text" placeholder="" value="${place}" style="font-size:12px">
     <input type="text" placeholder="" value="${transport}" style="font-size:12px">
     <input type="text" placeholder="09:00" value="${time}" style="text-align:center;font-size:12px">
-    <input type="text" placeholder="" value="${text}" style="font-size:12px">
+    <input type="text" placeholder="" value="${text}" style="font-size:12px" data-sched-text>
+    <button type="button" onclick="toggleGolfEmoji(this)" style="width:32px;height:32px;border:1.5px solid ${isGolf?'#fff':'#2A6B3C'};border-radius:6px;background:${isGolf?'#2A6B3C':'#F0F9F0'};color:${isGolf?'white':'inherit'};cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;padding:0" title="골프 표시">⛳</button>
     <button class="schedule-item-del" onclick="this.parentElement.remove()">✕</button>
   </div>`;
+}
+function toggleGolfEmoji(btn) {
+  const item = btn.closest('.schedule-item');
+  const textInput = item.querySelector('[data-sched-text]');
+  if (!textInput) return;
+  const val = textInput.value.trim();
+  if (val.startsWith('⛳')) {
+    textInput.value = val.replace(/^⛳\s*/, '');
+    btn.style.background = '#F0F9F0'; btn.style.borderColor = '#2A6B3C'; btn.style.color = 'inherit';
+  } else {
+    textInput.value = '⛳ ' + val;
+    btn.style.background = '#2A6B3C'; btn.style.borderColor = '#fff'; btn.style.color = 'white';
+  }
 }
 
 function applySchedColor(sel) {
@@ -1713,7 +1747,7 @@ function collectData() {
     contactPhone: v('contactPhone'), contactKakao: v('contactKakao'),
     companyName: v('companyName'), companyNameEn: v('companyNameEn'),
     logoUrl: v('logoUrl'),
-    deposit: v('deposit'), bankAccount: v('bankAccount'), cancelPolicy: v('cancelPolicy')
+    deposit: v('deposit'), bankAccount: v('bankAccount'), cancelPolicy: v('cancelPolicy'), invoiceMsg: v('invoiceMsg')
   };
 }
 
@@ -1936,14 +1970,13 @@ body{padding-bottom:76px}
   <!-- 05 예약 안내 -->
   ${(d.deposit || d.bankAccount || d.cancelPolicy) ? `
   <section class="reveal" style="padding:36px 20px;border-bottom:1px solid #E8E6E1">
-    <div class="sec-title">05 &nbsp;예약 안내</div>
-    ${d.deposit ? `<div style="border:1px solid #E8E6E1;border-radius:12px;padding:16px;margin-bottom:12px;background:#FAFAF8">
-      <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#111;margin-bottom:8px">예약금</div>
-      <div style="font-size:18px;font-weight:700;color:#C0392B">${d.deposit}</div>
+    <div class="sec-title">05 &nbsp;INVOICE</div>
+    ${d.bankAccount ? `<div style="border:2px solid #2A4A5E;border-radius:12px;padding:16px;margin-bottom:12px;background:#F7FAFA;cursor:pointer" onclick="var t=document.createElement('textarea');t.value='${d.bankAccount}';document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);var tt=document.getElementById('copyToast');if(tt){tt.style.opacity=1;setTimeout(function(){tt.style.opacity=0},1500);}">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#2A4A5E;margin-bottom:8px">💳 입금 계좌 <span style="font-size:10px;color:#888;font-weight:500;margin-left:6px">(클릭하면 복사)</span></div>
+      <div style="font-size:16px;font-weight:800;color:#000;line-height:1.8">${d.bankAccount}</div>
     </div>` : ''}
-    ${d.bankAccount ? `<div style="border:1px solid #E8E6E1;border-radius:12px;padding:16px;margin-bottom:12px;background:#FAFAF8">
-      <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#111;margin-bottom:8px">입금 계좌</div>
-      <div style="font-size:14px;font-weight:700;color:#000;line-height:1.8">${d.bankAccount}</div>
+    ${d.deposit ? `<div style="border:1.5px solid #C9A268;border-radius:12px;padding:18px 16px;margin-bottom:12px;background:#FFFBF2">
+      <div style="font-size:13px;font-weight:700;color:#92400E;line-height:1.9;word-break:keep-all">예약 시 담당자에게 여권 사본 전달 부탁드리며,<br>1인 예약금 <span style="font-size:16px;font-weight:800;color:#C0392B">${d.deposit}</span> 상기 계좌로 입금 부탁드립니다.</div>
     </div>` : ''}
     ${d.cancelPolicy ? `<div style="border:1px solid #E8E6E1;border-radius:12px;padding:16px;margin-bottom:12px;background:#FFF9F0">
       <div style="font-size:10px;font-weight:700;letter-spacing:1.5px;color:#8B6020;margin-bottom:10px">취소 및 환불 규정</div>
@@ -1967,6 +2000,8 @@ body{padding-bottom:76px}
       </div>
     </div>
   </div>
+
+  <div id="copyToast" style="position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#111;color:#fff;font-size:13px;padding:10px 22px;border-radius:24px;opacity:0;pointer-events:none;transition:opacity .3s;z-index:999">계좌번호가 복사되었습니다 ✓</div>
 
   <!-- FOOTER -->
   <footer style="padding:28px 20px 80px;text-align:center;background:#2C2C2C">
@@ -2723,6 +2758,7 @@ function applyProductData(d) {
   set('deposit', d.deposit);
   set('bankAccount', d.bankAccount);
   set('cancelPolicy', d.cancelPolicy);
+  if(document.getElementById('invoiceMsg') && d.invoiceMsg) document.getElementById('invoiceMsg').value = d.invoiceMsg;
   // 견적발송일 오늘 날짜
   const qd = document.getElementById('quoteDate');
   if(qd && !qd.value) qd.value = new Date().toISOString().split('T')[0];
@@ -3455,7 +3491,7 @@ async function deleteLibItem(id, name) {
 /* ─── Picker Modal ─── */
 async function openPickerModal(cat, mode) {
   libState.pickerCat = cat;
-  libState.pickerMode = mode; // 'single' | 'multi'
+  libState.pickerMode = mode;
   libState.pickerSelected.clear();
   const title = document.getElementById('pickerModalTitle');
   const hint  = document.getElementById('pickerHint');
@@ -3464,14 +3500,34 @@ async function openPickerModal(cat, mode) {
   const grid = document.getElementById('pickerGrid');
   grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--ink3)">로딩 중...</div>';
   document.getElementById('pickerModal').style.display = 'flex';
+  const filterWrap = document.getElementById('pickerFilterWrap');
+  if (filterWrap) filterWrap.innerHTML = '';
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/library?category=eq.${cat}&order=created_at.desc`, {
       headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
     });
     const items = await res.json();
     libState._pickerItems = items;
+    buildPickerFilter(items);
     renderPickerGrid(items);
   } catch(e) { grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--red)">불러오기 실패</div>'; }
+}
+function buildPickerFilter(items) {
+  const fw = document.getElementById('pickerFilterWrap');
+  if (!fw) return;
+  const countries = [...new Set(items.map(i => i.country).filter(Boolean))].sort();
+  if (!countries.length) { fw.innerHTML = ''; return; }
+  let h = '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">';
+  h += '<button class="cat-btn cat-active" onclick="filterPickerItems(\'\')" data-pf="">전체</button>';
+  countries.forEach(co => { h += '<button class="cat-btn" onclick="filterPickerItems(\''+co+'\')" data-pf="'+co+'">'+co+'</button>'; });
+  h += '</div>';
+  fw.innerHTML = h;
+}
+function filterPickerItems(filter) {
+  document.querySelectorAll('#pickerFilterWrap .cat-btn').forEach(b => b.classList.toggle('cat-active', b.getAttribute('data-pf') === filter));
+  const items = libState._pickerItems || [];
+  const filtered = filter ? items.filter(i => i.country === filter) : items;
+  renderPickerGrid(filtered);
 }
 
 function renderPickerGrid(items) {
