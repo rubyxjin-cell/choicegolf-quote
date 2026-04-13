@@ -128,7 +128,7 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;font-size:14px;c
 .golf-fields{background:rgba(28,61,46,0.04);border-radius:8px;padding:14px;margin-bottom:14px;display:none}
 .golf-fields.show{display:block}
 
-.schedule-item{display:grid;grid-template-columns:60px 60px 60px 1fr 30px 28px;gap:6px;align-items:center;margin-bottom:6px;padding:6px 8px;background:#FFFFFF;border:1.5px solid #D5D5D5;border-radius:8px}
+.schedule-item{display:grid;grid-template-columns:60px 60px 60px 1fr 28px;gap:6px;align-items:center;margin-bottom:6px;padding:6px 8px;background:#FFFFFF;border:1.5px solid #D5D5D5;border-radius:8px}
 .schedule-item input{background:#F8F8F6;border:1.5px solid #C8C8C8;border-radius:6px;padding:7px 8px;font-size:12px;color:var(--ink);font-family:'Noto Sans KR',sans-serif;outline:none;transition:border-color .15s,background .15s}
 .schedule-item input:focus{border-color:#2A6B3C;background:#FAFFFE}
 .schedule-item-del{background:none;border:none;cursor:pointer;color:var(--ink3);font-size:14px;display:flex;align-items:center;justify-content:center;border-radius:4px;transition:all .15s;width:28px;height:28px}
@@ -897,6 +897,27 @@ function flagImg(country, size=20) {
   return `<img src="https://flagcdn.com/w40/${code}.png" style="height:${size}px;vertical-align:middle;border-radius:2px;margin-right:4px" alt="">`;
 }
 
+/* ═══ 색상 태그 파서: [빨강]텍스트[빨강] → 빨간색 텍스트 ═══ */
+const COLOR_TAG_MAP = {
+  '빨강':'#E53E3E','빨간':'#E53E3E','빨간색':'#E53E3E','레드':'#E53E3E','red':'#E53E3E',
+  '파랑':'#2563EB','파란':'#2563EB','파란색':'#2563EB','블루':'#2563EB','blue':'#2563EB',
+  '초록':'#059669','초록색':'#059669','녹색':'#059669','그린':'#059669','green':'#059669',
+  '노랑':'#D97706','노란':'#D97706','노란색':'#D97706','옐로우':'#D97706','yellow':'#D97706',
+  '주황':'#EA580C','주황색':'#EA580C','오렌지':'#EA580C','orange':'#EA580C',
+  '보라':'#7C3AED','보라색':'#7C3AED','퍼플':'#7C3AED','purple':'#7C3AED',
+  '분홍':'#EC4899','분홍색':'#EC4899','핑크':'#EC4899','pink':'#EC4899',
+  '하늘':'#0EA5E9','하늘색':'#0EA5E9','cyan':'#0EA5E9',
+  '갈색':'#92400E','브라운':'#92400E','brown':'#92400E',
+  '회색':'#6B7280','그레이':'#6B7280','gray':'#6B7280',
+};
+function parseColorTags(text) {
+  if (!text) return text;
+  return text.replace(/\[([^\]]+?)\](.+?)\[\1\]/g, (m, tag, content) => {
+    const hex = COLOR_TAG_MAP[tag.toLowerCase()] || COLOR_TAG_MAP[tag];
+    return hex ? '<span style="color:'+hex+';font-weight:700">'+content+'</span>' : m;
+  });
+}
+
 let currentRegion = '';
 
 /* ════════════════════════════
@@ -1280,7 +1301,7 @@ function addDay(data={}, num=null, fromStr=null, dateObj=null) {
   }
 
   const schedItems = (data.items || [{place:'',time:'',transport:'',text:'',color:''}])
-    .map(it => scheduleItemHTML(id, it.place||'', it.time||'', it.transport||'', it.text||'', it.color||'')).join('');
+    .map(it => scheduleItemHTML(id, it.place||'', it.time||'', it.transport||'', it.text||'')).join('');
 
   const meals = data.meals || {bf:'', lunch:'', dinner:''};
   const hotelName = data.hotelStay || '';
@@ -1302,12 +1323,11 @@ function addDay(data={}, num=null, fromStr=null, dateObj=null) {
         <div class="day-meal-field"><label>🍽 석식</label><input type="text" placeholder="" value="${meals.dinner||''}" data-meal="dinner"></div>
       </div>
       <!-- 시간표 헤더 -->
-      <div style="display:grid;grid-template-columns:60px 60px 60px 1fr 30px 28px;gap:6px;margin:0 0 6px;padding:6px 8px;background:#2A4A5E;border-radius:6px">
+      <div style="display:grid;grid-template-columns:60px 60px 60px 1fr 28px;gap:6px;margin:0 0 6px;padding:6px 8px;background:#2A4A5E;border-radius:6px">
         <span style="font-size:10px;color:#FFFFFF;font-weight:700;letter-spacing:.5px">장소</span>
         <span style="font-size:10px;color:#FFFFFF;font-weight:700;letter-spacing:.5px">교통</span>
         <span style="font-size:10px;color:#FFFFFF;font-weight:700;letter-spacing:.5px">시간</span>
         <span style="font-size:10px;color:#FFFFFF;font-weight:700;letter-spacing:.5px">일정 내용</span>
-        <span style="font-size:10px;color:#FFFFFF;font-weight:700;letter-spacing:.5px">색상</span>
         <span></span>
       </div>
       <div class="schedule-items" id="sched-${id}">${schedItems}</div>
@@ -1400,16 +1420,11 @@ function photoGridHTML(photos, h=200, fallbackEmoji='⛳') {
 }
 
 function scheduleItemHTML(dayId, place='', time='', transport='', text='', color='') {
-  const bgStyle = color ? `background:${color}20;border-left:3px solid ${color}` : '';
-  const colorOpts = SCHED_COLORS.map((c,i) =>
-    `<option value="${c}" ${color===c?'selected':''}>${COLOR_LABELS[i]}</option>`
-  ).join('');
-  return `<div class="schedule-item" style="${bgStyle}">
-    <input type="text" placeholder="인천" value="${place}" style="font-size:12px" oninput="updateSchedColor(this)">
+  return `<div class="schedule-item">
+    <input type="text" placeholder="인천" value="${place}" style="font-size:12px">
     <input type="text" placeholder="버스" value="${transport}" style="font-size:12px">
     <input type="text" placeholder="09:00" value="${time}" style="text-align:center;font-size:12px">
-    <input type="text" placeholder="일정 내용" value="${text}" style="font-size:12px">
-    <select onchange="applySchedColor(this)" style="font-size:12px;border:1.5px solid var(--line);border-radius:6px;padding:4px 2px;background:var(--input-bg);width:30px;text-align:center;cursor:pointer">${colorOpts}</select>
+    <input type="text" placeholder="일정 내용 ([빨강]텍스트[빨강] = 색상)" value="${text}" style="font-size:12px">
     <button class="schedule-item-del" onclick="this.parentElement.remove()">✕</button>
   </div>`;
 }
@@ -1507,13 +1522,11 @@ function collectData() {
     const items = [];
     block.querySelectorAll('.schedule-item').forEach(si => {
       const ins = si.querySelectorAll('input');
-      const colorSel = si.querySelector('select');
       const place = ins[0]?.value || '';
       const transport = ins[1]?.value || '';
       const time = ins[2]?.value || '';
       const text = ins[3]?.value || '';
-      const color = colorSel?.value || '';
-      if(text || time || place) items.push({place, time, transport, text, color});
+      if(text || time || place) items.push({place, time, transport, text});
     });
     // 식사 텍스트 수집
     const meals = {
@@ -1621,11 +1634,10 @@ function generateHTML(d) {
     }
 
     const itemRows = items.map((it, ri) => {
-      const textStyle = it.color ? 'color:' + it.color + ';font-weight:700' : 'color:#222';
-      const bgStyle = it.color ? 'background:' + it.color + '10' : (ri%2===0 ? '' : 'background:#FAFAF8');
+      const bgStyle = ri%2===0 ? '' : 'background:#FAFAF8';
       return '<tr style="' + bgStyle + '">' +
         '<td style="' + dayBorder + ';padding:8px 8px;font-size:12px;color:#A07840;font-weight:700;text-align:center;vertical-align:top">' + (it.time||'') + '</td>' +
-        '<td style="' + dayBorder + ';padding:8px 14px;font-size:13px;' + textStyle + ';line-height:1.6;word-break:keep-all">' + (it.text||'') + '</td>' +
+        '<td style="' + dayBorder + ';padding:8px 14px;font-size:13px;color:#222;line-height:1.6;word-break:keep-all">' + parseColorTags(it.text||'') + '</td>' +
       '</tr>';
     }).join('');
 
@@ -1645,8 +1657,8 @@ function generateHTML(d) {
   // daysHTML 끝
 
   // 포함/불포함
-  const incHTML = d.includes.map(t=>`<li style="font-size:13px;font-weight:600;color:#000;padding:5px 0">· ${t}</li>`).join('');
-  const excHTML = d.excludes.map(t=>`<li style="font-size:13px;font-weight:600;color:#000;padding:5px 0">· ${t}</li>`).join('');
+  const incHTML = d.includes.map(t=>`<li style="font-size:13px;font-weight:600;color:#000;padding:5px 0">· ${parseColorTags(t)}</li>`).join('');
+  const excHTML = d.excludes.map(t=>`<li style="font-size:13px;font-weight:600;color:#000;padding:5px 0">· ${parseColorTags(t)}</li>`).join('');
 
   // 호텔 편의시설
   const hotelFacHTML = d.hotelFacilities.map(f=>`<span style="font-size:12px;padding:5px 12px;background:#F0F4F2;border:1px solid #C8DDD4;border-radius:20px;color:#2C2C2C;font-weight:500">${f}</span>`).join('');
@@ -1664,7 +1676,7 @@ function generateHTML(d) {
           <div style="font-family:'Noto Serif KR',serif;font-size:20px;font-weight:700;color:#1a1a1a;margin-bottom:4px;line-height:1.3">${c.name}</div>
           <div style="font-size:12px;font-weight:500;color:#000;margin-bottom:6px">${c.nameJp}${c.nameJp&&c.holes?' · ':''}${c.holes}</div>
           <div style="width:40px;height:1.5px;background:#C9A268;margin:14px auto;border-radius:2px"></div>
-          ${c.desc?`<div style="font-size:13px;color:#000;font-weight:500;line-height:1.9;text-align:left;padding:0 4px;margin-bottom:14px;word-break:keep-all">${c.desc}</div>`:''}
+          ${c.desc?`<div style="font-size:13px;color:#000;font-weight:500;line-height:1.9;text-align:left;padding:0 4px;margin-bottom:14px;word-break:keep-all">${parseColorTags(c.desc)}</div>`:''}
           <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center">${featHTML}</div>
         </div>
       </div>`;
@@ -1767,7 +1779,7 @@ body{padding-bottom:76px}
     <!-- REMARK -->
     <div style="margin-top:20px;border:1.5px solid #C9A268;border-radius:10px;padding:18px 20px;background:#FFFBF2">
       <div style="font-size:12px;font-weight:700;letter-spacing:2px;color:#A07840;margin-bottom:10px;text-align:center">REMARK</div>
-      <div style="font-size:13px;color:#000;line-height:1.9;font-weight:700">${(d.remark||'').replace(/\n/g,'<br>')}</div>
+      <div style="font-size:13px;color:#000;line-height:1.9;font-weight:700">${parseColorTags((d.remark||'').replace(/\n/g,'<br>'))}</div>
     </div>` : ''}
   </section>
 
@@ -1793,7 +1805,7 @@ body{padding-bottom:76px}
         <div style="font-family:'Noto Serif KR',serif;font-size:20px;font-weight:700;color:#1a1a1a;margin-bottom:4px;line-height:1.3">${d.hotelName}</div>
         <div style="font-size:12px;font-weight:500;color:#000;margin-bottom:6px">${d.hotelNameKr}${d.hotelNameKr&&d.hotelRoom?' · ':''}${d.hotelRoom}</div>
         <div style="width:40px;height:1.5px;background:#C9A268;margin:14px auto;border-radius:2px"></div>
-        ${d.hotelDesc?`<div style="font-size:13px;color:#000;font-weight:500;line-height:1.9;text-align:left;padding:0 4px;margin-bottom:14px;word-break:keep-all">${d.hotelDesc}</div>`:''}
+        ${d.hotelDesc?`<div style="font-size:13px;color:#000;font-weight:500;line-height:1.9;text-align:left;padding:0 4px;margin-bottom:14px;word-break:keep-all">${parseColorTags(d.hotelDesc)}</div>`:''}
         <div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center">${hotelFacHTML}</div>
       </div>
     </div>
