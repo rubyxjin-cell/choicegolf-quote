@@ -901,7 +901,7 @@ const COUNTRY_FLAG_IMG = {'일본':'jp','중국':'cn','대만':'tw','태국':'th
 function flagImg(country, size=20) {
   const code = COUNTRY_FLAG_IMG[country];
   if (!code) return '';
-  return `<img src="https://flagcdn.com/${size*2}x${Math.round(size*1.5)}/${code}.png" style="height:${size}px;vertical-align:middle;border-radius:2px;margin-right:4px" alt="${country}">`;
+  return `<img src="https://flagcdn.com/w40/${code}.png" style="height:${size}px;vertical-align:middle;border-radius:2px;margin-right:4px" alt="">`;
 }
 
 let currentRegion = '';
