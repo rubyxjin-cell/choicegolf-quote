@@ -1593,7 +1593,32 @@ function autoGenDays() {
     if (toEl) toEl.value = toDateStr;
   }
 
-  // 기존 일정 초기화
+  // 기존 일정 데이터 보존
+  const savedDays = [];
+  document.querySelectorAll('.day-block').forEach((block, i) => {
+    const items = [];
+    block.querySelectorAll('.schedule-item').forEach(si => {
+      const ins = si.querySelectorAll('input');
+      const place = ins[0]?.value || '';
+      const transport = ins[1]?.value || '';
+      const time = ins[2]?.value || '';
+      const text = ins[3]?.value || '';
+      if(text || time || place) items.push({place, time, transport, text});
+    });
+    const meals = {
+      bf: block.querySelector('[data-meal="bf"]')?.value || '',
+      lunch: block.querySelector('[data-meal="lunch"]')?.value || '',
+      dinner: block.querySelector('[data-meal="dinner"]')?.value || '',
+    };
+    const hotelStay = block.querySelector('[data-hotel="true"]')?.value || '';
+    savedDays.push({
+      num: i+1,
+      title: block.querySelector('.day-block-title-input')?.value || '',
+      meals, hotelStay, items
+    });
+  });
+
+  // 일정 초기화 후 재생성
   document.getElementById('dayBlocks').innerHTML = '';
   dayCount = 0;
 
@@ -1622,7 +1647,8 @@ function autoGenDays() {
         dateObj = new Date(fromDate);
         dateObj.setDate(fromDate.getDate() + i);
       }
-      addDay({ title: '' }, i + 1, from || '', dateObj);
+      const existing = savedDays[i] || { title: '' };
+      addDay(existing, i + 1, from || '', dateObj);
     }
   }
   updateSummary();
@@ -3339,13 +3365,25 @@ async function deleteQuote(id) {
 async function duplicateQuote(id) {
   if (!(await ensureAuth())) return;
   const q = quotesCache.find(x => x.id === id);
-  if (!q) { showToast('❌ 견적서를 찾을 수 없습니다'); return; }
-  if (!confirm(`"${q.quote_name||'이 견적서'}"를 복제할까요?`)) return;
+  if (!confirm(`"${q?.quote_name||'이 견적서'}"를 복제할까요?`)) return;
   try {
-    const newData = JSON.parse(JSON.stringify(q.data));
-    const newName = (q.quote_name||'견적서') + ' (복사본)';
-    if (newData.customerName) newData.customerName = newData.customerName + ' (복사본)';
-    const body = { quote_name: newName, data: newData, status: 'draft' };
+    // 서버에서 원본 데이터 직접 가져오기 (캐시 대신)
+    const origRes = await fetch(`${SUPABASE_URL}/rest/v1/quotes?id=eq.${id}&select=*`, {
+      headers: { 'apikey':SUPABASE_KEY,'Authorization':`Bearer ${AUTH_TOKEN}` }
+    });
+    const origRows = await origRes.json();
+    if (!origRows || !origRows[0]) { showToast('❌ 원본 견적서를 찾을 수 없습니다'); return; }
+    const orig = origRows[0];
+    const newData = JSON.parse(JSON.stringify(orig.data));
+    const newName = (orig.quote_name||'견적서') + ' (복사본)';
+    const body = {
+      quote_name: newName,
+      data: newData,
+      status: 'draft',
+      product_id: orig.product_id || null,
+      customer_name: orig.customer_name || '',
+      customer_phone: orig.customer_phone || ''
+    };
     const res = await fetch(`${SUPABASE_URL}/rest/v1/quotes`, {
       method: 'POST',
       headers: { 'apikey':SUPABASE_KEY,'Authorization':`Bearer ${AUTH_TOKEN}`,'Content-Type':'application/json','Prefer':'return=representation' },
