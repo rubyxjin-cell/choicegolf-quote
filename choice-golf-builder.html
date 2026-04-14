@@ -3151,6 +3151,7 @@ function renderQuoteList() {
       <div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap">
         <button onclick="changeQuoteStatus('${q.id}','${STATUS_NEXT[status]}')" style="padding:7px 10px;border-radius:7px;border:1px solid var(--line);background:var(--input-bg);font-size:11px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;color:var(--ink2);white-space:nowrap">${STATUS_NEXT_LABEL[status]}</button>
         <button onclick="generateQuoteLink('${q.id}')" style="padding:7px 12px;border-radius:7px;border:none;background:#2563EB;color:white;font-size:12px;font-weight:500;cursor:pointer;font-family:'Noto Sans KR',sans-serif">🔗 링크</button>
+        <button onclick="duplicateQuote('${q.id}')" style="padding:7px 10px;border-radius:7px;border:1px solid #B0C4B1;background:none;color:#2A6B3C;font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif" title="복제">📋</button>
         <button onclick="deleteQuote('${q.id}')" style="padding:7px 10px;border-radius:7px;border:1px solid #DFCAC9;background:none;color:var(--red);font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif">🗑</button>
       </div>
     </div>`;
@@ -3332,6 +3333,28 @@ async function deleteQuote(id) {
     showToast('🗑 견적서가 삭제됐어요');
     fetchQuotes();
   } catch(e) { showToast('❌ 삭제 오류: ' + e.message); }
+}
+
+/* 견적서 복제 */
+async function duplicateQuote(id) {
+  if (!(await ensureAuth())) return;
+  const q = quotesCache.find(x => x.id === id);
+  if (!q) { showToast('❌ 견적서를 찾을 수 없습니다'); return; }
+  if (!confirm(`"${q.quote_name||'이 견적서'}"를 복제할까요?`)) return;
+  try {
+    const newData = JSON.parse(JSON.stringify(q.data));
+    const newName = (q.quote_name||'견적서') + ' (복사본)';
+    if (newData.customerName) newData.customerName = newData.customerName + ' (복사본)';
+    const body = { quote_name: newName, data: newData, status: 'draft' };
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/quotes`, {
+      method: 'POST',
+      headers: { 'apikey':SUPABASE_KEY,'Authorization':`Bearer ${AUTH_TOKEN}`,'Content-Type':'application/json','Prefer':'return=representation' },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) { const t = await res.text(); throw new Error(t||res.status); }
+    showToast('📋 견적서가 복제되었습니다');
+    fetchQuotes();
+  } catch(e) { showToast('❌ 복제 오류: ' + e.message); }
 }
 
 /* 견적서 모드 종료 → 상품 모드로 복귀 */
