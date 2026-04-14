@@ -3765,6 +3765,7 @@ function confirmPickerSelection() {
     // 첫 번째 선택 항목을 호텔 폼에 적용
     const h = selected[0];
     if (h.name) { const el = document.getElementById('hotelName'); if(el) el.value = h.name; }
+    if (h.name_kr) { const el = document.getElementById('hotelNameKr'); if(el) el.value = h.name_kr; }
     if (h.description) { const el = document.getElementById('hotelDesc'); if(el) el.value = h.description; }
     if (h.photos && h.photos.length) {
       hotelPhotosState = [...h.photos, '', '', '', ''].slice(0, 4);
@@ -3784,7 +3785,7 @@ function confirmPickerSelection() {
     selected.forEach(g => {
       addCourse({
         name: g.name || '',
-        nameJp: '',
+        nameKr: g.name_kr || '',
         desc: g.description || '',
         features: (g.tags || []).join(','),
         photos: g.photos || [],
