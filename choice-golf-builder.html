@@ -1210,7 +1210,7 @@ function initApp() {
   ['개인 음료 · 주류','중식 (자유식)','쇼핑 · 개인 관광','싱글룸 추가 비용','여권 · 비자 발급비','기타 개인 경비'].forEach(t => addTagItem('excludes', t));
 
   // 기본 호텔 편의시설
-  ['🛁 천연 온천 스파','🍳 조식 포함','📶 무료 Wi-Fi','⛳ 골프코스 직결','🏊 실내외 수영장','🌊 오션뷰 객실'].forEach(t => addTagItem('hotelFacilities', t));
+  ['🛁 천연 온천 스파','조식 포함','📶 무료 Wi-Fi','⛳ 골프코스 직결','🏊 실내외 수영장','🌊 오션뷰 객실'].forEach(t => addTagItem('hotelFacilities', t));
 
   // 기본 골프장 2개
   addCourse({round:1, day:2, name:'미야자키 컨트리클럽', nameJp:'宮崎CC', holes:'18홀 파72', rating:'코스 레이팅 72.8', desc:'완만한 페어웨이와 전략적 벙커 배치로 중급자도 충분히 즐길 수 있는 파크랜드 스타일 코스. 라운드 후 온천이 피로를 풀어드립니다.', features:'🚗 카트 포함,👘 캐디 선택,🛁 온천 입욕', isPGA:false});
@@ -2015,9 +2015,9 @@ function generateHTML(d) {
     // 식사 정보 렌더링
     const meals = day.meals || {};
     const mealItems = [];
-    mealItems.push('🍳 조식: ' + (meals.bf || '-'));
-    mealItems.push('🍜 중식: ' + (meals.lunch || '-'));
-    mealItems.push('🍽 석식: ' + (meals.dinner || '-'));
+    mealItems.push('조식' + (meals.bf ? ': ' + meals.bf : ''));
+    mealItems.push('중식' + (meals.lunch ? ': ' + meals.lunch : ''));
+    mealItems.push('석식' + (meals.dinner ? ': ' + meals.dinner : ''));
     const mealRow = '<tr><td colspan="2" style="padding:0"><div style="margin:8px 10px;border:1.5px solid #D4A843;border-radius:8px;padding:10px 14px;background:#FFF9F0;font-size:12px;color:#92400E;font-weight:700;text-align:center">' + mealItems.join(' &nbsp;│&nbsp; ') + '</div></td></tr>';
 
     // 호텔 정보 렌더링 (고급 테두리로 구분)
@@ -4701,7 +4701,7 @@ function generateConfHTML(d) {
     if(day.teeoff)badges.push('<span style="display:inline-block;background:#059669;color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px">⛳ 티옵 '+day.teeoff+'</span>');
     const badgeRow=badges.length?'<div style="padding:8px 14px;background:#F0FFF4;border-bottom:1px solid #E8E6E1;display:flex;flex-wrap:wrap;gap:6px">'+badges.join('')+'</div>':'';
     const items=(day.items||[]).map((it,ri)=>{const bg=ri%2===0?'':'background:#FAFAF8';return '<tr style="'+bg+'"><td style="border-bottom:1px solid #D5D5D5;padding:8px 8px;font-size:12px;color:#A07840;font-weight:700;text-align:center;vertical-align:top">'+(it.time||'')+'</td><td style="border-bottom:1px solid #D5D5D5;padding:8px 14px;font-size:13px;color:#222;line-height:1.6;word-break:keep-all">'+pCT(it.text||'')+'</td></tr>';}).join('');
-    const meals=day.meals||{};const mi=[];mi.push('🍳 조식: '+(meals.bf||'-'));mi.push('🍜 중식: '+(meals.lunch||'-'));mi.push('🍽 석식: '+(meals.dinner||'-'));
+    const meals=day.meals||{};const mi=[];mi.push('조식'+(meals.bf?': '+meals.bf:''));mi.push('중식'+(meals.lunch?': '+meals.lunch:''));mi.push('석식'+(meals.dinner?': '+meals.dinner:''));
     const mealRow='<tr><td colspan="2" style="padding:0"><div style="margin:8px 10px;border:1.5px solid #D4A843;border-radius:8px;padding:10px 14px;background:#FFF9F0;font-size:12px;color:#92400E;font-weight:700;text-align:center">'+mi.join(' │ ')+'</div></td></tr>';
     return '<div style="border:1.5px solid #2A6B3C;border-radius:10px;overflow:hidden;margin-bottom:12px"><div style="background:#2A4A5E;padding:10px 16px;font-size:14px;font-weight:800;color:white">'+label+'</div>'+badgeRow+'<table style="width:100%;border-collapse:collapse;table-layout:fixed"><colgroup><col style="width:58px"><col></colgroup><tr><th style="'+thS+';text-align:center">시간</th><th style="'+thS+';text-align:center">일정</th></tr>'+items+mealRow+'</table></div>';
   }).join('');
