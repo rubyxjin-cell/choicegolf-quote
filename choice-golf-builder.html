@@ -1235,6 +1235,7 @@ function initApp() {
   document.getElementById('priceNote').value = '※ 항공권 유류할증료·환율 시세에 따라 금액이 변동될 수 있습니다\n※ 예약 확정 시 총 금액의 30% 계약금 납입\n※ 잔금은 출발 14일 전까지 납입 바랍니다';
   document.getElementById('companyName').value = '초이스골프';
   document.getElementById('companyNameEn').value = 'Choice Golf Tour';
+  document.getElementById('logoUrl').value = 'https://qmzrpyyadoajwziqachm.supabase.co/storage/v1/object/public/golf-images/logo.png';
 
   calcTotal();
   updateSummary();
@@ -1341,6 +1342,7 @@ function clearForm() {
   ids.forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
   const cn = document.getElementById('companyName'); if(cn) cn.value = '초이스골프';
   const ce = document.getElementById('companyNameEn'); if(ce) ce.value = 'Choice Golf Tour';
+  const lu = document.getElementById('logoUrl'); if(lu) lu.value = 'https://qmzrpyyadoajwziqachm.supabase.co/storage/v1/object/public/golf-images/logo.png';
   // 오늘 날짜 자동 세팅
   const qd = document.getElementById('quoteDate');
   if(qd) qd.value = new Date().toISOString().split('T')[0];
