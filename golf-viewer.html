@@ -203,9 +203,9 @@ function renderPage(d) {
     // 식사 정보 렌더링
     const meals = day.meals || {};
     const mealItems = [];
-    mealItems.push('🍳 조식: ' + (meals.bf || '-'));
-    mealItems.push('🍜 중식: ' + (meals.lunch || '-'));
-    mealItems.push('🍽 석식: ' + (meals.dinner || '-'));
+    mealItems.push('조식' + (meals.bf ? ': ' + meals.bf : ''));
+    mealItems.push('중식' + (meals.lunch ? ': ' + meals.lunch : ''));
+    mealItems.push('석식' + (meals.dinner ? ': ' + meals.dinner : ''));
     const mealRow = '<tr><td colspan="2" style="padding:0"><div style="margin:8px 10px;border:1.5px solid #D4A843;border-radius:8px;padding:10px 14px;background:#FFF9F0;font-size:12px;color:#92400E;font-weight:700;text-align:center">' + mealItems.join(' &nbsp;│&nbsp; ') + '</div></td></tr>';
 
     // 호텔 정보 (고급 테두리)
@@ -504,7 +504,7 @@ function renderConfirmation(d) {
       return '<tr style="'+bg+'"><td style="border-bottom:1px solid #D5D5D5;padding:8px 8px;font-size:12px;color:#A07840;font-weight:700;text-align:center;vertical-align:top">'+(it.time||'')+'</td><td style="border-bottom:1px solid #D5D5D5;padding:8px 14px;font-size:13px;color:#222;line-height:1.6;word-break:keep-all">'+parseColorTags(it.text||'')+'</td></tr>';
     }).join('');
     const meals=day.meals||{};const mi=[];
-    mi.push('🍳 조식: '+(meals.bf||'-'));mi.push('🍜 중식: '+(meals.lunch||'-'));mi.push('🍽 석식: '+(meals.dinner||'-'));
+    mi.push('조식'+(meals.bf?': '+meals.bf:''));mi.push('중식'+(meals.lunch?': '+meals.lunch:''));mi.push('석식'+(meals.dinner?': '+meals.dinner:''));
     const mealRow='<tr><td colspan="2" style="padding:0"><div style="margin:8px 10px;border:1.5px solid #D4A843;border-radius:8px;padding:10px 14px;background:#FFF9F0;font-size:12px;color:#92400E;font-weight:700;text-align:center">'+mi.join(' &nbsp;│&nbsp; ')+'</div></td></tr>';
     return '<div style="border:1.5px solid #2A6B3C;border-radius:10px;overflow:hidden;margin-bottom:12px">'+
       '<div style="background:#2A4A5E;padding:10px 16px;font-size:14px;font-weight:800;color:white">'+label+'</div>'+
