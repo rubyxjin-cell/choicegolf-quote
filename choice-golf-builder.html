@@ -1116,6 +1116,28 @@ function doLogout() {
 
 window.addEventListener('DOMContentLoaded', checkAuth);
 
+/* ── 토큰 자동 갱신 (50분 간격) ── */
+let authRefreshTimer = null;
+function startAuthRefresh() {
+  if (authRefreshTimer) clearInterval(authRefreshTimer);
+  authRefreshTimer = setInterval(async () => {
+    const expiry = parseInt(localStorage.getItem('cg_expiry') || '0');
+    if (expiry - Date.now() < 10 * 60 * 1000) {
+      await refreshSession();
+    }
+  }, 50 * 60 * 1000);
+}
+
+/* ── API 호출 전 토큰 확인 ── */
+async function ensureAuth() {
+  const expiry = parseInt(localStorage.getItem('cg_expiry') || '0');
+  if (expiry - Date.now() < 2 * 60 * 1000) {
+    const ok = await refreshSession();
+    if (!ok) { showToast('⚠️ 세션 만료. 다시 로그인해주세요'); doLogout(); return false; }
+  }
+  return true;
+}
+
 /* ════════════════════════════
    STATE
 ════════════════════════════ */
@@ -1168,6 +1190,7 @@ let currentRegion = '';
    INIT
 ════════════════════════════ */
 function initApp() {
+  startAuthRefresh();
   // 오늘 날짜 자동 설정
   const today = new Date().toISOString().split('T')[0];
   const qd = document.getElementById('quoteDate'); if(qd) qd.value = today;
@@ -2225,6 +2248,7 @@ const SUPABASE_URL = 'https://qmzrpyyadoajwziqachm.supabase.co';
    IMAGE UPLOAD (Supabase Storage)
 ════════════════════════════ */
 async function uploadImageToStorage(file, prefix) {
+  if (!(await ensureAuth())) return null;
   const ext = file.name.split('.').pop();
   const filename = prefix + '_' + Date.now() + '.' + ext;
   try {
@@ -2255,6 +2279,7 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const VIEWER_BASE = 'https://choicegolf-quote.vercel.app/golf-viewer.html';
 
 async function publishQuote() {
+  if (!(await ensureAuth())) return;
   const btn = document.getElementById('btnPublish');
   btn.disabled = true;
   btn.innerHTML = '<span>⏳</span> 저장 중...';
@@ -2425,6 +2450,7 @@ async function renameFolder(type, oldName) {
 
 /* ═══ 폴더 삭제 ═══ */
 async function deleteFolder(type, name) {
+  if (!(await ensureAuth())) return;
   const label = type === 'country' ? '국가' : '지역';
   const field = type === 'country' ? 'category' : 'region';
   const items = productsCache.filter(p => p[field] === name);
@@ -2735,6 +2761,7 @@ function productCard(p) {
 }
 
 async function saveProduct() {
+  if (!(await ensureAuth())) return;
   const name = document.getElementById('productName').value.trim();
   if (!name) { showToast('❌ 상품명을 입력하세요'); return; }
   const category = document.getElementById('productCategory')?.value || '';
@@ -2989,6 +3016,7 @@ function applyProductData(d) {
 }
 
 async function deleteProduct(id) {
+  if (!(await ensureAuth())) return;
   const p = productsCache.find(x => x.id === id);
   if (!confirm(`"${p?.name}" 상품을 삭제할까요?`)) return;
   try {
@@ -3151,6 +3179,7 @@ async function startQuoteFromProduct(productId) {
 
 /* 견적서 저장 (신규) */
 async function saveQuote() {
+  if (!(await ensureAuth())) return;
   const quoteName = document.getElementById('productName').value.trim();
   if (!quoteName) { showToast('❌ 견적서 이름을 입력해주세요 (예: 홍길동 - 일본 미야자키)'); document.getElementById('productName').focus(); return; }
   const d = collectData();
@@ -3273,6 +3302,7 @@ async function changeQuoteStatus(id, newStatus) {
 
 /* 견적서 삭제 */
 async function deleteQuote(id) {
+  if (!(await ensureAuth())) return;
   const q = quotesCache.find(x => x.id === id);
   if (!confirm(`"${q?.quote_name||'이 견적서'}"를 삭제할까요?`)) return;
   try {
@@ -3613,6 +3643,7 @@ function removeLibPhoto(idx) {
 }
 
 async function uploadLibPhoto(file) {
+  if (!(await ensureAuth())) return null;
   const ext = file.name.split('.').pop();
   const filename = `library/${libState.currentCat}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
   const res = await fetch(`${SUPABASE_URL}/storage/v1/object/golf-images/${filename}`, {
@@ -3631,6 +3662,7 @@ async function uploadLibPhoto(file) {
 
 /* ─── Save Library Item ─── */
 async function saveLibItem() {
+  if (!(await ensureAuth())) return;
   const name = document.getElementById('libName').value.trim();
   if (!name) { showToast('❌ 영문명을 입력해주세요'); return; }
   const name_kr = document.getElementById('libNameKr').value.trim();
@@ -3670,6 +3702,7 @@ async function saveLibItem() {
 
 /* ─── Delete Library Item ─── */
 async function deleteLibItem(id, name) {
+  if (!(await ensureAuth())) return;
   if (!confirm(`"${name}" 항목을 삭제할까요?`)) return;
   try {
     await fetch(`${SUPABASE_URL}/rest/v1/library?id=eq.${id}`, {
@@ -4070,6 +4103,7 @@ function renderDayTimeRows() {
 }
 
 async function saveFlight() {
+  if (!(await ensureAuth())) return;
   const v = id => document.getElementById(id)?.value || '';
   const days = [];
   document.querySelectorAll('#fm_days input[type=checkbox]:checked').forEach(cb => days.push(cb.value));
@@ -4161,6 +4195,7 @@ function getFlightTimesForDay(f, dayOfWeek) {
 }
 
 async function deleteFlight(id) {
+  if (!(await ensureAuth())) return;
   if (!confirm('이 항공편을 삭제할까요?')) return;
   try {
     await fetch(`${SUPABASE_URL}/rest/v1/flights?id=eq.${id}`, {
@@ -4579,6 +4614,7 @@ function collectConfData() {
 }
 
 async function saveConfirmation() {
+  if (!(await ensureAuth())) return;
   const d = collectConfData();
   if (!d.destination) { showToast('상품명을 입력해주세요'); return; }
   try {
@@ -4602,6 +4638,7 @@ async function saveConfirmation() {
 }
 
 async function publishConfirmation() {
+  if (!(await ensureAuth())) return;
   await saveConfirmation();
   if (!confState.currentId) return;
   const link = `${VIEWER_BASE}?id=${confState.currentId}`;
@@ -4775,6 +4812,7 @@ function loadConfData(d) {
 }
 
 async function deleteConfirmation(id) {
+  if (!(await ensureAuth())) return;
   if (!confirm('이 확정서를 삭제할까요?')) return;
   try {
     await fetch(`${SUPABASE_URL}/rest/v1/quotes?id=eq.${id}`, {
