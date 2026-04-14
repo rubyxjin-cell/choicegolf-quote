@@ -9,7 +9,7 @@
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{--white:#fff;--off:#F8F7F5;--line:#E8E6E1;--line2:#D4D1CA;--ink:#111110;--ink2:#4A4A46;--ink3:#8A8A84;--accent:#2C2C2C;--navy:#2A4A5E;--green:#4A7A5A;--gold:#A07840;--gold-lt:#C9A268;--red:#8B2E2E;--red2:#C0392B}
 html{scroll-behavior:smooth}
-body{background:#DDDBD5;font-family:'Noto Sans KR',sans-serif;font-weight:300;-webkit-font-smoothing:antialiased;color:var(--ink);padding-bottom:80px}
+body{background:#DDDBD5;font-family:'Noto Sans KR',sans-serif;font-weight:300;-webkit-font-smoothing:antialiased;color:var(--ink);padding-bottom:130px}
 .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
 .reveal.visible{opacity:1;transform:translateY(0)}
 
@@ -69,6 +69,7 @@ section,.contact-sec{padding:44px 20px;border-bottom:1px solid var(--line)}
 </style>
 </head>
 <body>
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.8.0/kakao.min.js"></script>
 
 <!-- LOADING -->
 <div class="loading-screen" id="loadingScreen">
@@ -385,9 +386,12 @@ function renderPage(d) {
     </footer>
 
     <!-- SHARE BAR -->
-    <div class="share-bar" style="position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,0.97);backdrop-filter:blur(14px);border-top:1px solid #E8E6E1;padding:12px 20px 20px;display:flex;gap:10px;z-index:200;box-sizing:border-box">
-      <button onclick="shareKakao()" class="share-btn" style="display:flex;align-items:center;justify-content:center;gap:7px;padding:13px 0;border-radius:12px;font-size:13px;font-weight:600;border:none;cursor:pointer;flex:1;background:#FEE500;color:#3A1D1D;font-family:'Noto Sans KR',sans-serif">💬 카카오톡 공유</button>
-      <button onclick="copyLink()" class="share-btn" style="display:flex;align-items:center;justify-content:center;gap:7px;padding:13px 0;border-radius:12px;font-size:13px;font-weight:600;border:none;cursor:pointer;flex:1;background:#2C2C2C;color:white;font-family:'Noto Sans KR',sans-serif">🔗 링크 복사</button>
+    <div class="share-bar" style="position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,0.97);backdrop-filter:blur(14px);border-top:1px solid #E8E6E1;padding:12px 20px 20px;display:flex;flex-direction:column;gap:8px;z-index:200;box-sizing:border-box">
+      <div style="display:flex;gap:10px">
+        <button onclick="shareKakao()" class="share-btn" style="display:flex;align-items:center;justify-content:center;gap:7px;padding:13px 0;border-radius:12px;font-size:13px;font-weight:600;border:none;cursor:pointer;flex:1;background:#FEE500;color:#3A1D1D;font-family:'Noto Sans KR',sans-serif">💬 카카오톡 공유</button>
+        <button onclick="copyLink()" class="share-btn" style="display:flex;align-items:center;justify-content:center;gap:7px;padding:13px 0;border-radius:12px;font-size:13px;font-weight:600;border:none;cursor:pointer;flex:1;background:#2C2C2C;color:white;font-family:'Noto Sans KR',sans-serif">🔗 링크 복사</button>
+      </div>
+      <button onclick="openKakaoChannel()" style="display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 0;border-radius:12px;font-size:12px;font-weight:600;border:1.5px solid #3A1D1D;cursor:pointer;width:100%;background:white;color:#3A1D1D;font-family:'Noto Sans KR',sans-serif">💬 초이스골프 카카오톡 채널 상담</button>
     </div>
   `;
 
@@ -430,10 +434,30 @@ function showToast() {
   t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200);
 }
 function shareKakao() {
-  if (navigator.share) {
-    const title = document.title;
-    navigator.share({ title, text: '골프투어 확정서를 확인하세요!', url: window.location.href });
-  } else { copyLink(); }
+  if (!window.Kakao) { copyLink(); return; }
+  if (!Kakao.isInitialized()) Kakao.init('c871608ff42d17cd576ab535a61e483e');
+  try {
+    Kakao.Share.sendDefault({
+      objectType: 'feed',
+      content: {
+        title: document.title || '초이스골프 골프투어',
+        description: '골프투어 견적서를 확인하세요!',
+        imageUrl: 'https://qmzrpyyadoajwziqachm.supabase.co/storage/v1/object/public/golf-images/logo_share.png',
+        link: { mobileWebUrl: window.location.href, webUrl: window.location.href }
+      },
+      buttons: [{
+        title: '견적서 보기',
+        link: { mobileWebUrl: window.location.href, webUrl: window.location.href }
+      }]
+    });
+  } catch(e) {
+    if (navigator.share) {
+      navigator.share({ title: document.title, text: '골프투어 견적서를 확인하세요!', url: window.location.href });
+    } else { copyLink(); }
+  }
+}
+function openKakaoChannel() {
+  window.open('https://pf.kakao.com/_xaWiKn/chat', '_blank');
 }
 
 /* ════════════════════════════════════════
@@ -559,9 +583,12 @@ function renderConfirmation(d) {
       ${d.contactPhone?'<div style="margin-top:8px;font-size:13px;color:rgba(255,255,255,0.7)">📞 '+d.contactPhone+'</div>':''}
     </section>
 
-    <div style="padding:20px;display:flex;gap:10px">
-      <button onclick="shareKakao()" class="share-btn" style="display:flex;align-items:center;justify-content:center;gap:7px;padding:13px 0;border-radius:12px;font-size:13px;font-weight:600;border:none;cursor:pointer;flex:1;background:#FEE500;color:#3A1D1D;font-family:'Noto Sans KR',sans-serif">💬 카카오톡 공유</button>
-      <button onclick="copyLink()" class="share-btn" style="display:flex;align-items:center;justify-content:center;gap:7px;padding:13px 0;border-radius:12px;font-size:13px;font-weight:600;border:none;cursor:pointer;flex:1;background:#2C2C2C;color:white;font-family:'Noto Sans KR',sans-serif">🔗 링크 복사</button>
+    <div style="padding:20px;display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;gap:10px">
+        <button onclick="shareKakao()" class="share-btn" style="display:flex;align-items:center;justify-content:center;gap:7px;padding:13px 0;border-radius:12px;font-size:13px;font-weight:600;border:none;cursor:pointer;flex:1;background:#FEE500;color:#3A1D1D;font-family:'Noto Sans KR',sans-serif">💬 카카오톡 공유</button>
+        <button onclick="copyLink()" class="share-btn" style="display:flex;align-items:center;justify-content:center;gap:7px;padding:13px 0;border-radius:12px;font-size:13px;font-weight:600;border:none;cursor:pointer;flex:1;background:#2C2C2C;color:white;font-family:'Noto Sans KR',sans-serif">🔗 링크 복사</button>
+      </div>
+      <button onclick="openKakaoChannel()" style="display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 0;border-radius:12px;font-size:12px;font-weight:600;border:1.5px solid #3A1D1D;cursor:pointer;width:100%;background:white;color:#3A1D1D;font-family:'Noto Sans KR',sans-serif">💬 초이스골프 카카오톡 채널 상담</button>
     </div>
   `;
   wrap.style.display='block';
